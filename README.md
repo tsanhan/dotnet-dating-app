@@ -1,34 +1,12 @@
+tips for vscode users only:
+1. install 'C#' extension, after install click 'yes'. if u didn't: shift+ctrl+p => type >assets and pick 'Generate assets for Build and Debug' 
+2. install 'C# extensions' extension by JosKreativ (for now, create class template by right clicking a folder)
+3. install 'Material Icon Theme'
+4. turn on auto save: file => Auto Save
+5. file => preferences => settings => "exclude" => add pattern: **/obj, **/bin
+    * obj and bin folders are recreated but we never interact with them
+6. file => preferences => settings => "folder" => uncheck "compact folders"
+7. just make sure 'code' is in PATH: shift+ctrl+p => type >path => select 'Shell Command: install ... PATH'
+    * so `code .` will work in any folder on the computer.
 
-we'll create a folder named DatingApp and get into it:
-`mkdir DatingApp`
-`cd DatingApp`
 
-we'll start with a check if out dotnet install was successful:
-`dotnet --info`: all SDKs and runtime installed
-'Host' is the version we'll be using
-'.NET SDK' is the sdk we'll be using
-
-as long we have dotnet core 5 we r fine!
-
-- create .net api project:
-`dotnet -h` for help
-- we'll bw using options `new` and `sln`
-
-`dotnet new -h` will show us the help for this command.
-we see `-l` that interests me... so
-`dotnet new -l` will show all the templates available in dotnet 5
-
-first we want to create a sln file (a container for our projects) and a project template too.
-
-now some confusion about dotnet naming:
-- .net framework is the old .net (windows only) and it's ended on 4 (microsoft abandoning it)
-- .net core (all platforms) came and started on version 1 then 2 and 3 (the future of .net)
-- so microsoft just renamed .net core => .net 5 (less confusion 🤔)
-- the templates are still named in .net core but in the future i believe they fix this.
-
-ok so new solution file:
-`dotnet new sln`: containing folder name => name of the solution file;
-vscode is opening a folder but vs can do more use on the sln file.
-
-`dotnet new webapi -o API` (-o: output folder)
-`dotnet sln add API`: to add our api project into out solution
