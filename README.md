@@ -1,26 +1,34 @@
-well be working now on a basic working skeleton.
 
-what is it?
-'''
-a walking skeleton is a tiny implementation of the system that performs a small end to end function,
+we'll create a folder named DatingApp and get into it:
+`mkdir DatingApp`
+`cd DatingApp`
 
-it need not use the final architecture, but it should link together the main architectural components.
+we'll start with a check if out dotnet install was successful:
+`dotnet --info`: all SDKs and runtime installed
+'Host' is the version we'll be using
+'.NET SDK' is the sdk we'll be using
 
-Then the architecture and the functionality can then evolve in parallel.
-'''
+as long we have dotnet core 5 we r fine!
 
-simply put:
-1. have data in db
-2. API project to fetch the data
-3. angular project to query the API and display it
+- create .net api project:
+`dotnet -h` for help
+- we'll bw using options `new` and `sln`
 
-- we'll start simple and and complexity later.
-learning goals:
-1. using dotnet CLI (come with dotnet sdk)
-2. API controllers/endpoints (understand structure)
-3. Entity Framework
-4. API project structure (whats in it, how app starts)
-5. config and env variables 
-6. source control (commiting code for backup and version control)
+`dotnet new -h` will show us the help for this command.
+we see `-l` that interests me... so
+`dotnet new -l` will show all the templates available in dotnet 5
 
+first we want to create a sln file (a container for our projects) and a project template too.
 
+now some confusion about dotnet naming:
+- .net framework is the old .net (windows only) and it's ended on 4 (microsoft abandoning it)
+- .net core (all platforms) came and started on version 1 then 2 and 3 (the future of .net)
+- so microsoft just renamed .net core => .net 5 (less confusion 🤔)
+- the templates are still named in .net core but in the future i believe they fix this.
+
+ok so new solution file:
+`dotnet new sln`: containing folder name => name of the solution file;
+vscode is opening a folder but vs can do more use on the sln file.
+
+`dotnet new webapi -o API` (-o: output folder)
+`dotnet sln add API`: to add our api project into out solution
