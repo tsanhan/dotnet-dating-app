@@ -7,9 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
+    // 1. annotation: means this class is of type api controller
+    // explain later, for now we'll just add it.
     [ApiController]
+    // 2. route: how the user will get to the API controller
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController : ControllerBase //3. deriving from ControllerBase 
     {
         private static readonly string[] Summaries = new[]
         {
