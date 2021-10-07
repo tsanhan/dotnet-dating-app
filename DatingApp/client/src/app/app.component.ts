@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'client';
+  //1. passing data from component to view: interpolation
+  title = 'The Dating App';
 }
