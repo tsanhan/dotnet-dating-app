@@ -61,7 +61,7 @@ namespace API
             policy
             .AllowAnyHeader() // Allow Any Header (like authentication related)
             .AllowAnyMethod()// Allow Any Method (GET/POST/PUT/PATCH)
-            .WithOrigins("http://localhost:4200") // our frontend
+            .WithOrigins("https://localhost:4200") // our frontend
             );
 
             app.UseAuthorization();
