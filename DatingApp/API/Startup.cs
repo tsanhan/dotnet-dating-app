@@ -18,35 +18,17 @@ namespace API
 {
     public class Startup
     {
-        // 1. here we injecting our configuration into the startup class.
-        // 1. I don't really like it, so we'll follow a slightly different way of specifying dependency injection...
-        // 1. other developers are into this way too, it's not just me
         private readonly IConfiguration _config;
-        // 4. When we construct this class, the IConfiguration is being injected into this class when it's constructed,
-        public Startup(IConfiguration config) //2. shorted the name and ctrl+. 'init field from parameter'
+        public Startup(IConfiguration config)
         {
 
-            /*3.*/
             _config = config;
-            // Configuration = configuration;
-
-            //4. I don;t want to remove the 'this' and retype the variables so:
-            //4.1. for the _ retyping: in settings, add _ to 'Private Member Prefix'
-            //4.2. for removing 'this', uncheck 'Use This For Ctor Assignments'
-            //4.3. check the works by deleting line 30 and 24. follow point 2. again
         }
-
-        // public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // the ordering here is not so important
-            // don't use DbContext here 
-
-
             services.AddDbContext<DataContext>(options =>
-            { // this is a lambda expression - very common if you want to pass expression as a parameter
+            {
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
 
@@ -55,6 +37,9 @@ namespace API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+
+            // ordering not importent here
+            services.AddCors();//1. adding service for CORS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,6 +55,14 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            // 2. ordering is very importent here:
+            // must be between routing and endpoints
+            app.UseCors(policy =>
+            policy
+            .AllowAnyHeader() // Allow Any Header (like authentication related)
+            .AllowAnyMethod()// Allow Any Method (GET/POST/PUT/PATCH)
+            .WithOrigins("http://localhost:4200") // our frontend
+            );
 
             app.UseAuthorization();
 
