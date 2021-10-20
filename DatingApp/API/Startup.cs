@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
+using API.Interfaces;
+using API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,6 +29,17 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // 3 types of service lifetimes after we start it:
+            // AddSingleton: dies (disposed) with the application (too long for service we need on the api call level)
+            // AddScoped: dies(disposed) with the http request ( in this case its scoped to the request, we create it on http call (injected to the controller), most useful in Web Apps)
+            // AddTransient: dies(disposed) on method finishing, created every time they are injected or requested.
+            services.AddScoped<ITokenService,TokenService>(); // do we really need the interface?
+            // no we don't! services.AddScoped<TokenService>(); will also work
+            // so why we use interfaces?
+            // when we want to test services it's easy to mock an interface
+            // I can't show exactly because we don;t have testing in this module but it's a 'best practice' 
+
+
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
@@ -38,8 +51,7 @@ namespace API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
 
-            // ordering not importent here
-            services.AddCors();//1. adding service for CORS
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
