@@ -1,10 +1,10 @@
-validation:
-    * we can add validation in different levels
-        - db level
-        - entity level (not really relevant in our case, cant validate hash/salt)
-    * we'll use the level of the dto
-    * we can validate before the dto reach the action(endpoint), it's a feature of the ApiController attribute
-    * goto RegisterDto
-    * test the empty username (also with both username & password empty) in postman... we should get an status 400  error
+adding the login method.
+* go to the AccountController.cs
+* test with postman: login endpoint, wrong username, wrong password 
+* at this point we can clean our db by dropping and recreate it. so stop the app and run `dotnet ef database drop` and recreate it from our migrations, run: `dotnet ef database update`
+* start the dotnet app and register a new user (from postman)
+* make sure we can login with the new user
 
-next up: the login method
+ok so we have login and register, but how can we authenticate?
+
+next up: what we use to authenticate with our API?
