@@ -18,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using API.Extensions;
 
 namespace API
 {
@@ -32,11 +33,15 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ITokenService,TokenService>();
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            });
+            // 1. cutting to create the AddApplicationServices extantion method
+            // services.AddScoped<ITokenService,TokenService>();
+            // services.AddDbContext<DataContext>(options =>
+            // {
+            //     options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
+            // });
+
+            services.AddApplicationServices(_config); //2. after creating AddApplicationServices as an extantion method, we can use it.
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -45,18 +50,21 @@ namespace API
             });
 
             services.AddCors();
-            //1. before adding our middleware we add a service for the authentication, configure it with jwt configuration:
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => {// 2. configure parameters 
-                options.TokenValidationParameters = new TokenValidationParameters{
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
-                    ValidateIssuer = false, // the api server 
-                    ValidateAudience = false // the angular app
-                    //we can add validations against those ☝ too but our main concern is the token 
-                };
-            });
+            //2. to do the same with Identity Service Extensions well cut this and go to IdentityServiceExtensions.cs
 
+            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            // .AddJwtBearer(options => {// 2. configure parameters 
+            //     options.TokenValidationParameters = new TokenValidationParameters{
+            //         ValidateIssuerSigningKey = true,
+            //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
+            //         ValidateIssuer = false, // the api server 
+            //         ValidateAudience = false // the angular app
+            //         //we can add validations against those ☝ too but our main concern is the token 
+            //     };
+            // });
+            
+            //3. use AddIdentityServices from IdentityServiceExtensions.cs
+            services.AddIdentityServices(_config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,8 +80,7 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            // 2. ordering is very importent here:
-            // must be between routing and endpoints
+
             app.UseCors(policy =>
             policy
             .AllowAnyHeader() // Allow Any Header (like authentication related)
