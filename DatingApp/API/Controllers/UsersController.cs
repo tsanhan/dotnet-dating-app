@@ -21,7 +21,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous] //2. this is only so we could compare 
+        [Authorize] 
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
 
@@ -29,7 +29,7 @@ namespace API.Controllers
             return users;
         }
 
-        [Authorize] //1. now our GetUser is protected 
+        [Authorize] 
         [HttpGet("{id}")]
         public async Task<ActionResult<AppUser>> GetUser(int id)
         {
