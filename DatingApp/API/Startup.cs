@@ -1,3 +1,4 @@
+using System.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Interfaces;
 using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace API
@@ -29,17 +32,7 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // 3 types of service lifetimes after we start it:
-            // AddSingleton: dies (disposed) with the application (too long for service we need on the api call level)
-            // AddScoped: dies(disposed) with the http request ( in this case its scoped to the request, we create it on http call (injected to the controller), most useful in Web Apps)
-            // AddTransient: dies(disposed) on method finishing, created every time they are injected or requested.
-            services.AddScoped<ITokenService,TokenService>(); // do we really need the interface?
-            // no we don't! services.AddScoped<TokenService>(); will also work
-            // so why we use interfaces?
-            // when we want to test services it's easy to mock an interface
-            // I can't show exactly because we don;t have testing in this module but it's a 'best practice' 
-
-
+            services.AddScoped<ITokenService,TokenService>();
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
@@ -52,6 +45,18 @@ namespace API
             });
 
             services.AddCors();
+            //1. before adding our middleware we add a service for the authentication, configure it with jwt configuration:
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => {// 2. configure parameters 
+                options.TokenValidationParameters = new TokenValidationParameters{
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
+                    ValidateIssuer = false, // the api server 
+                    ValidateAudience = false // the angular app
+                    //we can add validations against those ☝ too but our main concern is the token 
+                };
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +80,10 @@ namespace API
             .AllowAnyMethod()// Allow Any Method (GET/POST/PUT/PATCH)
             .WithOrigins("https://localhost:4200") // our frontend
             );
+
+            // 3. the order is important
+            // Authentication come before Authorization, Cors comes before Authentication
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
