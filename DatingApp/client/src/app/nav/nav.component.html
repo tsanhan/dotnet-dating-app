@@ -2,7 +2,6 @@
   <div class="container">
     <a class="navbar-brand" href="#">Dating App</a>
 
-    <!-- 1. add structural directive for if -->
     <ul *ngIf="loggedIn" class="navbar-nav mr-auto">
       <li class="nav-item">
         <a class="nav-link" href="#">Matches</a>
@@ -13,20 +12,19 @@
       <li class="nav-item">
         <a class="nav-link " href="#">Messages</a>
       </li>
-      <!-- 4. dropdown will not work right now because we need to enable the dropdown functionality, we'll temporary do it here-->
       <li class="nav-item">
         <a class="nav-link " (click)="logout()" href="#">Logout</a>
       </li>
     </ul>
-    <!-- 2. we'll swap the form with a dropdown for available when they logged in-->
-    <div class="dropdown" *ngIf="loggedIn">
-      <a  class="dropdown-toggle text-light">welcome user</a>
-      <div class="dropdown-menu">
+    <!--1. add the directives in their locations and a divider and a mt-3: checkout it works and go to style this visa the nav.component.css -->
+    <div class="dropdown" *ngIf="loggedIn" dropdown>
+      <a  class="dropdown-toggle text-light" dropdownToggle>welcome user</a>
+      <div class="dropdown-menu mt-3" *dropdownMenu>
         <a  class="dropdown-item">Edit Profile</a>
+        <div class="dropdown-divider"></div>
         <a (click)="logout()" class="dropdown-item">Logout</a>
       </div>
     </div>
-    <!-- 2. we can use ngIf for render elements, if we want the elements to exist but just be hidden then [hidden]="..." -->
     <form *ngIf="!loggedIn"  class="form-inline mt-2 mt-md-0" #loginForm="ngForm" (ngSubmit)="login()" autocomplete="off">
       <input name="username" [(ngModel)]="model.username" class="form-control mr-sm-2" type="text" placeholder="Username">
       <input name="password" [(ngModel)]="model.password" class="form-control mr-sm-2" type="password" placeholder="Password">

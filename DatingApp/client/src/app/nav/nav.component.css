@@ -1,0 +1,4 @@
+/* we can use the devtools to figure out what elements are we targeting here */
+.dropdown-toggle, .dropdown-item {
+  cursor: pointer;
+}
