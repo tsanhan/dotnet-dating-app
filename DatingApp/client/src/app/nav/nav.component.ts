@@ -7,10 +7,8 @@ import { AccountService } from '../services/account.service';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-  //3. store a property if logged in
   loggedIn: boolean = false;
   model: any = {};
-  //1. inject account service
   constructor(private accountService: AccountService) { }
 
   ngOnInit(): void {
@@ -18,8 +16,7 @@ export class NavComponent implements OnInit {
   }
 
   login() {
-    //2. login
-    this.accountService.login(this.model) // returning observable (it's lazy)
+    this.accountService.login(this.model)
       .subscribe(response => {
         console.log(response);
         this.loggedIn = true;
@@ -28,7 +25,11 @@ export class NavComponent implements OnInit {
         console.log(error);
 
       })
+  }
 
+  //1. create a logout method (we'll sure deal with login/logout differently )
+  logout() {
+    this.loggedIn = false; // 2. goto the html
   }
 
 }
