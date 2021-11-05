@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { User } from '../models/user';
 import { AccountService } from '../services/account.service';
 
 @Component({
@@ -7,19 +9,36 @@ import { AccountService } from '../services/account.service';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-  loggedIn: boolean = false;
+  //2. remove the loggedIn property from the nav component
+  // loggedIn: boolean = false;
+
+  //3. use currentUser$ to get the current user
+  currentUser$: Observable<User>;
+
+
   model: any = {};
-  constructor(private accountService: AccountService) { }
+  constructor(private accountService: AccountService) {
+    this.currentUser$ = this.accountService.currentUser$;
+  }
 
   ngOnInit(): void {
-    this.getCurrentUser(); //3. use at on init, and go back to README.md
+    //7. we dont need this anymore
+    // this.getCurrentUser();
+
+    //8. go to nav.component.html and switch the ngIf to the currentUser$
+    //9. two things cna be changed here:
+    // 1 we can use this.accountService.currentUser$ in the template, no need for this.currentUser$
+    // 2 to do 1 we need the accountService in the constructor to be public
+
+    //10. we can remove the logout() link in the nav.component.html
   }
 
   login() {
     this.accountService.login(this.model)
       .subscribe(response => {
         console.log(response);
-        this.loggedIn = true;
+        // 4. no need of this anymore
+        // this.loggedIn = true;
       },
       error => {
         console.log(error);
@@ -28,19 +47,23 @@ export class NavComponent implements OnInit {
   }
 
   logout() {
-    this.accountService.logout(); //1. use service to logout
-    this.loggedIn = false;
+    this.accountService.logout();
+    // 5. no need of this anymore
+    // this.loggedIn = false;
   }
 
-  // 2. get the current user
-  getCurrentUser() {
-    this.accountService.currentUser$.subscribe(user => {
-      this.loggedIn = !!user;
-    },
-    error => {
-      console.log(error);
+  //6. we dont need this anymore
+  // getCurrentUser() {
+  //   //1. we should not use subscribe here:
+  //   // this current user is not an http request, this never completes: potential for memory leak (explain why - what async pipe do?)
+  //   // lets use the async pipe
+  //   this.accountService.currentUser$.subscribe(user => {
+  //     this.loggedIn = !!user;
+  //   },
+  //   error => {
+  //     console.log(error);
 
-    })
-  }
+  //   })
+  // }
 
 }
