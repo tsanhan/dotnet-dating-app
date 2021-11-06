@@ -9,38 +9,47 @@ import { User } from '../models/user';
 export class AccountService {
 
   baseUrl = 'https://localhost:5001/api/';
-  //6. create an observable to store the user in
-  //the special type of observable is ReplaySubject (replaying values to every one who subscribe to it)
-  private currentUserSource$ = new ReplaySubject<User>(1/* number of values to replay (buffer size)  */);
+  private currentUserSource$ = new ReplaySubject<User>(1);// 3. don't worry if u not clear on what is going on here... we'll come back to this when we look at routing
   currentUser$ = this.currentUserSource$.asObservable();
 
   constructor(private http: HttpClient) { }
 
-  login(model: any){
-    return this.http.post<User>/*4. generic type*/(this.baseUrl + 'account/login', model).pipe( //1. pipe: do something with the observable before we subscribe (so pipe returns observable)
-      map((response: User/*5. use type*/) =>{ //2. mapping the data coming in to another data (wrapping as observable on the way out)
+  login(model: any) {
+    return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
+      map((response: User) => {
         const user = response;
-        if(user){
+        if (user) {
           localStorage.setItem('user', JSON.stringify(user));
-          this.currentUserSource$.next(user); //7. update the observable value
+          this.currentUserSource$.next(user);
         }
       })
-
     )
   }
 
 
-  // 8. create a helper method
-  setCurrentUser(user:User){
+  //1. create the resister method
+  register(model: any) {
+    return this.http.post<User>(this.baseUrl + 'account/register', model)
+    .pipe(
+      map((user: User) => {
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.currentUserSource$.next(user);
+        }
+        return user; // first try without this line(this line is't needed): we'll console 'undefined' in the console in register.component.ts
+      })
+    )
+  }
+  //2. go to register component
+
+  setCurrentUser(user: User) {
     this.currentUserSource$.next(user);
   }
 
-  // 3. logout method, now we'll create a type for our user: create and go to models/user.ts
   logout() {
     localStorage.removeItem('user')
-    this.currentUserSource$.next();//8. update the observable value
+    this.currentUserSource$.next();
   }
 
-  //9. go to app.component.ts
 
 }
