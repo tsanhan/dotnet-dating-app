@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-register',
@@ -6,7 +6,9 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  @Input() usersFromHomeComponent: any; // 1. not a grate name, go to the template to use this data
+  @Input() usersFromHomeComponent: any;
+  @Output() cancelRegister = new EventEmitter<boolean>(); // 1. create an event emitter (what is it?)
+
   model: any = {};
 
   constructor() { }
@@ -19,7 +21,9 @@ export class RegisterComponent implements OnInit {
   }
 
   cancel() {
-    console.log('cancelled');
+    // 2. emit the event
+    this.cancelRegister.emit(false);
+    // go to home.component.html
   }
 
 
