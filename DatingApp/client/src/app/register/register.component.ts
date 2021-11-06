@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-register',
@@ -6,8 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-
-  // add all this and go to the template
+  @Input() usersFromHomeComponent: any; // 1. not a grate name, go to the template to use this data
   model: any = {};
 
   constructor() { }

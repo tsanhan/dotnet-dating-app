@@ -2,15 +2,15 @@
   <h2 class="text-center text-primary">Sign up</h2>
   <hr>
   <div class="form-group">
-    <!--the 'name' will help angular to track what is entering the form -->
-    <!-- play with it, what if:  -->
-    <!-- 1. no name attribute -->
-    <!-- 2. same name attribute -->
-    <!-- 3. value of the form passed to register: register(registerForm)  -->
-    <!-- 4. conclusion: do we need it? if so, for what? in what scenario? -->
+
     <input type="text" class="form-control" name="username" [(ngModel)]="model.username" placeholder="Username">
   </div>
+  <label >Who is your favorite user?</label>
+
   <div class="form-group">
+    <select class="form-control">
+      <option *ngFor="let user of usersFromHomeComponent" [value]="user.userName">{{user.userName}}</option> <!--no data... what did I forget? [answer in home component on init]-->
+    </select>
     <input type="password" class="form-control" name="password" [(ngModel)]="model.password" placeholder="Password">
   </div>
 
@@ -20,4 +20,4 @@
   </div>
 </form>
 
-<!-- when done go to home.component.html to add <app-register>-->
+
