@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../services/account.service';
 
 @Component({
@@ -7,24 +8,25 @@ import { AccountService } from '../services/account.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  //1. cleanup the code, we don't need to get the users from the server.
-  //cleanup here, in the html, in home.component.html and home.component.ts:
   @Output() cancelRegister = new EventEmitter<boolean>();
 
   model: any = {};
 
-  constructor(private accountService: AccountService) { }
+  constructor(
+    private accountService: AccountService,
+    /*1. inject the router*/ private toastr: ToastrService ) { }
 
   ngOnInit(): void {
   }
 
   register() {
-    //2. register the user
     this.accountService.register(this.model).subscribe((re) => {
       console.log(re);
-      this.cancel();// this is temporary, we will use the router to navigate to another page
+      this.cancel();
     }, error => {
       console.log(error);
+      // 2. use the toastr
+      this.toastr.error(error.error);
     });
   }
 
