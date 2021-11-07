@@ -10,18 +10,19 @@
         "projectUniqueName": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
         "projectName": "API",
         "projectPath": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
-        "packagesPath": "C:\\Users\\victor\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\c0700437\\.nuget\\packages\\",
         "outputPath": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\victor\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\c0700437\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {}
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
@@ -80,7 +81,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.202\\RuntimeIdentifierGraph.json"
         }
       }
     }
