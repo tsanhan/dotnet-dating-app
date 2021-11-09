@@ -1,34 +1,39 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { ListsComponent } from './lists/lists.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 import { MemberListComponent } from './members/member-list/member-list.component';
 import { MessagesComponent } from './messages/messages.component';
 
-const routes: Routes = [ // we'll use this array to provide routes for angular
-  { // will be loaded on http://localhost:4200/ without any routing
+const routes: Routes = [
+  {
     path:'',
     component: HomeComponent,
-    pathMatch: 'full' // better read the inline doc on pathMatch (hover above it)
+    pathMatch: 'full'
   }, {
     path:'members',
-    component: MemberListComponent
+    component: MemberListComponent,
+    canActivate: [AuthGuard] // protect this route
   },
   {
-    path:'members/:id', //:id is a parameter, for example 4 will look like: http://localhost:4200/members/4
-    component: MemberDetailComponent
+    path:'members/:id',
+    component: MemberDetailComponent,
+    canActivate: [AuthGuard] // protect this route
   },
   {
     path:'lists',
-    component: ListsComponent
+    component: ListsComponent,
+    canActivate: [AuthGuard] // protect this route
   },
   {
     path:'messages',
-    component: MessagesComponent
+    component: MessagesComponent,
+    canActivate: [AuthGuard] // protect this route
   },
   {
-    path:'**', //wildcard route (on error/non existing route)
+    path:'**',
     component: HomeComponent,
     pathMatch: 'full'
   }
