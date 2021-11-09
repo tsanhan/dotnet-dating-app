@@ -1,19 +1,20 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
   <div class="container">
-    <!--1. letting angular take control on the routing -->
-    <a class="navbar-brand" routerLink="/">Dating App</a>
-    <!--2. '/' means absolute route (from the beginning). if without '/'' (try it) it will chain the route (relative route)-->
-    <ul *ngIf="currentUser$ | async" class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <!--3. introduce routerLinkActive="active", start with adding 'active' in the class, and then explain about routerLinkActive="active"  -->
-        <a class="nav-link" routerLinkActive="active" routerLink="/members">Matches</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLinkActive="active" routerLink="/lists">Lists</a>
-      </li>
+    <a class="navbar-brand" routerLink="/">Dating App </a>
+    <ul  class="navbar-nav mr-auto">
+      <!-- we'll add angular container because we might want to add other links that a non authenticated user CAN access -->
+      <!-- ng-container does not generate any html and thus not interfere with any of our styling-->
+      <ng-container *ngIf="currentUser$ | async">
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" routerLink="/members">Matches</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" routerLink="/lists">Lists</a>
+        </li>
       <li class="nav-item">
         <a class="nav-link " routerLinkActive="active" routerLink="/messages">Messages</a>
       </li>
+    </ng-container>
 
     </ul>
     <div class="dropdown" *ngIf="currentUser$ | async" dropdown>

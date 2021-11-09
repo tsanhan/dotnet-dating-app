@@ -12,26 +12,20 @@ const routes: Routes = [
     path:'',
     component: HomeComponent,
     pathMatch: 'full'
-  }, {
-    path:'members',
-    component: MemberListComponent,
-    canActivate: [AuthGuard] // protect this route
   },
+  //1. just create the route to group other routes
   {
-    path:'members/:id',
-    component: MemberDetailComponent,
-    canActivate: [AuthGuard] // protect this route
+    path: '',
+    runGuardsAndResolvers:'always',
+    canActivate:[AuthGuard],
+    children:[
+      {path:'members',component: MemberListComponent},
+      {path:'members/:id',component: MemberDetailComponent},
+      {path:'lists',component: ListsComponent},
+      {path:'messages', component: MessagesComponent}
+    ]
   },
-  {
-    path:'lists',
-    component: ListsComponent,
-    canActivate: [AuthGuard] // protect this route
-  },
-  {
-    path:'messages',
-    component: MessagesComponent,
-    canActivate: [AuthGuard] // protect this route
-  },
+  //2. go to nav.component.html to conditionally display the links
   {
     path:'**',
     component: HomeComponent,
