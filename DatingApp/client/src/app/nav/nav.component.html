@@ -1,9 +1,7 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary"><!--1. a brighter color for the background-->
   <div class="container">
     <a class="navbar-brand" routerLink="/">Dating App </a>
     <ul  class="navbar-nav mr-auto">
-      <!-- we'll add angular container because we might want to add other links that a non authenticated user CAN access -->
-      <!-- ng-container does not generate any html and thus not interfere with any of our styling-->
       <ng-container *ngIf="currentUser$ | async">
         <li class="nav-item">
           <a class="nav-link" routerLinkActive="active" routerLink="/members">Matches</a>
@@ -17,8 +15,8 @@
     </ng-container>
 
     </ul>
-    <div class="dropdown" *ngIf="currentUser$ | async" dropdown>
-      <a  class="dropdown-toggle text-light" dropdownToggle>welcome user</a>
+    <div class="dropdown" *ngIf="currentUser$ | async as user" dropdown>
+      <a  class="dropdown-toggle text-light" dropdownToggle>{{user.username | titlecase}}</a> <!--2. display the username using a pipe (that is it?)-->
       <div class="dropdown-menu mt-3" *dropdownMenu>
         <a  class="dropdown-item">Edit Profile</a>
         <div class="dropdown-divider"></div>
