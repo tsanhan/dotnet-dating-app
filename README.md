@@ -1,13 +1,8 @@
-exporting to a shared module:
-the app.module.ts can become really large, lets see what we can do about it.
+section 6 summery:
 
-- we'll create a shared module (for stuff being shared between other modules)
-- we'll create a feature module (for feature related stuff)
-    * we want to enable lazy loading (we download the code only when needed)
+1. router basics
+2. added bootstrap theme
+3. route guards (not a security, security is on the BE, FE have all the code ­Ъце)
+4. feature + core modules (can talk about shared module) 
 
-
-* create modules folder
-* create a 'members' module there
-* create a 'shared' module there
-* go to shared.module.ts:
-* go to members.module.ts:
+next module: error handling on the FE + BE
