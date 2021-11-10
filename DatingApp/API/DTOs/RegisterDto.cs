@@ -3,15 +3,11 @@ namespace API.DTOs
 {
     public class RegisterDto
     {
-        //1. data annotation, 
         [Required]
-        //we can add different validations:
-        // [Phone]
-        // [Email]
-        // [StringLength(4)]
-        // [RegularExpression("asd")] - if we want a custom format
         public string Username { get; set; } 
 
+        //1. add another validator
+        [StringLength(8, MinimumLength = 4, ErrorMessage = "You must specify password between 4 and 8 characters")]
         [Required]
         public string Password { get; set; }
     }

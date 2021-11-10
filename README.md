@@ -1,10 +1,7 @@
-section 7 into:
+we'll start with setting up a controller to take a look at errors in terms of exceptions and error handling
 
-error handling on the FE and the BE:
+create and go to API/Controllers/BuggyController.cs
 
-learning goals:
-1. API Middleware - understanding
-2. angular interceptors - intercept requests and responses
-3. troubleshooting exceptions
+test in postman - section 7 to see all the errors coming back
 
-the goal of this module is to create an Error Handling utopia: setting things up once in a centralized way and not waring about it ever again 
+next up: handling server errors
