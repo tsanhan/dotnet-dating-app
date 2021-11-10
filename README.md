@@ -1,8 +1,10 @@
-section 6 summery:
+section 7 into:
 
-1. router basics
-2. added bootstrap theme
-3. route guards (not a security, security is on the BE, FE have all the code ­Ъце)
-4. feature + shared modules (can talk about core module - things that are used in all the app) 
+error handling on the FE and the BE:
 
-next module: error handling on the FE + BE
+learning goals:
+1. API Middleware - understanding
+2. angular interceptors - intercept requests and responses
+3. troubleshooting exceptions
+
+the goal of this module is to create an Error Handling utopia: setting things up once in a centralized way and not waring about it ever again 
