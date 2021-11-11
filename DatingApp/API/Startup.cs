@@ -33,14 +33,9 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // 1. cutting to create the AddApplicationServices extantion method
-            // services.AddScoped<ITokenService,TokenService>();
-            // services.AddDbContext<DataContext>(options =>
-            // {
-            //     options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            // });
 
-            services.AddApplicationServices(_config); //2. after creating AddApplicationServices as an extantion method, we can use it.
+
+            services.AddApplicationServices(_config);
 
 
             services.AddControllers();
@@ -50,20 +45,7 @@ namespace API
             });
 
             services.AddCors();
-            //2. to do the same with Identity Service Extensions well cut this and go to IdentityServiceExtensions.cs
 
-            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            // .AddJwtBearer(options => {// 2. configure parameters 
-            //     options.TokenValidationParameters = new TokenValidationParameters{
-            //         ValidateIssuerSigningKey = true,
-            //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
-            //         ValidateIssuer = false, // the api server 
-            //         ValidateAudience = false // the angular app
-            //         //we can add validations against those ☝ too but our main concern is the token 
-            //     };
-            // });
-            
-            //3. use AddIdentityServices from IdentityServiceExtensions.cs
             services.AddIdentityServices(_config);
         }
 
@@ -72,7 +54,15 @@ namespace API
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //1. UseDeveloperExceptionPage: this is where we tach the exception and can see the error message
+                // we don't have any exception handling inside any of our methods, controllers or middleware,
+                // then it's going to get thrown all the way up to our developer exception page.
+                // * btw we can read the 500 exception message from the response body, it's call stack trace with the top as the most recent information
+                
+                //2. what we'll see if we comment this out? nothing will change, we'll still get the 500 error but no stack strace
+                // app.UseDeveloperExceptionPage();
+
+                //3. go to BuggyController/GetServerError to see what we use to have (for demonstration purposes only)
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
@@ -83,13 +73,11 @@ namespace API
 
             app.UseCors(policy =>
             policy
-            .AllowAnyHeader() // Allow Any Header (like authentication related)
-            .AllowAnyMethod()// Allow Any Method (GET/POST/PUT/PATCH)
-            .WithOrigins("https://localhost:4200") // our frontend
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithOrigins("https://localhost:4200")
             );
 
-            // 3. the order is important
-            // Authentication come before Authorization, Cors comes before Authentication
             app.UseAuthentication();
 
             app.UseAuthorization();

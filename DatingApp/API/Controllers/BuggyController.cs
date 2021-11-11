@@ -32,10 +32,10 @@ namespace API.Controllers
         [HttpGet("not-found")] // buggy/not-found
         public ActionResult<AppUser> GetNotFound()
         {
-            var thing  = _context.Users.Find(-1);
-            if(thing == null)
+            var thing = _context.Users.Find(-1);
+            if (thing == null)
             {
-                return NotFound() ;// 404 not found
+                return NotFound();// 404 not found
             }
             return Ok(); //🤣
         }
@@ -44,16 +44,36 @@ namespace API.Controllers
         [HttpGet("server-error")] // buggy/server-error
         public ActionResult<string> GetServerError()
         {
-            var thing  = _context.Users.Find(-1);
-            var thingtoReturn = thing.ToString(); //NullReferenceExaption: 'thing' will be null (checkout Find inline doc)
+
+            //1. things used to be like this try catch block but:
+            // * this way we dont get any infomation in the console logs (because we swallowed the exception)
+            // * the data about the exception is in ex, we don;t do much about it
+            // so we wont use try catch blocks all over the place, it's a bad practice and it's not the 1990's 
+            // we'll create our own middleware to handle  exceptions specifically in a global way
+
+            // try
+            // {
+            //     var thing = _context.Users.Find(-1);
+            //     var thingtoReturn = thing.ToString();
+            //     return thingtoReturn; //🤣
+            // }
+            // catch (Exception ex)
+            // {
+            //     return StatusCode(500, "Computer Says no!");
+            // }
+
+            
+            var thing = _context.Users.Find(-1);
+            var thingtoReturn = thing.ToString();
             return thingtoReturn; //🤣
+
         }
 
 
         //4. bad request
         [HttpGet("bad-request")] // buggy/bad-request
         public ActionResult<string> GetBetRequest()
-        { 
+        {
             return BadRequest("this was not a good request");
         }
 
