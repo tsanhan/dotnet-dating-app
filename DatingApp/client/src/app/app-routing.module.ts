@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { TestErrorsComponent } from './errors/test-errors/test-errors.component';
 import { AuthGuard } from './guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { ListsComponent } from './lists/lists.component';
@@ -11,7 +12,6 @@ const routes: Routes = [
     component: HomeComponent,
     pathMatch: 'full'
   },
-  //1. just create the route to group other routes
   {
     path: '',
     runGuardsAndResolvers:'always',
@@ -25,7 +25,7 @@ const routes: Routes = [
       {path:'messages', component: MessagesComponent}
     ]
   },
-  //2. go to nav.component.html to conditionally display the links
+  {path: 'errors', component: TestErrorsComponent},//1. add the component and go to navbar.component.html
   {
     path:'**',
     component: HomeComponent,
