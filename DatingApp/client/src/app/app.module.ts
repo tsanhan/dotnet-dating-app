@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component'
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { SharedModule } from './modules/shared.module';
 import { MembersModule } from './modules/members.module';
 import { TestErrorsComponent } from './errors/test-errors/test-errors.component';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,13 @@ import { TestErrorsComponent } from './errors/test-errors/test-errors.component'
     SharedModule,
     MembersModule
   ],
-  providers: [],
+  providers: [//1. add the interceptor to the providers array
+    {
+      provide: HTTP_INTERCEPTORS, // 2. injection token
+      useClass: ErrorInterceptor, // 3. class to be injected
+      multi: true                 // 4. we adding this one to others already in use internally by angular
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
