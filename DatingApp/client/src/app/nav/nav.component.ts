@@ -17,7 +17,7 @@ export class NavComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private router :Router,
-     /*1. inject the router*/ private toastr: ToastrService) {
+    private toastr: ToastrService) {
 
     this.currentUser$ = this.accountService.currentUser$;
   }
@@ -31,11 +31,8 @@ export class NavComponent implements OnInit {
         this.router.navigateByUrl('/members');
         console.log(response);
       },
-      error => {
-        console.log(error);
-        // 2. use the toastr
-        this.toastr.error(error.error);
-      })
+      // 1. we dont need error handling here now
+      )
   }
 
   logout() {
