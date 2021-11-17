@@ -1,14 +1,22 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace API.Entities
 {
+    [Table("Photos")]
     public class Photo
     {
         public int Id { get; set; }
         public string Url { get; set; }
         public bool IsMain { get; set; }
         
-        // we'll use a photo storage service that need this property... 
-        // so this is to save a new migration when we get there, 
         public string PublicId { get; set; } 
+
+    
+        //1. tell entity framework that this entity has a relationship with another entity
+        //* this is 'fully defining' a relationship
+        public AppUser AppUser { get; set; }
+        public int AppUserId { get; set; }
+        
         
     }
 }
