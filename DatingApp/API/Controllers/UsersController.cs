@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,31 +12,30 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
 
-    [Authorize] // 3. we want authentication on conteroller level
+    [Authorize]
     public class UsersController : BaseApiController
     {
-        private readonly DataContext _context;
-        public UsersController(DataContext context)
+        //1. no need for the BbContext, swap with IUserRepository
+        private readonly IUserRepository _userRepository;
+        public UsersController(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
 
         }
 
         [HttpGet]
-        // [AllowAnonymous] // 1. no need- we want authentication on conteroller level
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
-
-            var users = await _context.Users.ToListAsync();
-            return users;
+            var users = await _userRepository.GetUsersAsync(); //2. use the repository 
+            return Ok(users); //3. we cant convert IEnum to ActionResult of an IEnum,so we wrap with OK ActionResult
         }
 
-        // [Authorize] // 2. no need- we want authentication on conteroller level
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetUser(int id)
+        //4. let's use the username instead of id
+        [HttpGet("{username}")]
+        public async Task<ActionResult<AppUser>> GetUser(string username)
         {
-            
-            return await _context.Users.FindAsync(id);
+            var rtn = await _userRepository.GetUserByUserNameAsync(username); 
+            return rtn;
         }
 
     }

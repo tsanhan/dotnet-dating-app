@@ -26,26 +26,30 @@ namespace API.Data
             return await _context.Users.FindAsync(id);
         }
 
+        // 1. eager loading
         public async Task<AppUser> GetUserByUserNameAsync(string username)
         {
-            return await _context.Users.SingleOrDefaultAsync(x => x.UserName == username);
+            return await _context.Users
+            .Include(x => x.Photos)// we include the photos in the response
+            .SingleOrDefaultAsync(x => x.UserName == username);
         }
 
+        // 2. eager loading
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+            .Include(x => x.Photos) // we include the photos in the response 
+            .ToListAsync();
         }
 
         public async Task<bool> SaveAllAsync()
         {
-            // SaveChangesAsync returns the number of changes made to the database, I want to make suer at least one change was made
-            return await _context.SaveChangesAsync() > 0; 
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public void Update(AppUser user)
         {
-            // just updating a flag to say 'yep that has been modified'
-             _context.Entry<AppUser>(user).State = EntityState.Modified;
+            _context.Entry<AppUser>(user).State = EntityState.Modified;
         }
     }
 }
