@@ -1674,11 +1674,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
+      "projectUniqueName": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
+      "projectPath": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
       "packagesPath": "C:\\Users\\victor\\.nuget\\packages\\",
-      "outputPath": "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\obj\\",
+      "outputPath": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\victor\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1688,7 +1688,7 @@
         "net5.0"
       ],
       "sources": {
-        "https://api.nuget.org/v3/index.json": {}
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {}
       },
       "frameworks": {
         "net5.0": {

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LhF/ZR11wQcg2HKfAe6SnfDGozEV96RMk2r8KNMAM0pXDEMkiq4d4skdjwfMYLj65kSW4gvkNXhrLH7wUeYoxg==",
+  "dgSpecHash": "ioIGzs4IyxV/JQ3/Z7HRFdXS5NAxFYnvbOptvg88LvQkhJZwDijdeKqkt90zaPoX8Mc9vzsJq6uvp7tCP/pU4w==",
   "success": true,
-  "projectFilePath": "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
+  "projectFilePath": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\victor\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
     "C:\\Users\\victor\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.1.1\\automapper.extensions.microsoft.dependencyinjection.8.1.1.nupkg.sha512",

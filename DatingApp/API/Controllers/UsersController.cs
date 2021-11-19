@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,27 +17,32 @@ namespace API.Controllers
     [Authorize]
     public class UsersController : BaseApiController
     {
-        //1. no need for the BbContext, swap with IUserRepository
+        private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUserRepository userRepository, IMapper mapper/*3. import the mapper*/)
         {
+            _mapper = mapper; 
             _userRepository = userRepository;
-
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto/*1. change that*/>>> GetUsers()
         {
-            var users = await _userRepository.GetUsersAsync(); //2. use the repository 
-            return Ok(users); //3. we cant convert IEnum to ActionResult of an IEnum,so we wrap with OK ActionResult
+            var users = await _userRepository.GetUsersAsync();
+            // 4. map the objects to return
+            var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
+
+            return Ok(usersToReturn);
         }
 
-        //4. let's use the username instead of id
         [HttpGet("{username}")]
-        public async Task<ActionResult<AppUser>> GetUser(string username)
+        public async Task<ActionResult<MemberDto/*2. change that*/>> GetUser(string username)
         {
-            var rtn = await _userRepository.GetUserByUserNameAsync(username); 
-            return rtn;
+            var rtn = await _userRepository.GetUserByUserNameAsync(username);
+            // 5. map the object to return
+            var userToReturn = _mapper.Map<MemberDto>(rtn);
+            
+            return userToReturn;
         }
 
     }
