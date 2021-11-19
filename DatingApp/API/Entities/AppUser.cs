@@ -25,9 +25,13 @@ namespace API.Entities
         public string Country {get;set;}
         public ICollection<Photo> Photos {get;set;} 
 
-        //1. please use THIS name, the 'Get' in GetAge is important, we'll se later on
-        public int GetAge() {
-           return DateOfBirth.CalculateAge();
-        }
+        //1. fixing the issue that AutoMapper uses this method 
+        //   we just remove it
+        // public int GetAge() {
+        //    return DateOfBirth.CalculateAge();
+        // }
+
+        //2. so how will we calculate the age?
+        // go to AutoMapperProfiles.cs
     }
 }

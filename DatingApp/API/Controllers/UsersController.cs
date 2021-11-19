@@ -19,30 +19,39 @@ namespace API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
-        public UsersController(IUserRepository userRepository, IMapper mapper/*3. import the mapper*/)
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
             _mapper = mapper; 
             _userRepository = userRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto/*1. change that*/>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            var users = await _userRepository.GetUsersAsync();
-            // 4. map the objects to return
-            var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
+            // 3. do the same here
+            var users = await _userRepository.GetMembersAsync();
+            
+            // var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
 
-            return Ok(usersToReturn);
+            return Ok(users);
         }
 
         [HttpGet("{username}")]
-        public async Task<ActionResult<MemberDto/*2. change that*/>> GetUser(string username)
+        public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
-            var rtn = await _userRepository.GetUserByUserNameAsync(username);
-            // 5. map the object to return
-            var userToReturn = _mapper.Map<MemberDto>(rtn);
+            // 2. update this to use the new projection
+            var rtn = await _userRepository.GetMemberAsync(username);
             
-            return userToReturn;
+            // 1. no need for this
+            // var userToReturn = _mapper.Map<MemberDto>(rtn);
+
+            // 4. test in postman
+            // not working... we still quering the full Entity (with the password hash and salt)
+            // why do you think that is?
+            // answer: because AutoMapper uses the GetAge method in the AppUser
+            // the method needs a property from an AppUser Entity object, therefor an AppUser object must be created.
+            // to fix this go to AppUser.cs
+            return rtn;
         }
 
     }
