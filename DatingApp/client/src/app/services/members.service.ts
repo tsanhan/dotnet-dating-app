@@ -8,7 +8,7 @@ import { Member } from '../models/member';
 // this is a short term option
 const htpOptions = {
   headers: new HttpHeaders({
-    Authentication: 'Bearer ' + JSON.parse(localStorage.getItem('user') as string).token
+    Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user') as any)?.token
   })
 }
 
@@ -24,7 +24,7 @@ export class MembersService {
 
   //1. start implementing
   getMembers() {
-    return this.http.get<Member[]>(`${this.baseUrl}users'`,/*3. */ htpOptions);
+    return this.http.get<Member[]>(`${this.baseUrl}users`,/*3. */ htpOptions);
   }
 
   //4.
