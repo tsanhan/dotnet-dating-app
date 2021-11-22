@@ -21,7 +21,7 @@ export class JwtInterceptor implements HttpInterceptor {
     //2. take(1): we need the values from currentUser$ observable only one time so no need to unsubscribe
 
     this.account.currentUser$.pipe(take(1)).subscribe(user => currentUser = user);
-    if(currentUser.token) {
+    if(currentUser?.token) {
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${currentUser.token}`

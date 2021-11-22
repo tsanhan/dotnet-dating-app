@@ -7,19 +7,18 @@ import { MemberCardComponent } from '../members/member-card/member-card.componen
 
 const routes: Routes = [
   {path:'',component: MemberListComponent, pathMatch:'full'},
-  {path:':id',component: MemberDetailComponent},
+  {path:':username',component: MemberDetailComponent}, //1. change this
 ];
 
 @NgModule({
   declarations: [
-    // taken from app.module.ts, remove it from there and remove imports
     MemberListComponent,
     MemberDetailComponent,
     MemberCardComponent
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes) // these are child routes (not starting from the root path)
+    RouterModule.forChild(routes)
   ],
   exports:[
     RouterModule,
