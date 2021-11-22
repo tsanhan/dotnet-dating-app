@@ -17,6 +17,7 @@ import { TestErrorsComponent } from './errors/test-errors/test-errors.component'
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
+import { JwtInterceptor } from './interceptors/jwt.interceptor';
 
 @NgModule({
   declarations: [
@@ -40,11 +41,16 @@ import { ServerErrorComponent } from './errors/server-error/server-error.compone
     SharedModule,
     MembersModule
   ],
-  providers: [//1. add the interceptor to the providers array
+  providers: [
     {
-      provide: HTTP_INTERCEPTORS, // 2. injection token
-      useClass: ErrorInterceptor, // 3. class to be injected
-      multi: true                 // 4. we adding this one to others already in use internally by angular
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
     }
   ],
   bootstrap: [AppComponent]
