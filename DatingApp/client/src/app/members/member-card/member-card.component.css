@@ -1,0 +1,20 @@
+.card:hover img{
+  transform: scale(1.2,1.2);
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  opacity: 0.7;
+}
+.card img{
+  transform: scale(1);
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  opacity: 0.7;
+}
+
+/* we have a problem in this point that the image overrides the border */
+/* we will fix this like this: */
+.card-img-wrapper {
+  overflow: hidden;
+}
+
+/* talk a bit about angular's css encapsulation (the attribute added to html elements) and go to member-card.component.ts */
