@@ -1,7 +1,5 @@
-adding some styling to the cards:
+Adding animated buttons:
+we need button interaction: view profile, like and messages
 
-zoom a bit on hover.
-go to member-card.component.css
-
-up next: Adding animated buttons
-
+go to member-card.component.html
+up next: Using an interceptor to send the token (not like what we did in the member service)

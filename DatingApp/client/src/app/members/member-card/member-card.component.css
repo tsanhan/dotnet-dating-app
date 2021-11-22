@@ -11,10 +11,27 @@
   opacity: 0.7;
 }
 
-/* we have a problem in this point that the image overrides the border */
-/* we will fix this like this: */
 .card-img-wrapper {
   overflow: hidden;
+  position: relative;
 }
 
-/* talk a bit about angular's css encapsulation (the attribute added to html elements) and go to member-card.component.ts */
+
+.member-icons{
+  position: absolute;
+  bottom: -30%;
+  left: 0;
+  right: 0;
+  margin-right: auto;
+  margin-left: auto;
+  opacity: 0;
+}
+/* so initially we wont see nothing, but on hover we will */
+.card-img-wrapper:hover .member-icons {
+  bottom: 0px;
+  opacity: 1;
+}
+
+.animate {
+  transition: all 0.3s ease-in-out;
+}
