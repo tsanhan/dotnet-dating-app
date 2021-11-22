@@ -13,3 +13,15 @@
   background-color: #fff;
   border-top: none;
 }
+
+/* 1. add this */
+.ngx-gallery {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+/* 2.
+* * try to see if it's working, not working, try to fix.
+* * this is a timing problem.
+* * at the moment of using the member, the member is still not there, everithing in ngOnInit is sync
+* * we need to wait for the member to be loaded, so lets see what I'll do in member-detail.component.ts (go there)
+ */

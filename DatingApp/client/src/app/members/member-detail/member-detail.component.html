@@ -44,7 +44,9 @@
 
    </tab>
    <tab heading="Photos" >
-    <p>photos will go here</p>
+     <!-- 1. add this -->
+    <ngx-gallery [options]="galleryOptions" [images]="galleryImages" class="ngx-gallery"></ngx-gallery>
+    <!-- 2. go to the css -->
   </tab>
   <tab heading="Messages" >
      <p>Messages will go here</p>
