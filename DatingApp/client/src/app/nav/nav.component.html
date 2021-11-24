@@ -13,16 +13,15 @@
         <a class="nav-link " routerLinkActive="active" routerLink="/messages">Messages</a>
       </li>
     </ng-container>
-    <!-- 1. add the errors link -->
     <li class="nav-item">
       <a class="nav-link " routerLinkActive="active" routerLink="/errors">Errors</a>
     </li>
 
     </ul>
     <div class="dropdown" *ngIf="currentUser$ | async as user" dropdown>
-      <a  class="dropdown-toggle text-light" dropdownToggle>{{user.username | titlecase}}</a> <!--2. display the username using a pipe (that is it?)-->
+      <a  class="dropdown-toggle text-light" dropdownToggle>{{user.username | titlecase}}</a>
       <div class="dropdown-menu mt-3" *dropdownMenu>
-        <a  class="dropdown-item">Edit Profile</a>
+        <a  class="dropdown-item" routerLink="/member/edit">Edit Profile</a><!--1. add routerLink  -->
         <div class="dropdown-divider"></div>
         <a (click)="logout()" class="dropdown-item">Logout</a>
       </div>
