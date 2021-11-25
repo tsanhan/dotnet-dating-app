@@ -1,15 +1,20 @@
 <div class="row" *ngIf="member">
-  <!-- 1. add this -->
   <div class="col-4">
     <h1>Your profile</h1>
   </div>
-  <!-- 2. add this-->
   <div class="col-8">
-    <!-- 3. give the user notification tha some changed was made -->
-    <div class="alert alert-info">
-      <p><strong>Information</strong>
+    <!-- 6.
+      * once we created a element reference, it's available all over the template.
+      * display the alert only if the form is dirty, that id dirty? changed.
+      * there is another property in the form called "touched", what do you think the difference is?
+      * there is another property in the form called "pristine", what do you think that is?
+      * so you can figure out yourself, if there is a property called 'touched'
+     -->
+    <div class="alert alert-info" *ngIf="editForm.dirty">
+      <!-- 5. no need for the p tag -->
+      <strong>Information</strong>
         You have made changes. any unsaved changes will be lost
-      </p>
+
     </div>
   </div>
   <div class="col-4">
@@ -36,27 +41,25 @@
 
       </div>
       <div class="card-footer">
-        <!-- 4. no need for all the buttons -->
-        <!-- <div class="btn-group d-flex"> -->
-        <!-- <button class="btn btn-primary">Like</button> -->
-        <!-- <button class="btn btn-success">Message</button> -->
-        <button class="btn btn-success btn-block">Save Changes</button>
-        <!-- </div> -->
+        <!--4. tell the button it's related to a form, test it in the browser -->
+        <!-- 7. disable the form if it's not dirty-->
+        <button [disabled]="editForm.pristine" type="submit" form="editForm" class="btn btn-success btn-block">Save Changes</button>
+        <!-- 8. after we submitting we don't want to display the alert above so we need to reset the fom state. go to the ts file to implement this -->
       </div>
     </div>
   </div>
   <div class="col-8">
     <tabset class="member-tabset">
       <tab heading="About {{member.knownAs}}">
-
-        <!-- 6. text areas in a  -->
-        <form>
+        <!-- 1. make this an angular form (no eed for the id yet - it's at point 3.)-->
+        <form #editForm="ngForm" (ngSubmit)="updateMember()" id="editForm" >
+          <!-- 2. go to the ts file to create the update member method -->
+          <!-- 3. after 2, how the 'Save Changes' button could know how to submit the button? -->
+          <!-- solution:  add id to the form-->
           <h4>Description</h4>
           <textarea [(ngModel)]="member.introduction" name="introduction" class="form-control" rows="6"></textarea>
-          <!-- <p>{{member.introduction}}</p> -->
           <h4 class="mt-2">Looking for</h4>
           <textarea [(ngModel)]="member.lookingFor" name="lookingFor" class="form-control" rows="6"></textarea>
-          <!-- <p>{{member.lookingFor}}</p> -->
           <h4 class="mt-2">interests</h4>
           <textarea [(ngModel)]="member.interests" name="interests" class="form-control" rows="6"></textarea>
           <h4 class="mt-2">Location Details</h4>
@@ -69,19 +72,6 @@
           </div>
         </form>
       </tab>
-      <!-- 7. no need for these tabs -->
-      <!-- <tab heading="Interests">
-        <h4>Interests</h4>
-        <p>{{member.interests}}</p>
-
-      </tab>
-      <tab heading="Photos">
-        <ngx-gallery [options]="galleryOptions" [images]="galleryImages" class="ngx-gallery"></ngx-gallery>
-      </tab>
-      <tab heading="Messages">
-        <p>Messages will go here</p>
-      </tab> -->
-      <!-- 8. create other tab as a place holder for future feature-->
       <tab heading="Edit Photos">
         Photo edit will go here
       </tab>
