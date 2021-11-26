@@ -19,6 +19,7 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,16 @@ import { MemberEditComponent } from './members/member-edit/member-edit.component
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true
+    },
+    //1. this is for loading spinner
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
+      multi: true
     }
+    //2. now we need a place to see the spinner in some html,
+    // * we want it to be visible everywhere
+    // * so go to app.component.html
   ],
   bootstrap: [AppComponent]
 })

@@ -1,9 +1,17 @@
-Updating the user in the client app:
-go to members.service.ts
+Adding loading indicators:
 
-now there is something odd here:
-* as soon as we update the user we get a response, with almost no delays,
-* this is not the case when we update the user in the server
+so the problem (that is't a problem) we'll fix now to make our API slower:
+* install a package for loading indicators
 
-so up next we'll add some fake delays to the requests and see that we need some loading indicators (why do you think loading indicators are important here?) (answer good UX)
+1. install ngx-spinner (https://www.npmjs.com/package/ngx-spinner), look ad the readme, we can install via ng add ot npm
+2. make sure the module is imported (and exported), go to shared.module.ts
+
+3. we'll create a service to help up with this, create a service called 'busy', go to busy.service.ts
+
+4. ok so it's all working great, now I have an issue with this constant API fetching
+    * hmm... do I REALLY need to load the users EVERY SINGLE TIME, right?
+    * I want to store some data in the service so there won;t be so much API calls.
+    * what will bee stored will be called 'state'
+
+up next: Using the service to store state
 
