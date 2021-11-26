@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
@@ -28,30 +29,60 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            // 3. do the same here
             var users = await _userRepository.GetMembersAsync();
             
-            // var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
-
             return Ok(users);
         }
 
         [HttpGet("{username}")]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
-            // 2. update this to use the new projection
             var rtn = await _userRepository.GetMemberAsync(username);
             
-            // 1. no need for this
-            // var userToReturn = _mapper.Map<MemberDto>(rtn);
-
-            // 4. test in postman
-            // not working... we still quering the full Entity (with the password hash and salt)
-            // why do you think that is?
-            // answer: because AutoMapper uses the GetAge method in the AppUser
-            // the method needs a property from an AppUser Entity object, therefor an AppUser object must be created.
-            // to fix this go to AppUser.cs
             return rtn;
+        }
+
+        //1. we need to create a DTO to receive as a parameter so go and create MemberUpdateDTO.cs
+        //2. coming back from auto mapper, we need to add this:
+        
+        //  * PUT: in REST: update a full entity (PATCH: update only a few fields)
+        //  * no need for parameters, because there is no conflict with anything in the API controller 
+        //  * the name UpdateUser is not really relevant
+        //  * what is relevant is the method(HTTP verb), the parameters in the route and those we take in the method
+        //  * what do you thing would happen if we had, for example [HttpGet("{id}")]?
+        //  * answer: we would get a conflict in our routes and will need to somehow change to [HttpGet("id/{username}")] or something to have a different route
+        //  * right now there is no conflict, this is hte only PUT method we have
+        [HttpPut]
+        //3. no need to return anything, the client has all the data about the updated entity
+        public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDTO)
+        {
+            //4. we want to have hold of the user and username, 
+            // * we don't believe to the client giving us the right username.
+            // * we'll authenticate against the token, and we'll get the username from the token
+            // * in the controller we have access to the ClaimsPrincipal (it's an object created from the token sent from the client side)
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // I'm looking for the NameIdentifier claim (nameid in the payload in the jwt)
+            var user = await _userRepository.GetUserByUserNameAsync(username);
+
+            // map the DTO to the user automatically (otherwise we would have to do it manually)
+            // no need for that: user.City = memberUpdateDTO.City;
+            _mapper.Map(memberUpdateDTO, user); 
+
+            _userRepository.Update(user); 
+            // now the entity is flagged as updated by EF (it's not saved yet and it doesn't matter if the entity was actually modified)
+
+            if(await _userRepository.SaveAllAsync())
+            {
+                return NoContent();
+            }
+
+            // if failed, return a bad request
+            return BadRequest("Failed to update user");
+            // 5. test our api in postman, and see if it works, 
+            // * go to postman section 9
+            // * start with the login to save the token as an environment variables
+            // * and then update the user
+            // * good - 204: no content
+            // * go to member/edit in the client to see the updated data
         }
 
     }

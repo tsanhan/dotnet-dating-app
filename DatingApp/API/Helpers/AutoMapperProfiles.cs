@@ -17,10 +17,6 @@ namespace API.Helpers
                     {  
                         opt.MapFrom(src => src.Photos.FirstOrDefault(p => p.IsMain).Url);
                     })
-            // 1. we use this to map a value to Age
-            // lets see if this helps in postman
-            // YaY, it does, no query for hash and salt
-            // go back to README.md
             .ForMember( 
                 dest => dest.Age, 
                 opt => 
@@ -28,6 +24,10 @@ namespace API.Helpers
                         opt.MapFrom(src => src.DateOfBirth.CalculateAge());
                     });
             CreateMap<Photo, PhotoDto>();
+
+            //1. add this:
+            CreateMap<MemberUpdateDTO, AppUser>(); // there is an option of .ReverseMap() but we not using it be because we not using MemberDto
+            //2. use this mapping in the UsersController.cs, go there
 
         }
     }
