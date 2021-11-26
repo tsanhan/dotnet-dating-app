@@ -1,6 +1,11 @@
 <div class="row">
-  <!-- use the app-member-card component -->
-  <div class="col-2" *ngFor="let member of members">
+  <!-- 1. use the async pipe -->
+  <div class="col-2" *ngFor="let member of members$| async">
     <app-member-card [member]="member"></app-member-card>
   </div>
+  <!-- 2. test in the browser:
+    all is working:
+    - and after one fetch of the members: no second loading indicators.
+    - after updating we can see the result in the users's detailed page.
+   - all the games does not produce any errors in the console -->
 </div>
