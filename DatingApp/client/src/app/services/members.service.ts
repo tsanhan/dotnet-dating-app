@@ -23,4 +23,11 @@ export class MembersService {
   getMember(username: string) {
     return this.http.get<Member>(`${this.baseUrl}users/${username}`);
   }
+
+  //.1 add this
+  updateMember(member: Member) {
+    return this.http.put(`${this.baseUrl}users`, member);
+  }
+
+  // 2. go to member-edit.component.ts
 }

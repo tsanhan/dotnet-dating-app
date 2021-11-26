@@ -18,7 +18,6 @@ export class MemberEditComponent implements OnInit {
   member: Member;
   user:User;
 
-  //1. what is a HostListener? we can read the inline doc a bit, but in short it allows up to access browser events
   @HostListener('window:beforeunload',['$event']) unloadNotification($event: any){
     if(this.editForm.dirty) {
       $event.returnValue = true;
@@ -43,11 +42,12 @@ export class MemberEditComponent implements OnInit {
   }
 
   updateMember() {
-    console.log(this.member);
-
-    this.toastr.success('Profile updated successfully');
-
-    this.editForm.reset(this.member);
+    //1. update the member
+    this.memberService.updateMember(this.member).subscribe(() => {
+      this.toastr.success('Profile updated successfully');
+      this.editForm.reset(this.member);
+    });
+    //2. test in the browser: update a user, then refresh the page or navigate away and back
   }
 
 }
