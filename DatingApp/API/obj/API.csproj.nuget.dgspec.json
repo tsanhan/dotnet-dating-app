@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj": {}
+    "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj": {
+    "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
+        "projectUniqueName": "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
+        "projectPath": "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\API.csproj",
         "packagesPath": "C:\\Users\\victor\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\dotnet-dating-app\\DatingApp\\API\\obj\\",
+        "outputPath": "c:\\Projects\\dotnet-dating-app\\DatingApp\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\victor\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -21,7 +21,7 @@
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
@@ -42,6 +42,10 @@
             "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
               "version": "[8.1.1, )"
+            },
+            "CloudinaryDotNet": {
+              "target": "Package",
+              "version": "[1.15.2, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
