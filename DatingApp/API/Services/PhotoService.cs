@@ -40,16 +40,20 @@ namespace API.Services
             var uploadResult = new ImageUploadResult();
             if (file.Length > 0)
             {
-                using var stream = file.OpenReadStream(); // we want to dispose the stream after we use it (in this method)
+                using var stream = file.OpenReadStream(); 
 
                 var uploadParams = new ImageUploadParams()
                 {
                     File = new FileDescription(file.FileName, stream),
-                    // we always want the image to be square  and crop it to the face
+
                     Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
                 };
 
-                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                uploadResult = await _cloudinary.UploadAsync(uploadParams); 
+                // the actual save of the file. this will return an object we want to inspect:
+                // * the 'Error' property is null, that's good!
+                // * in 'more' we see we have PublicId, SecureUrl, that's great!
+                // now we can 'step out' ⬆ from the method
 
             }
             return uploadResult;

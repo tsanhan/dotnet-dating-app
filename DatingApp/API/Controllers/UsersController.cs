@@ -70,17 +70,11 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
-            //3. we need the username, well we can do the same as what we did in UpdateUser, but we can be a bit more DRY
-            // * lets create an extention method that extanding the User ClaimsPrincipal.
-            // * try to do that yourself
-            // * [10 minuts later]... create and go to ClaimsPrincipalExtensions.cs
-
-            //5. use the extention
+            // 1. make sure we have somthing in the file property (the file name right)
             var username = User.GetUsernae();
-            // eagerly load the photos
             var user = await _userRepository.GetUserByUserNameAsync(username);
 
-            var result = await _photoService.UploadPhotoAsync(file);
+            var result = await _photoService.UploadPhotoAsync(file);// 'step into' the UploadPhotoAsync
 
             if(result.Error != null){
                 return BadRequest(result.Error.Message);
@@ -90,17 +84,15 @@ namespace API.Controllers
                 PublicId = result.PublicId
             };
 
-            // if this is the first photo of the user
             
             if(user.Photos.Count == 0){
                 photo.IsMain = true;
             }
-            // one liner: photo.IsMain = user.Photos.Count == 0;
 
             user.Photos.Add(photo);
 
             if(await _userRepository.SaveAllAsync())
-                return _mapper.Map<PhotoDto>(photo);// this is not what we should be retuning(not RESTfull), we'll deal with this later
+                return _mapper.Map<PhotoDto>(photo);
             
             return BadRequest("Problem adding photos");
         }
