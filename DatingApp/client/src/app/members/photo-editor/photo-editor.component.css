@@ -1,3 +1,26 @@
-.my-drop-zone { border: dotted 3px lightgray; }
-.nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
-.another-file-over-class { border: dotted 3px green; }
+.my-drop-zone {
+  border: dotted 3px lightgray;
+}
+.nv-file-over {
+  border: dotted 3px red;
+} /* Default class applied to drop zones on over */
+.another-file-over-class {
+  border: dotted 3px green;
+}
+
+/* 1. the image */
+img.img-thumbnail {
+  width: 100px;
+  height: 100px !important;
+  margin-bottom: 2px;
+}
+
+/*2. the class that appear on drag over */
+.nv-file-over {
+  border: dotted 3px red;
+}
+
+/*3. the text near the file uploads  */
+input[type=file] {
+  color: transparent;
+}
