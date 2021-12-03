@@ -38,7 +38,7 @@ namespace API.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{username}", /*3. add this */Name = "GetUser"),]
+        [HttpGet("{username}", Name = "GetUser"),]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
             var rtn = await _userRepository.GetMemberAsync(username);
@@ -89,28 +89,44 @@ namespace API.Controllers
             user.Photos.Add(photo);
 
             if(await _userRepository.SaveAllAsync()){
-                
-                //0. lets talk a bit about overloads:
-                //1. commenting the current return: return _mapper.Map<PhotoDto>(photo);
-                //2. we can return Created object but we'll need to somehow get the uri to create the object that contain the data. 
-                // * better use CreatedAtRoute so we can utilize existing routes (we have a route that returning the user that contains the photo)
-                // * for that we need to name a route that contains can give me the object I want
-                // * add name to the GetUser method
-
-                //4. use the name of the route to generate 201 status that also tell the client how to get the resource containing the object returned
-                // 4.1 return CreatedAtRoute("GetUser", _mapper.Map<PhotoDto>(photo));
-                
-                //5. test with postman: add photo to see the response, [this will fail]
-                //5.1 try to think a bit how would to fix this?
-
-                //6. the solution is o use another overload:
                 return CreatedAtRoute("GetUser",new {username = user.UserName}, _mapper.Map<PhotoDto>(photo));
-                //7. test again, yay, success!,  on success checkout the location header created
             }
             
             return BadRequest("Problem adding photos");
         }
         
-        
+        //1. we updating something so it's a PUT
+        [HttpPut("set-main-photo/{photoId}")]
+        public async Task<ActionResult> SetMainPhoto(int photoId)
+        {
+            //2. when we getting the user this way we validatint they are who they say they are
+            // we can trust the infomation inside the token, our server signed the token, and the user send the token
+            var username =  User.GetUsernae(); 
+
+            //3. we gen the photos eagerly here, so we have access to the photos
+            var user = await _userRepository.GetUserByUserNameAsync(username);
+
+            //4. this is synchronous, we allready have the user and it's photos in memory, no walk to the DB
+            var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+
+            //5. this will happen because we will prevent the user set a main photo as main
+            if(photo.IsMain) return BadRequest("This is already the main photo");
+
+            //6. we are setting the main photo to false
+            var currentMain = user.Photos.FirstOrDefault(p => p.IsMain);
+            if(currentMain != null) currentMain.IsMain = false;
+            photo.IsMain = true;
+            
+
+            if(await _userRepository.SaveAllAsync()) return NoContent();
+
+            return BadRequest("Failed to set photo to main");
+            //7. test in postman, section 11: 
+            //  1. login
+            //  2. make sure you have at least 2 photos
+            //  3. get user by username
+            //  4. use the set main photo PUT call with the right photoId
+        }
+
     }
 }
