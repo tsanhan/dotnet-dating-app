@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../services/account.service';
 
@@ -20,20 +20,21 @@ export class RegisterComponent implements OnInit {
     private toastr: ToastrService ) { }
 
   ngOnInit(): void {
-    // 2. add this
     this.initializeForm();
   }
-  // 2. add this methos
   initializeForm() {
-    // form group contains form controls
     this.registerForm = new FormGroup({
-      username: new FormControl(),
-      password: new FormControl(),
-      confirmPassword: new FormControl(),
+      //1. add initial value and validation
+      username: new FormControl(/*initial value */ "Hello", /*validations*/ Validators.required),
+      //2. add multiple validations
+      password: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(8)]),
+      //3. we woth this to be required AND the same as the password... we need a custom validator, we'll put required for now
+      confirmPassword: new FormControl('', Validators.required),
+      //4. for now lets see in the browser what impact it made on the form (the json is being updated as we type)
+      //5. back to readme.md
     });
   }
   register() {
-    //3. comment this for now
     // this.accountService.register(this.model).subscribe((re) => {
     //   console.log(re);
     //   this.cancel();
@@ -42,9 +43,7 @@ export class RegisterComponent implements OnInit {
     //   this.toastr.error(error.error);
     // });
 
-    //4. and log the form values
     console.log(this.registerForm.value);
-    //5. go to the html
 
   }
 
