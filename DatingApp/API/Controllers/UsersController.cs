@@ -73,60 +73,85 @@ namespace API.Controllers
 
             var result = await _photoService.UploadPhotoAsync(file);
 
-            if(result.Error != null){
+            if (result.Error != null)
+            {
                 return BadRequest(result.Error.Message);
             }
-            var photo = new Photo {
+            var photo = new Photo
+            {
                 Url = result.SecureUrl.AbsoluteUri,
                 PublicId = result.PublicId
             };
 
-            
-            if(user.Photos.Count == 0){
+
+            if (user.Photos.Count == 0)
+            {
                 photo.IsMain = true;
             }
 
             user.Photos.Add(photo);
 
-            if(await _userRepository.SaveAllAsync()){
-                return CreatedAtRoute("GetUser",new {username = user.UserName}, _mapper.Map<PhotoDto>(photo));
+            if (await _userRepository.SaveAllAsync())
+            {
+                return CreatedAtRoute("GetUser", new { username = user.UserName }, _mapper.Map<PhotoDto>(photo));
             }
-            
+
             return BadRequest("Problem adding photos");
         }
-        
-        //1. we updating something so it's a PUT
+
         [HttpPut("set-main-photo/{photoId}")]
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
-            //2. when we getting the user this way we validatint they are who they say they are
-            // we can trust the infomation inside the token, our server signed the token, and the user send the token
-            var username =  User.GetUsernae(); 
+            var username = User.GetUsernae();
 
-            //3. we gen the photos eagerly here, so we have access to the photos
             var user = await _userRepository.GetUserByUserNameAsync(username);
 
-            //4. this is synchronous, we allready have the user and it's photos in memory, no walk to the DB
             var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
 
-            //5. this will happen because we will prevent the user set a main photo as main
-            if(photo.IsMain) return BadRequest("This is already the main photo");
+            if (photo.IsMain) return BadRequest("This is already the main photo");
 
-            //6. we are setting the main photo to false
             var currentMain = user.Photos.FirstOrDefault(p => p.IsMain);
-            if(currentMain != null) currentMain.IsMain = false;
+            if (currentMain != null) currentMain.IsMain = false;
             photo.IsMain = true;
-            
 
-            if(await _userRepository.SaveAllAsync()) return NoContent();
+
+            if (await _userRepository.SaveAllAsync()) return NoContent();
 
             return BadRequest("Failed to set photo to main");
-            //7. test in postman, section 11: 
-            //  1. login
-            //  2. make sure you have at least 2 photos
-            //  3. get user by username
-            //  4. use the set main photo PUT call with the right photoId
         }
+
+        // 1. add this method
+        [HttpDelete("delete-photo/{photoId}")]
+        public async Task<ActionResult> DeletePhoto(int photoId)
+        {
+            var username = User.GetUsernae();
+
+            var user = await _userRepository.GetUserByUserNameAsync(username);
+
+            var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+
+            if (photo == null) return BadRequest("Photo not found");
+
+            if (photo.IsMain) return BadRequest("You cannot delete your main photo");
+
+            // some of our photos are stored on cloudinary (have PublicId), but maybe not all...
+            if (photo.PublicId != null) 
+            {
+                var result = await _photoService.DeletePhotoAsync(photo.PublicId);
+
+                if (result.Error != null) return BadRequest(result.Error.Message);
+            }
+
+            user.Photos.Remove(photo);
+
+            if (await _userRepository.SaveAllAsync()) return Ok();
+
+            return BadRequest("Failed to delete photo");
+        }
+        // 2. test in postman, section 11:
+        //  * get user by username to get the photos
+        //  * delete a photo (try first a main one to expect a failure)
+        //  * see if worked, all is working fine (check your cloudinary account to see it is deleted)
 
     }
 }
