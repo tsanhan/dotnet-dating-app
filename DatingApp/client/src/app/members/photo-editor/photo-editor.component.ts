@@ -34,6 +34,7 @@ export class PhotoEditorComponent implements OnInit {
   //1. add this method to the component
   setMainPhoto(photo: Photo) {
     this.membersService.setMainPhoto(photo.id).subscribe(() => {
+      this.user.photoUrl = photo.url;
       // to update the local storage and the current user with the new main photo url
       // this is page reload proof because the photoUrl is stored in the local storage too
       this.accountService.setCurrentUser(this.user);
