@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component'
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { ListsComponent } from './lists/lists.component';
@@ -43,6 +43,7 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,// add this, might be a good idea to recompile the app (stop and serve)
     SharedModule,
     MembersModule
   ],
@@ -57,15 +58,11 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
       useClass: JwtInterceptor,
       multi: true
     },
-    //1. this is for loading spinner
     {
       provide: HTTP_INTERCEPTORS,
       useClass: LoadingInterceptor,
       multi: true
     }
-    //2. now we need a place to see the spinner in some html,
-    // * we want it to be visible everywhere
-    // * so go to app.component.html
   ],
   bootstrap: [AppComponent]
 })
