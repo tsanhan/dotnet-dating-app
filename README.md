@@ -1,4 +1,5 @@
-Client side validation:
+Adding custom validators:
 go to register.component.ts
 
-up next: make the confirm password field match the password field
+we want the user to have some user feedback and not a json printed
+up next: validation feedback
