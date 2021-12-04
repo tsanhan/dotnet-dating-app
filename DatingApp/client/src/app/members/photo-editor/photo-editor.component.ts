@@ -31,23 +31,28 @@ export class PhotoEditorComponent implements OnInit {
     this.initializeUploader();
   }
 
-  //1. add this method to the component
   setMainPhoto(photo: Photo) {
     this.membersService.setMainPhoto(photo.id).subscribe(() => {
       this.user.photoUrl = photo.url;
-      // to update the local storage and the current user with the new main photo url
-      // this is page reload proof because the photoUrl is stored in the local storage too
       this.accountService.setCurrentUser(this.user);
 
-      // updating the photoUrl and the other photos in the member object
       this.member.photoUrl = photo.url;
-      this.member.photos.forEach(p => { // try to make it a one liner 👍
+      this.member.photos.forEach(p => {
         if (p.isMain) p.isMain = false;
         if (p.id === photo.id) p.isMain = true;
       });
     });
   }
-  //2. go the html add the a call to this method
+
+  //1. delete photo
+  deletePhoto(photoId: number) {
+    this.membersService.deletePhoto(photoId).subscribe(() => {
+      // no need to worry about user deleting it's main photo
+      // no need to worry about error, our interceptor will handle it
+      this.member.photos = this.member.photos.filter(p => p.id !== photoId);
+    });
+  }
+  //2. go to the html
 
   initializeUploader() {
     this.uploader = new FileUploader({

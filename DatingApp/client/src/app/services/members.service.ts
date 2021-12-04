@@ -53,10 +53,13 @@ export class MembersService {
     )
   }
 
-  //1. create a new method to set main photo
   setMainPhoto(photoId: number) {
     return this.http.put(`${this.baseUrl}users/set-main-photo/${photoId}`, {}); // we need to send something to the server
   }
-  //2. use this method in the photo-editor.component.ts
 
+  //1. add this method to the service
+  deletePhoto(photoId: number) {
+    return this.http.delete(`${this.baseUrl}users/delete-photo/${photoId}`);
+  }
+  //2. go to the photo-editor.component.ts
 }
