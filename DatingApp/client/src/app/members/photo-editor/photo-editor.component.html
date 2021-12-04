@@ -2,23 +2,26 @@
   <div class="col-2" *ngFor="let photo of member.photos">
     <img src="{{photo.url}}" alt="{{photo.url}}" class="img-thumbnail p-1">
     <div class="text-center">
-      <button class="btn btn-sm">Main</button>
+      <!--1. update this button-->
+      <button
+      [disabled]="photo.isMain"
+      (click)="setMainPhoto(photo)"
+      [ngClass]="photo.isMain ? 'btn-success active' : 'btn-outline-success'"
+
+      class="btn btn-sm">Main</button>
+      <!--2. [ngClass]="{'btn-success active': photo.isMain, 'btn-outline-success': !photo.isMain}" is also an option -->
+      <!-- 3. can test the functionality manually -->
       <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
     </div>
   </div>
 </div>
 
-<!-- 8. margin top a bit -->
 <div class="row mt-3">
 
   <div class="col-md-3">
-      <!-- 7.change title -->
       <h3>Add photos</h3>
 
-      <!--2. we have hasBaseDropZoneOver property, cool-->
-      <!--3. we trigger the fileOverBase method on fileOver event, cool-->
-      <!--4. we have have an uploader-->
-      <!--5. change the class a bit-->
+
       <div ng2FileDrop
            [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
            (fileOver)="fileOverBase($event)"
@@ -27,16 +30,6 @@
            <i class="fa fa-upload fa-3x"></i>
           Drop photos here
       </div>
-      <!-- 6. at this point we can already something ugly that actually works -->
-
-      <!-- 1. we only need one drop zone -->
-      <!-- <div ng2FileDrop
-           [ngClass]="{'another-file-over-class': hasAnotherDropZoneOver}"
-           (fileOver)="fileOverAnother($event)"
-           [uploader]="uploader"
-           class="well my-drop-zone">
-          Another drop zone
-      </div> -->
 
       Multiple
       <input type="file" ng2FileSelect [uploader]="uploader" multiple  /><br/>
@@ -45,9 +38,7 @@
       <input type="file" ng2FileSelect [uploader]="uploader" />
   </div>
 
-  <!--9. we'll display this only if we have an image,  -->
   <div class="col-md-9" style="margin-bottom: 40px" *ngIf="uploader?.queue?.length">
-  <!-- 10. can see that we don't have that here anymore at the start -->
       <h3>Upload queue</h3>
       <p>Queue length: {{ uploader?.queue?.length }}</p>
 
@@ -56,41 +47,13 @@
           <tr>
               <th width="50%">Name</th>
               <th>Size</th>
-              <!-- 11. i don;t need the individual status, only the conduction at the bottom of the component  -->
-              <!-- <th>Progress</th>
-              <th>Status</th>
-              <th>Actions</th> -->
           </tr>
           </thead>
           <tbody>
           <tr *ngFor="let item of uploader.queue">
               <td><strong>{{ item?.file?.name }}</strong></td>
               <td *ngIf="uploader.options.isHTML5" nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
-              <!-- 11 ⬆️ -->
-              <!-- <td *ngIf="uploader.options.isHTML5">
-                  <div class="progress" style="margin-bottom: 0;">
-                      <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': item.progress + '%' }"></div>
-                  </div>
-              </td>
-              <td class="text-center">
-                  <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                  <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                  <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-              </td>
-              <td nowrap>
-                  <button type="button" class="btn btn-success btn-xs"
-                          (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess">
-                      <span class="glyphicon glyphicon-upload"></span> Upload
-                  </button>
-                  <button type="button" class="btn btn-warning btn-xs"
-                          (click)="item.cancel()" [disabled]="!item.isUploading">
-                      <span class="glyphicon glyphicon-ban-circle"></span> Cancel
-                  </button>
-                  <button type="button" class="btn btn-danger btn-xs"
-                          (click)="item.remove()">
-                      <span class="glyphicon glyphicon-trash"></span> Remove
-                  </button>
-              </td> -->
+
           </tr>
           </tbody>
       </table>
@@ -102,7 +65,6 @@
                   <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
               </div>
           </div>
-          <!-- 12. update the icon classes -->
           <button type="button" class="btn btn-success btn-s"
                   (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
               <span class="fa fa-upload"></span> Upload all
@@ -115,11 +77,6 @@
                   (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
               <span class="fa fa-trash"></span> Remove all
           </button>
-          <!-- 13. after a view on the page, we want:
-            1. to remove the 'no file chosen' text
-            2. to highligh the drop area on hover
-
-          go to the css-->
       </div>
 
   </div>

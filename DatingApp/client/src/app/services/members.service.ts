@@ -20,7 +20,6 @@ import { Member } from '../models/member';
 export class MembersService {
   baseUrl = environment.apiUrl;
 
-  //2. our members state;
   members:Member[] = [];
 
   constructor(
@@ -28,27 +27,23 @@ export class MembersService {
   ) { }
 
 
-  //3. edit this method to check if we already have members stored
   getMembers() {
     if(this.members.length > 0) {
-      return of(this.members); //'of' will create an observable wil one value
+      return of(this.members);
     }
     return this.http.get<Member[]>(`${this.baseUrl}users`).pipe(
-      // tap is a operator that will do something with the result (not changing the result itself)
       tap(members => this.members = members)
     );
   }
 
-  //4. edit this method to check if we already have members stored
   getMember(username: string) {
     const member = this.members.find(m => m.username === username);
-    if(member !== undefined) {// if we found the member
+    if(member !== undefined) {
       return of(member);
     }
     return this.http.get<Member>(`${this.baseUrl}users/${username}`);
   }
 
-  //5. edit this method to check if we already have members stored to update them too!
   updateMember(member: Member) {
     return this.http.put(`${this.baseUrl}users`, member).pipe(
       tap(() => {
@@ -57,6 +52,11 @@ export class MembersService {
       })
     )
   }
-  //6. go to the member-list.component.ts to do something different with the members
+
+  //1. create a new method to set main photo
+  setMainPhoto(photoId: number) {
+    return this.http.put(`${this.baseUrl}users/set-main-photo/${photoId}`, {}); // we need to send something to the server
+  }
+  //2. use this method in the photo-editor.component.ts
 
 }
