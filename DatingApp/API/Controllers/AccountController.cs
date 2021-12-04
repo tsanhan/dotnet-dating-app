@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ namespace API.Controllers
     public class AccountController : BaseApiController
     {
         private readonly DataContext _context;
-        //1. inject the token service
         private readonly ITokenService _tokenService;
         public AccountController(DataContext context, ITokenService tokenService)
         {
@@ -24,7 +24,7 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto/*3. returning UserDto*/>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             if (await UserExist(registerDto.Username)) return BadRequest("Username is taken");
 
@@ -40,10 +40,7 @@ namespace API.Controllers
             _context.Users.Add(user);
 
             await _context.SaveChangesAsync();
-            //2. we want to return the token so we'll create a DTO for that
-            // create and go to DTOs/UserDto.cs
-
-            //4. return userDto
+     
             return new UserDto
             {
                 Username = user.UserName,
@@ -53,10 +50,13 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto/*5. same here*/>> Login(LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
 
-            var user = await this._context.Users.SingleOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
+            var user = await this._context.Users
+                .Include(x => x.Photos) //2. (later, after debug) eager loading the photos to avoid N+1 problem
+                
+            .SingleOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
             if (user == null) return Unauthorized("invalid username");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
@@ -68,11 +68,12 @@ namespace API.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("invalid password");
             }
 
-             //6. return userDto
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                //1. add this, there might not be a photo, thats the reason for the conditional chaining 
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url 
             };
 
         }

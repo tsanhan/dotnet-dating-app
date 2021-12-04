@@ -1,4 +1,14 @@
-/* we can use the devtools to figure out what elements are we targeting here */
 .dropdown-toggle, .dropdown-item {
   cursor: pointer;
 }
+
+/*1. add this and go back to readme.md*/
+.img {
+  max-height: 50px;
+  border: 2px solid #fff;
+  display: inline;
+  margin-right: 1rem;
+}
+
+
+

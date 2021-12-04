@@ -1,5 +1,5 @@
-export interface User { //interface in ts
+export interface User {
   username: string;
   token: string;
+  photoUrl:string;
 }
-// 1. and// going back to account.service.ts

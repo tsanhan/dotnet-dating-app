@@ -8,10 +8,6 @@ import { User } from '../models/user';
   providedIn: 'root'
 })
 export class AccountService {
-  //1. lets remove this and use the environment files
-  //2. go to environment.ts
-  //3. go to environment.prod.ts
-  //4. name sure environment is imported from environment and not environment.prod
   baseUrl = environment.apiUrl;
   private currentUserSource$ = new ReplaySubject<User>(1);
   currentUser$ = this.currentUserSource$.asObservable();
@@ -23,8 +19,10 @@ export class AccountService {
       map((response: User) => {
         const user = response;
         if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.currentUserSource$.next(user);
+          //0. just a little design fix
+          this.setCurrentUser(user);
+          // localStorage.setItem('user', JSON.stringify(user));
+          // this.currentUserSource$.next(user);
         }
       })
     )
@@ -37,16 +35,22 @@ export class AccountService {
     .pipe(
       map((user: User) => {
         if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.currentUserSource$.next(user);
+          //0. just a little design fix
+          this.setCurrentUser(user);
+          // localStorage.setItem('user', JSON.stringify(user));
+          // this.currentUserSource$.next(user);
         }
         return user;
       })
     )
   }
 
-
+  //1. ok  so we see that on login and register we push the user to the currentUserSource$
+  //  as a result everybody get notified via currentUser$
+  //  go to the nav.component.html to use the value from currentUser$ in teh dropdown
   setCurrentUser(user: User) {
+    //0. just a little design fix
+    localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource$.next(user);
   }
 
