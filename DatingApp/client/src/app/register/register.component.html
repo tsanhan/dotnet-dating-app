@@ -2,50 +2,17 @@
 <form [formGroup]='registerForm' (ngSubmit)="register()" autocomplete="off">
   <h2 class="text-center text-primary">Sign up</h2>
   <hr>
-  <div class="form-group">
-    <!-- 1. style input if the input is not valid, we'll use attribute binding (can test in the browser)-->
-    <input
-    [class.is-invalid]="registerForm.get('username')?.errors
-      && registerForm.get('username')?.touched"
-    type="text"
-    class="form-control"
-    formControlName="username"
-    placeholder="Username">
-    <!-- 2. add user feedback (can test in the browser) -->
-    <div class="invalid-feedback">Please enter a username</div>
-  </div>
 
-  <div class="form-group">
-    <!-- 3. copy the styles from username -->
-    <input
-    [class.is-invalid]="registerForm.get('password')?.errors
-      && registerForm.get('password')?.touched"
-    type="password"
-    class="form-control"
-    formControlName="password"
-    placeholder="Password">
-    <!-- 4. add user feedback, on here we have different types: required, min/maxlength(all lowercase)  -->
-    <div *ngIf="registerForm.get('password')?.hasError('required')" class="invalid-feedback">Please enter a password</div>
-    <div *ngIf="registerForm.get('password')?.hasError('minlength')" class="invalid-feedback">password must be at least 4 characters</div>
-    <div *ngIf="registerForm.get('password')?.hasError('maxlength')" class="invalid-feedback">password must be at most 8 characters</div>
+  <!-- 1. use app-text-input: -->
+  <app-text-input formControlName="username" label="Username" ></app-text-input>
+  <app-text-input formControlName="password" label="Password" type="password" ></app-text-input>
+  <app-text-input formControlName="confirmPassword" label="Confirm Password" type="password"></app-text-input>
+  <!-- 2. cool, right? we can also pass the form control like this: -->
+  <!-- <app-text-input [formControl]="$any(registerForm.controls['username'])" [label]="'Username'" ></app-text-input> -->
+  <!-- 3. when using attribute binding, using [] will tell angular that the value come from expression, without [] is a string -->
+  <!-- 8. test in the browser and back to readme.md-->
 
-  </div>
 
-  <div class="form-group">
-    <!-- 5. copy the styles from password -->
-    <input
-     [class.is-invalid]="registerForm.get('confirmPassword')?.errors
-    && registerForm.get('confirmPassword')?.touched"
-     type="password"
-     class="form-control"
-     formControlName="confirmPassword"
-    placeholder="Confirm Password">
-    <!-- 6. add user feedback, keep the 'required' validator, and add the 'isMatching' validator  (can test in the browser) -->
-    <div *ngIf="registerForm.get('confirmPassword')?.hasError('required')" class="invalid-feedback">Please confirm the password</div>
-    <div *ngIf="registerForm.get('confirmPassword')?.hasError('isMatching')" class="invalid-feedback">confirm confirmation must match the password </div>
-  </div>
-
-    <!-- 7. this is a lot of html code... lets try a more DRY way to do this... back to readme.md -->
   <div class="form-group text-center">
     <button class="btn btn-success mr-2" type="submit">Register</button>
     <button class="btn btn-default mr-2" (click)="cancel()" type="button">Cancel</button>
