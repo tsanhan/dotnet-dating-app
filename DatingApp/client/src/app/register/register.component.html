@@ -1,31 +1,57 @@
-<!-- 1. edit the form to use the newly reactive form -->
-<!-- no need for the form template reference -->
-<!-- no need for the name property in the form controls -->
-<!-- we'll add the confirm password input -->
+
 <form [formGroup]='registerForm' (ngSubmit)="register()" autocomplete="off">
   <h2 class="text-center text-primary">Sign up</h2>
   <hr>
   <div class="form-group">
-
-    <input type="text" class="form-control"  formControlName="username" placeholder="Username">
+    <!-- 1. style input if the input is not valid, we'll use attribute binding (can test in the browser)-->
+    <input
+    [class.is-invalid]="registerForm.get('username')?.errors
+      && registerForm.get('username')?.touched"
+    type="text"
+    class="form-control"
+    formControlName="username"
+    placeholder="Username">
+    <!-- 2. add user feedback (can test in the browser) -->
+    <div class="invalid-feedback">Please enter a username</div>
   </div>
 
   <div class="form-group">
-    <input type="password" class="form-control"  formControlName="password" placeholder="Password">
+    <!-- 3. copy the styles from username -->
+    <input
+    [class.is-invalid]="registerForm.get('password')?.errors
+      && registerForm.get('password')?.touched"
+    type="password"
+    class="form-control"
+    formControlName="password"
+    placeholder="Password">
+    <!-- 4. add user feedback, on here we have different types: required, min/maxlength(all lowercase)  -->
+    <div *ngIf="registerForm.get('password')?.hasError('required')" class="invalid-feedback">Please enter a password</div>
+    <div *ngIf="registerForm.get('password')?.hasError('minlength')" class="invalid-feedback">password must be at least 4 characters</div>
+    <div *ngIf="registerForm.get('password')?.hasError('maxlength')" class="invalid-feedback">password must be at most 8 characters</div>
+
   </div>
 
   <div class="form-group">
-    <input type="password" class="form-control"  formControlName="confirmPassword" placeholder="Confirm Password">
+    <!-- 5. copy the styles from password -->
+    <input
+     [class.is-invalid]="registerForm.get('confirmPassword')?.errors
+    && registerForm.get('confirmPassword')?.touched"
+     type="password"
+     class="form-control"
+     formControlName="confirmPassword"
+    placeholder="Confirm Password">
+    <!-- 6. add user feedback, keep the 'required' validator, and add the 'isMatching' validator  (can test in the browser) -->
+    <div *ngIf="registerForm.get('confirmPassword')?.hasError('required')" class="invalid-feedback">Please confirm the password</div>
+    <div *ngIf="registerForm.get('confirmPassword')?.hasError('isMatching')" class="invalid-feedback">confirm confirmation must match the password </div>
   </div>
 
+    <!-- 7. this is a lot of html code... lets try a more DRY way to do this... back to readme.md -->
   <div class="form-group text-center">
     <button class="btn btn-success mr-2" type="submit">Register</button>
     <button class="btn btn-default mr-2" (click)="cancel()" type="button">Cancel</button>
   </div>
 </form>
 
-<!-- 2. we'll have (for now) the value of the form -->
 <p>Form value: {{registerForm.value | json}}</p>
-<p>Form status: {{registerForm.status | json}}</p> <!-- status: VALID, INVALID, PENDING, DISABLED -->
+<p>Form status: {{registerForm.status | json}}</p>
 
-<!-- 3. we can test what we have so far in the browser-->
