@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary"><!--1. a brighter color for the background-->
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
   <div class="container">
     <a class="navbar-brand" routerLink="/">Dating App </a>
     <ul  class="navbar-nav mr-auto">
@@ -20,7 +20,7 @@
     </ul>
 
     <div class="dropdown" *ngIf="currentUser$ | async as user" dropdown>
-      <img class="img" src="{{user.photoUrl}}" alt="{{user.username}}"> <!--1. add this, and lets style this, go to the css file-->
+      <img class="img" src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}"> <!--1. edit the src-->
       <a  class="dropdown-toggle text-light" dropdownToggle>{{user.username | titlecase}}</a>
       <div class="dropdown-menu mt-3" *dropdownMenu>
         <a  class="dropdown-item" routerLink="/member/edit">Edit Profile</a>

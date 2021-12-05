@@ -1,5 +1,6 @@
 
-<form [formGroup]='registerForm' (ngSubmit)="register()" autocomplete="off">
+<!-- 4. make sure on the ngSubmit level we not invoking register -->
+<form [formGroup]='registerForm' (ngSubmit)="registerForm.valid && register()" autocomplete="off">
   <h2 class="text-center text-primary">Sign up</h2>
   <hr>
 
@@ -16,10 +17,7 @@
   <app-text-input formControlName="username" label="Username" ></app-text-input>
   <app-text-input formControlName="knownAs" label="Known As" ></app-text-input>
 
-  <!-- 1. rewrite the date input (the maxDate is after point 2) and test in the browser -->
-  <!-- <app-text-input formControlName="dateOfBirth" label="Date Of Birth" type="date" ></app-text-input> -->
   <app-date-input formControlName="dateOfBirth" label="Date Of Birth" [maxDate]="maxDate"></app-date-input>
-  <!-- 2. we want the site to be over 18 only, go to the ts file  -->
 
   <app-text-input formControlName="city" label="City" ></app-text-input>
   <app-text-input formControlName="country" label="Country" ></app-text-input>
@@ -27,13 +25,22 @@
   <app-text-input formControlName="confirmPassword" label="Confirm Password" type="password"></app-text-input>
 
 
-
+  <!-- 1. paste from test-errors.component.html , this will show us the server side validation errors-->
+  <div class="row" *ngIf="validationErrors.length">
+    <ul class="text-danger">
+      <li *ngFor="let error of validationErrors">{{error}}</li>
+    </ul>
+  </div>
+  <!-- 2. test in the browser to see the errors (nothing is stopping up from sending a non valid form).
+  * we don't want to relay on them we want our client side validation to do the work -->
   <div class="form-group text-center">
-    <button class="btn btn-success mr-2" type="submit">Register</button>
+    <!-- 3. disable Register if not valid-->
+    <button [disabled]="registerForm.invalid" class="btn btn-success mr-2" type="submit">Register</button>
     <button class="btn btn-default mr-2" (click)="cancel()" type="button">Cancel</button>
   </div>
 </form>
 
-<p>Form value: {{registerForm.value | json}}</p>
-<p>Form status: {{registerForm.status | json}}</p>
-
+<!-- 5. no need to see the form values, the validation works -->
+<!-- <p>Form value: {{registerForm.value | json}}</p>
+<p>Form status: {{registerForm.status | json}}</p> -->
+ <!-- 6. back to the readme.md -->

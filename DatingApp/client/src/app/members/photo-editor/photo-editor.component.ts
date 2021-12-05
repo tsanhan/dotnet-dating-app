@@ -44,15 +44,11 @@ export class PhotoEditorComponent implements OnInit {
     });
   }
 
-  //1. delete photo
   deletePhoto(photoId: number) {
     this.membersService.deletePhoto(photoId).subscribe(() => {
-      // no need to worry about user deleting it's main photo
-      // no need to worry about error, our interceptor will handle it
       this.member.photos = this.member.photos.filter(p => p.id !== photoId);
     });
   }
-  //2. go to the html
 
   initializeUploader() {
     this.uploader = new FileUploader({
@@ -72,8 +68,16 @@ export class PhotoEditorComponent implements OnInit {
 
     this.uploader.onSuccessItem = (item, response, status, headers) => {
       if (response) {
-        const photo = JSON.parse(response);
+        const photo: Photo = JSON.parse(response);
         this.member.photos.push(photo);
+
+        // 1. check if the photo is the main photo
+        if (photo.isMain) {
+          this.user.photoUrl = photo.url; // update the user's photoUrl
+          this.member.photoUrl = photo.url; // update the member photoUrl
+          this.accountService.setCurrentUser(this.user); // this will update the photoUrl in the user object
+        }
+        //2. back to readme.md
       }
     };
   }
