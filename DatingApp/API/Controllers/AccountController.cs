@@ -8,6 +8,7 @@ using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Interfaces;
+using AutoMapper;
 
 namespace API.Controllers
 {
@@ -16,9 +17,16 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
-        public AccountController(DataContext context, ITokenService tokenService)
+        private readonly IMapper _mapper;
+
+        public AccountController(
+            DataContext context,
+            ITokenService tokenService,
+            IMapper mapper //1. inject the mapper
+            )
         {
             _tokenService = tokenService;
+            _mapper = mapper;//2. inject the mapper
             _context = context;
 
         }
@@ -28,23 +36,30 @@ namespace API.Controllers
         {
             if (await UserExist(registerDto.Username)) return BadRequest("Username is taken");
 
+            //2. map the registerDto to the user entity
+            var user = _mapper.Map<AppUser>(registerDto);
+
             using var hmac = new HMACSHA512();
-
-            var user = new AppUser
-            {
-                UserName = registerDto.Username.ToLower(),
-                PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key
-            };
-
+            
+            //3. add properties to the user entity
+            // var user = new AppUser
+            // {
+            user.UserName = registerDto.Username.ToLower();
+            user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(registerDto.Password));
+            user.PasswordSalt = hmac.Key;
+            // };
+            //4. go over the method to sanity check all is ok
             _context.Users.Add(user);
 
             await _context.SaveChangesAsync();
-     
+
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                //5. we have a 'known as' data so lets return it (we can use it in the client), add it to UserDto (go to UserDto.cs)
+                //     * do the same for the login method
+                KnownAs = user.KnownAs,
             };
 
         }
@@ -54,8 +69,8 @@ namespace API.Controllers
         {
 
             var user = await this._context.Users
-                .Include(x => x.Photos) //2. (later, after debug) eager loading the photos to avoid N+1 problem
-                
+                .Include(x => x.Photos)
+
             .SingleOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
             if (user == null) return Unauthorized("invalid username");
 
@@ -72,8 +87,11 @@ namespace API.Controllers
             {
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                //1. add this, there might not be a photo, thats the reason for the conditional chaining 
-                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url 
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                //6. add the known as property and back to readme.md
+                KnownAs = user.KnownAs,
+
+                
             };
 
         }

@@ -4,7 +4,10 @@ namespace API.DTOs {
         public string Username { get; set; }
         public string Token { get; set; }
 
-        public string PhotoUrl { get; set; } //1. ad this, this will be the main photo
+        public string PhotoUrl { get; set; } 
+
+        //1.add this property
+        public string KnownAs { get; set; }
     
     }
 }

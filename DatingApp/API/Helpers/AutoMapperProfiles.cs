@@ -25,9 +25,10 @@ namespace API.Helpers
                     });
             CreateMap<Photo, PhotoDto>();
 
-            //1. add this:
-            CreateMap<MemberUpdateDTO, AppUser>(); // there is an option of .ReverseMap() but we not using it be because we not using MemberDto
-            //2. use this mapping in the UsersController.cs, go there
+            CreateMap<MemberUpdateDTO, AppUser>();
+
+            CreateMap<RegisterDto, AppUser>(); //1. add this mapping
+            //2. go to AccountController.cs to the register method
 
         }
     }
