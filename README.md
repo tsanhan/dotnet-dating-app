@@ -1,4 +1,6 @@
-Using the form builder service:
+Expanding the register form:
 go to register.component.ts
 
-up next: expend our form to have more information about the user on register
+as you noticed, we need to use date as date of birth.
+
+up next: create a date input and make it reusable

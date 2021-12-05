@@ -3,14 +3,26 @@
   <h2 class="text-center text-primary">Sign up</h2>
   <hr>
 
-  <!-- 1. use app-text-input: -->
+  <!-- 2. we do something different for the radio -->
+  <div class="form-group">
+    <label style="margin-right: 10px;" class="control-label">I am a:</label>
+    <label for="" class="radio-inline">
+      <input type="radio" value="male" formControlName="gender"> Male
+    </label>
+    <label for="" class="radio-inline">
+      <input class="ml-3" type="radio" value="female" formControlName="gender"> Female
+    </label>
+  </div>
+
+  <!-- 1. easy implement text inputs -->
   <app-text-input formControlName="username" label="Username" ></app-text-input>
+  <app-text-input formControlName="knownAs" label="Known As" ></app-text-input>
+  <app-text-input formControlName="dateOfBirth" label="Date Of Birth" ></app-text-input>
+  <app-text-input formControlName="city" label="City" ></app-text-input>
+  <app-text-input formControlName="country" label="Country" ></app-text-input>
   <app-text-input formControlName="password" label="Password" type="password" ></app-text-input>
   <app-text-input formControlName="confirmPassword" label="Confirm Password" type="password"></app-text-input>
-  <!-- 2. cool, right? we can also pass the form control like this: -->
-  <!-- <app-text-input [formControl]="$any(registerForm.controls['username'])" [label]="'Username'" ></app-text-input> -->
-  <!-- 3. when using attribute binding, using [] will tell angular that the value come from expression, without [] is a string -->
-  <!-- 8. test in the browser and back to readme.md-->
+
 
 
   <div class="form-group text-center">

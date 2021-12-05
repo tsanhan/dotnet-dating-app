@@ -18,16 +18,21 @@ export class RegisterComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private toastr: ToastrService,
-    private fb: FormBuilder//1. inject the service
+    private fb: FormBuilder
     ) { }
 
   ngOnInit(): void {
     this.initializeForm();
   }
   initializeForm() {
-    //2. change this to use the form builder
     this.registerForm = this.fb.group({
+      //1. the order is not important
+      gender: ['male'], // a radio button, no need for validator
       username: ['', Validators.required],
+      knownAs: ['', Validators.required],
+      dateOfBirth: ['', Validators.required],// we;ll need to do something about this but for now we'll keep it a a string
+      city: ['', Validators.required],
+      country: ['', Validators.required],
       password: ['', [
         Validators.required,
         Validators.minLength(4),
@@ -37,7 +42,7 @@ export class RegisterComponent implements OnInit {
         Validators.required,
          this.matchValues('password')
       ]],
-
+      //2. go to the html
     });
     this.registerForm.get('password')?.valueChanges.subscribe(() => {
       this.registerForm.get('confirmPassword')?.updateValueAndValidity();
