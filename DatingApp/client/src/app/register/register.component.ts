@@ -12,8 +12,9 @@ export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter<boolean>();
 
   model: any = {};
-  //1. add this
   registerForm: FormGroup;
+  //1. declare a max date
+  maxDate: Date;
 
   constructor(
     private accountService: AccountService,
@@ -23,14 +24,18 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    //2. set max date
+    this.maxDate = new Date();
+    this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
+    //3. use maxDate in the html file
+
   }
   initializeForm() {
     this.registerForm = this.fb.group({
-      //1. the order is not important
-      gender: ['male'], // a radio button, no need for validator
+      gender: ['male'],
       username: ['', Validators.required],
       knownAs: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],// we;ll need to do something about this but for now we'll keep it a a string
+      dateOfBirth: ['', Validators.required],
       city: ['', Validators.required],
       country: ['', Validators.required],
       password: ['', [
@@ -42,7 +47,6 @@ export class RegisterComponent implements OnInit {
         Validators.required,
          this.matchValues('password')
       ]],
-      //2. go to the html
     });
     this.registerForm.get('password')?.valueChanges.subscribe(() => {
       this.registerForm.get('confirmPassword')?.updateValueAndValidity();

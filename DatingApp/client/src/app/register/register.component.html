@@ -3,7 +3,6 @@
   <h2 class="text-center text-primary">Sign up</h2>
   <hr>
 
-  <!-- 2. we do something different for the radio -->
   <div class="form-group">
     <label style="margin-right: 10px;" class="control-label">I am a:</label>
     <label for="" class="radio-inline">
@@ -14,10 +13,14 @@
     </label>
   </div>
 
-  <!-- 1. easy implement text inputs -->
   <app-text-input formControlName="username" label="Username" ></app-text-input>
   <app-text-input formControlName="knownAs" label="Known As" ></app-text-input>
-  <app-text-input formControlName="dateOfBirth" label="Date Of Birth" ></app-text-input>
+
+  <!-- 1. rewrite the date input (the maxDate is after point 2) and test in the browser -->
+  <!-- <app-text-input formControlName="dateOfBirth" label="Date Of Birth" type="date" ></app-text-input> -->
+  <app-date-input formControlName="dateOfBirth" label="Date Of Birth" [maxDate]="maxDate"></app-date-input>
+  <!-- 2. we want the site to be over 18 only, go to the ts file  -->
+
   <app-text-input formControlName="city" label="City" ></app-text-input>
   <app-text-input formControlName="country" label="Country" ></app-text-input>
   <app-text-input formControlName="password" label="Password" type="password" ></app-text-input>

@@ -1,0 +1,17 @@
+<div class="form-group">
+  <!-- 1. configure the bsDatepicker -->
+  <input
+  type="text"
+  [class.is-invalid] ='ngControl.touched && ngControl.invalid'
+  class="form-control"
+  [formControl]="$any(ngControl.control)"
+  placeholder="{{label}}"
+  bsDatepicker
+  [bsConfig]="bsConfig"
+  [maxDate]="maxDate"
+  >
+  <!-- 2. user error feedback -->
+  <div *ngIf="$any(ngControl.control)?.required" class="invalid-feedback"> {{label}} is required </div>
+</div>
+
+<!-- 3. go to register.component.html -->
