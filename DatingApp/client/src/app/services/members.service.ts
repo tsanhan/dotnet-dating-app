@@ -1,19 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Member } from '../models/member';
+import { PaginatedResult } from '../models/pagination';
 
 
 
-//1. remember: this service is a singleton
-// * question when is it created? (on first inject, a component need the service)
-// * when is it destroyed? (on app close)
-// * so services are good fit to store application state
-//    * there are other things like redux, mobx, etc... all these be an overkill for our small app
-// * our service is good enough to store application state
-// * if we loaded the members before, we don't need to load them again
 @Injectable({
   providedIn: 'root'
 })
@@ -21,18 +15,41 @@ export class MembersService {
   baseUrl = environment.apiUrl;
 
   members:Member[] = [];
+  //3. prop for paginated result
+  paginatedResult: PaginatedResult<Member[]> = new PaginatedResult<Member[]>();
+
 
   constructor(
     private http: HttpClient
   ) { }
 
 
-  getMembers() {
-    if(this.members.length > 0) {
-      return of(this.members);
+  // 1. update this method
+  getMembers(/*4. nullable props*/page?:number, itemsPerPage?:number) {
+    // 5. create params, help to serialize parameters and adding to the query string
+    let params = new HttpParams();
+    // 6. use paras if exist
+    if(page != null && itemsPerPage != null) {
+      params = params.append('pageNumber', page.toString());
+      params = params.append('pageSize', itemsPerPage.toString());
     }
-    return this.http.get<Member[]>(`${this.baseUrl}users`).pipe(
-      tap(members => this.members = members)
+
+    // 2. we remove cache for now, we set up pagination, and come back for caching after
+    return this.http.get<Member[]>(`${this.baseUrl}users`,
+    {
+      observe:'response', // when observing response, we getting the pull response, with the headers (otherwise we only get the body)
+      params
+    }).pipe(
+      map(response => {
+        // 7. map to paginated result
+        this.paginatedResult.result = response.body as Member[];
+        if(response.headers.get('Pagination') !== null) {
+          this.paginatedResult.pagination = JSON.parse(response.headers.get('Pagination') || '');
+        }
+        return this.paginatedResult;
+      })
+      // 8. so now that the method is returning a paginated result, we need to update member-list.component.ts
+      // go to member-list.component.ts
     );
   }
 
@@ -57,9 +74,7 @@ export class MembersService {
     return this.http.put(`${this.baseUrl}users/set-main-photo/${photoId}`, {}); // we need to send something to the server
   }
 
-  //1. add this method to the service
   deletePhoto(photoId: number) {
     return this.http.delete(`${this.baseUrl}users/delete-photo/${photoId}`);
   }
-  //2. go to the photo-editor.component.ts
 }

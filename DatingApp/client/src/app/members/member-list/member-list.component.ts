@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Member } from 'src/app/models/member';
+import { Pagination } from 'src/app/models/pagination';
 import { MembersService } from 'src/app/services/members.service';
 
 @Component({
@@ -9,26 +10,30 @@ import { MembersService } from 'src/app/services/members.service';
   styleUrls: ['./member-list.component.css']
 })
 export class MemberListComponent implements OnInit {
-  //1. first we'll say our members will be an observable
-  members$: Observable<Member[]>
+  //1. first return the members back to static array
+  members: Member[];
+  //2. add pagination information
+  pagination: Pagination;
+  pageNumber: number = 1;
+  pageSize: number = 5;
 
   constructor(private memberService: MembersService) { }
 
   ngOnInit(): void {
-    //2. populate the members Observable
-    this.members$ = this.memberService.getMembers();
+    //4. call the load members method
+    this.loadMembers();
+    //5. go to the html
   }
 
-  //3. we don't need the leadMembers method anymore
-  // leadMembers(){
-  //   this.memberService.getMembers()
-  //   .subscribe(members => {
-  //     this.members = members;
-  //   })
-  // }
+  //3. add a load members method
+  loadMembers() {
+    this.memberService.getMembers(this.pageNumber, this.pageSize).subscribe(
+      response => {
+        this.members = response.result;
+        this.pagination = response.pagination;
+      }
+    );
+  }
 
-  //4. so how will get the data from the observable?
-  // * we'll use the async pipe,
-  // * async pipe subscribes and unsubscribes when the component is destroyed
-  // * go to the html and add the async pipe
+
 }

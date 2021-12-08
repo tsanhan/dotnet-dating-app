@@ -1,11 +1,12 @@
 <div class="row">
-  <!-- 1. use the async pipe -->
-  <div class="col-2" *ngFor="let member of members$| async">
+ <!-- 1. remove the async and use 'members' -->
+  <div class="col-2" *ngFor="let member of members">
     <app-member-card [member]="member"></app-member-card>
   </div>
-  <!-- 2. test in the browser:
-    all is working:
-    - and after one fetch of the members: no second loading indicators.
-    - after updating we can see the result in the users's detailed page.
-   - all the games does not produce any errors in the console -->
+  <!-- 2. test in browser to see that we get only 5 users, works, great-->
+  <!-- 3. remember, for now, we don't have the ability to cache results,
+          we'll figure our pagination and comeback for caching (then it'll be a bit more complex)
+        -->
+  <!-- 4. back to readme.md -->
+
 </div>

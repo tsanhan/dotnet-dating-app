@@ -1,9 +1,6 @@
-Using the pagination classes:
+Setting up client pagination.
+1. in the members list, we should see the 'Pagination' header and get 10 members only.
+2. ok so the first thing we'll do is create an interface for the pagination information.
+    * create and go to models/pagination.ts
 
-usually when we take time to set something up we want to reuse it over and over again easily.
-so lets do that.
-
-stating with the user repository to change the return type for our GetMembersAsync method, go to IUserRepository.cs
-
-up next: setting this up in the client
-
+* up next: display the pagination information for the user to switch between pages.
