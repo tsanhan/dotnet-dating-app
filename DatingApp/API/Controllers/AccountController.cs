@@ -22,11 +22,11 @@ namespace API.Controllers
         public AccountController(
             DataContext context,
             ITokenService tokenService,
-            IMapper mapper //1. inject the mapper
+            IMapper mapper 
             )
         {
             _tokenService = tokenService;
-            _mapper = mapper;//2. inject the mapper
+            _mapper = mapper;
             _context = context;
 
         }
@@ -36,19 +36,15 @@ namespace API.Controllers
         {
             if (await UserExist(registerDto.Username)) return BadRequest("Username is taken");
 
-            //2. map the registerDto to the user entity
             var user = _mapper.Map<AppUser>(registerDto);
 
             using var hmac = new HMACSHA512();
             
-            //3. add properties to the user entity
-            // var user = new AppUser
-            // {
+            
             user.UserName = registerDto.Username.ToLower();
             user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(registerDto.Password));
             user.PasswordSalt = hmac.Key;
-            // };
-            //4. go over the method to sanity check all is ok
+       
             _context.Users.Add(user);
 
             await _context.SaveChangesAsync();
@@ -57,9 +53,8 @@ namespace API.Controllers
             {
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                //5. we have a 'known as' data so lets return it (we can use it in the client), add it to UserDto (go to UserDto.cs)
-                //     * do the same for the login method
                 KnownAs = user.KnownAs,
+                Gender = user.Gender//1. add this line
             };
 
         }
@@ -88,8 +83,8 @@ namespace API.Controllers
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user),
                 PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                //6. add the known as property and back to readme.md
                 KnownAs = user.KnownAs,
+                Gender = user.Gender//2. add this line, and take care of the client side: go to User.ts first
 
                 
             };

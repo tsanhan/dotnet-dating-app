@@ -6,8 +6,13 @@ namespace API.DTOs {
 
         public string PhotoUrl { get; set; } 
 
-        //1.add this property
         public string KnownAs { get; set; }
+
+        //1.add this property, we'll sent another bit of info to the client when we login 
+        // this is to save us from making an api call just to know the user's gender
+        public string Gender { get; set; }
+        //2. go to AccountController.cs
     
+        
     }
 }
