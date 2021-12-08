@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Entities;
@@ -35,34 +36,33 @@ namespace API.Data
 
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            // 4. use different approach
-            // var query = _context.Users
-            // .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            // .AsNoTracking();
             
-            //5. get direct access to the entities
             var query = _context.Users.AsQueryable();
 
-            //6. filter
             query = query.Where(x => x.UserName != userParams.CurrnetUsername);
             query = query.Where(x => x.Gender == userParams.Gender);
+            query = query.Where(x => x.Gender == userParams.Gender);
 
-            //1. filter by 
-            // per of 4.: query = query.Where(x => x.Username != userParams.CurrnetUsername);
-            //2. this is a bad practice because we comparing properties before and after mapping via projection
-            //  * we don't want to be working with the MemberDto, we want to filter before that
-            //  * so we'll change strategy.
+            //1. filter by age
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1); //i still want this year to be included
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
 
-
+            query = query.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
+            //3. so lets say a user searching ages 20-30
+            //  * minDob = DateTime.Today.AddYears(-30);
+            //  * maxDob = DateTime.Today.AddYears(-20);
+            //  so he was born after today - 30 and before today - 20, got it?
+            //4. test in postman, section 13: 'Get Users with minAge 25'
+            //  * change the param to exec the age of one of the users, works
+            //  * works!, change to 43, also works
+            //  * test 'Get Users with maxAge 40', also works, great!
+            //  * test 'Get Users in 20s'(change to 30s' if needed), works!  
+             
             return await PagedList<MemberDto>.CreateAsync(
-                /*7. mapping the results only*/query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), 
+                query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), 
                 userParams.PageNumber, 
                 userParams.PageSize);
             
-            // 8. test in postman: section 13: Get Users No QS:
-            //  * will get all users except me (logged in) and members of the opposite gender
-            //  * test in postman section 13: 'Get Users with gender' works, get members of the specified gender
-            // 9. back to readme.md
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
