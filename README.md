@@ -1,6 +1,13 @@
-Setting up client pagination.
-1. in the members list, we should see the 'Pagination' header and get 10 members only.
-2. ok so the first thing we'll do is create an interface for the pagination information.
-    * create and go to models/pagination.ts
+Using the angular bootstrap pagination component:
 
-* up next: display the pagination information for the user to switch between pages.
+* angualr bootstrap pagination component can help us here.
+* lets read the documentation(https://valor-software.com/ngx-bootstrap/#/pagination)
+    * it gives us the ability to switch between the different pages.
+    * so we need to import a pagination module.
+
+* go to shared.module.ts
+
+* up next: adding filters to our API
+
+
+

@@ -9,4 +9,22 @@
         -->
   <!-- 4. back to readme.md -->
 
+  <!-- 5. i like the one with the custom links (https://valor-software.com/ngx-bootstrap/#/pagination#custom-links-content) -->
+  <!-- lets start with pasting it here: (can test in browser how it looks)-->
+  <div class="d-flex justify-content-center" *ngIf="pagination">
+    <!-- 6. we populating totalItems and itemsPerPage based on pagination properties -->
+    <!-- we also want to know when the paging changed so we use ngModel with pageChanged event-->
+    <pagination
+      [boundaryLinks]="true"
+      [totalItems]="pagination.totalItems"
+      [itemsPerPage]="pagination.itemsPerPage"
+      [(ngModel)]="pagination.currentPage"
+      (pageChanged)="pageChanged($event)"
+      previousText="&lsaquo;"
+      nextText="&rsaquo;"
+      firstText="&laquo;"
+      lastText="&raquo;">
+  </pagination>
+  <!-- 7. we need to create the pageChanged method, go to the ts -->
+</div>
 </div>

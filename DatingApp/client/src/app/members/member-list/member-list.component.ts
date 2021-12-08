@@ -10,9 +10,7 @@ import { MembersService } from 'src/app/services/members.service';
   styleUrls: ['./member-list.component.css']
 })
 export class MemberListComponent implements OnInit {
-  //1. first return the members back to static array
   members: Member[];
-  //2. add pagination information
   pagination: Pagination;
   pageNumber: number = 1;
   pageSize: number = 5;
@@ -20,12 +18,9 @@ export class MemberListComponent implements OnInit {
   constructor(private memberService: MembersService) { }
 
   ngOnInit(): void {
-    //4. call the load members method
     this.loadMembers();
-    //5. go to the html
   }
 
-  //3. add a load members method
   loadMembers() {
     this.memberService.getMembers(this.pageNumber, this.pageSize).subscribe(
       response => {
@@ -34,6 +29,20 @@ export class MemberListComponent implements OnInit {
       }
     );
   }
+  //1. add the method
+  pageChanged(event: any){
+    this.pageNumber = event.page;
+    this.loadMembers();
+    //2. test in browser, works cool
+    //3. all is working fine:
+    // * paging back and forth,
+    // * to last page and to first page
+    // * links are disabled when on last/first page (this is thanks to [boundaryLinks] attribute)
+
+    // 4. back to readme.md
+  }
+
+
 
 
 }
