@@ -33,18 +33,36 @@ namespace API.Data
             .SingleOrDefaultAsync();
         }
 
-        //1. update the method
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            //1. the type of query is IQueryable<User>, this is an expression tree, execution yet
-            var query = _context.Users
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .AsNoTracking(); //we only read these entities so... a small optimization to avoid tracking the entities, which improves performance.
+            // 4. use different approach
+            // var query = _context.Users
+            // .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+            // .AsNoTracking();
             
-            //2. apply the params to the query
-            return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+            //5. get direct access to the entities
+            var query = _context.Users.AsQueryable();
+
+            //6. filter
+            query = query.Where(x => x.UserName != userParams.CurrnetUsername);
+            query = query.Where(x => x.Gender == userParams.Gender);
+
+            //1. filter by 
+            // per of 4.: query = query.Where(x => x.Username != userParams.CurrnetUsername);
+            //2. this is a bad practice because we comparing properties before and after mapping via projection
+            //  * we don't want to be working with the MemberDto, we want to filter before that
+            //  * so we'll change strategy.
+
+
+            return await PagedList<MemberDto>.CreateAsync(
+                /*7. mapping the results only*/query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), 
+                userParams.PageNumber, 
+                userParams.PageSize);
             
-            //3. add the data to our header, go to UsersController.cs, GetUsers method
+            // 8. test in postman: section 13: Get Users No QS:
+            //  * will get all users except me (logged in) and members of the opposite gender
+            //  * test in postman section 13: 'Get Users with gender' works, get members of the specified gender
+            // 9. back to readme.md
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)

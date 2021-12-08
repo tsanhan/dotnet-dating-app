@@ -1,13 +1,12 @@
-Using the angular bootstrap pagination component:
+Adding filtering to the API:
+* right now re returning on members page, all the users, including the logged user,
+    this make no sense.
+* another thing: we want to let the user choose the gender.
 
-* angualr bootstrap pagination component can help us here.
-* lets read the documentation(https://valor-software.com/ngx-bootstrap/#/pagination)
-    * it gives us the ability to switch between the different pages.
-    * so we need to import a pagination module.
+* so:
+    1. setup a default gender to return (opposite the current logged in gender)
+    2. looking gin how to exclude the logged in user
 
-* go to shared.module.ts
+* we'll start with UserParams.cs
 
-* up next: adding filters to our API
-
-
-
+* up next: adding additional filter parameters

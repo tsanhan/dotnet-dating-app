@@ -31,32 +31,36 @@ namespace API.Controllers
             _userRepository = userRepository;
         }
 
-        //1. update this method to return a PagedList and add the Pagination reader 
+        
         [HttpGet]
-        public async Task<ActionResult<PagedList<MemberDto>>> GetUsers(/*4. adding FromQuery*/[FromQuery] UserParams userParams)
+        public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
+            //0. oops, fix in ClaimsPrincipalExtensions the method name: GetUsernae => GetUsername
+            //1. things w need to do here:
+            //  * populate the CurrnetUsername prop in userParams
+            //  * set a default gender to be the opposite then the user's gender if they don't specify it
+            
+          
+
+            //2. get user to know it's gender
+            var user = await _userRepository.GetUserByUserNameAsync(User.GetUsername());
+            
+            if(string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+            }
+
+            //3. populate CurrnetUsername in params 
+            userParams.CurrnetUsername = user.UserName;
+            //4. go to UserRepository.cs, GetMembersAsync method to apply the filtering
             var users = await _userRepository.GetMembersAsync(userParams);
-            // 2. we allways have an access to re Response object in a controller (property of controller base)
-            //  * oops, change AddApplicationHeader to AddPaginationHeader in the extension method
+
             Response.AddPaginationHeader(
                 users.CurrentPage, 
                 users.PageSize, 
                 users.TotalCount, 
                 users.TotalPages);
             return Ok(users);
-            //3. test functionality in postman,  seasion 13, start with 'Get Users No QS'.
-            //  * aaand we get 415 Unsupported Media Type, our API is not that smart with our parameters...
-            //  * to fix this we need to add [FromQuery] to the parameters, 
-            //      * the query string does suppose to be inside an objects
-            //      * so the API does not know what to do with it
-            //  * we need to add a new parameter to the UserParams class,
-            //  * ok so we get only 10 users, why is that? (because we are using defaults in the UserParams class)
-            //  * what about the headers, we get them, great!
-
-            //5. test functionality in postman,  seasion 13: 'Get Users with pagination'.
-            //  * we get the pagination headers and responses looking good based on params passed!
-            //6. one thing i don't like: the Pagination header is in title case, and i want it in camel case. 
-            //  * to fix this go to HttpExtensions.cs
         }   
 
         [HttpGet("{username}", Name = "GetUser"),]
@@ -70,7 +74,7 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDTO)
         {
-            var username = User.GetUsernae();
+            var username = User.GetUsername();
             var user = await _userRepository.GetUserByUserNameAsync(username);
 
             _mapper.Map(memberUpdateDTO, user);
@@ -89,7 +93,7 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
-            var username = User.GetUsernae();
+            var username = User.GetUsername();
             var user = await _userRepository.GetUserByUserNameAsync(username);
 
             var result = await _photoService.UploadPhotoAsync(file);
@@ -123,7 +127,7 @@ namespace API.Controllers
         [HttpPut("set-main-photo/{photoId}")]
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
-            var username = User.GetUsernae();
+            var username = User.GetUsername();
 
             var user = await _userRepository.GetUserByUserNameAsync(username);
 
@@ -145,7 +149,7 @@ namespace API.Controllers
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
-            var username = User.GetUsernae();
+            var username = User.GetUsername();
 
             var user = await _userRepository.GetUserByUserNameAsync(username);
 
