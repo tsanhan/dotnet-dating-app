@@ -11,6 +11,7 @@ using API.DTOs;
 using System.Linq;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
+using API.Helpers;
 
 namespace API.Data
 {
@@ -24,44 +25,26 @@ namespace API.Data
             _context = context;
         }
 
-        //1. we'll start with a single user
-        //2. what we tals about is something called 'projection'
         public async Task<MemberDto> GetMemberAsync(string username)
         {
-            //3. lets say I dont want to use AutoMapper
-            // return await _context.Users
-            // .Where(x => x.UserName == username)
-            // .Select(user => new MemberDto //4. it's all manual
-            // {
-            //     //6. the manual mapping process
-            //     Id = user.Id,
-            //     Username = user.UserName
-            //     // etc... but AutoMapper can do it for us
-            //     // before we see when we done here lets see what we have right now!
-            //     // in postman, lets run 'get user by username' and see in the terminal how the query looks like
-            //     // we see in the terminal the query of lots of properties.
-            //     // some we don't need, what's not efficient!
-            //     // lets improve this, it's called '*projecting* from the repository'
-            // })
-            // .SingleOrDefaultAsync();//5. SingleOrDefaultAsync is when we ACTUALLY execute the query
-
-            //7. we replace the Select with ProjectTo (from Automapper)
             return await _context.Users
             .Where(x => x.UserName == username)
-            // 8. ProjectTo accepts a configuration provider
-            // this is effectively the AutoMapperProfiles (the configuration we provided to AutoMapper)
-            // lets see if we made any improvements (go to UsersController.cs)
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+        //1. update the method
+        public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            //9. do the same for the GetMembersAsync
-            return await _context.Users
+            //1. the type of query is IQueryable<User>, this is an expression tree, execution yet
+            var query = _context.Users
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .ToListAsync();
-
+            .AsNoTracking(); //we only read these entities so... a small optimization to avoid tracking the entities, which improves performance.
+            
+            //2. apply the params to the query
+            return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+            
+            //3. add the data to our header, go to UsersController.cs, GetUsers method
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
@@ -72,14 +55,14 @@ namespace API.Data
         public async Task<AppUser> GetUserByUserNameAsync(string username)
         {
             return await _context.Users
-            .Include(x => x.Photos)// we include the photos in the response
+            .Include(x => x.Photos)
             .SingleOrDefaultAsync(x => x.UserName == username);
         }
 
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
             return await _context.Users
-            .Include(x => x.Photos) // we include the photos in the response 
+            .Include(x => x.Photos) 
             .ToListAsync();
         }
 

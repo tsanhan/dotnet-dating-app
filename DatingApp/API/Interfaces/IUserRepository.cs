@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 
 namespace API.Interfaces
 {
@@ -15,11 +16,12 @@ namespace API.Interfaces
          Task<AppUser> GetUserByIdAsync(int id);
          Task<AppUser> GetUserByUserNameAsync(string username);
 
-        //1. we add a methods for getting members
-        Task<IEnumerable<MemberDto>> GetMembersAsync();
+        //1. change this to return PagedList and accept user parameters
+        Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);// we can't call it params, because it's a reserved keyword
+
         Task<MemberDto> GetMemberAsync(string username);
 
-        //2. go to UserRepository.cs to implement the methods
+        //2. go to UserRepository.cs and apply the change
 
     }
 }

@@ -1,12 +1,9 @@
-Adding helper classes for pagination:
+Using the pagination classes:
 
-so what we age doing now is creating a pagination information (info about what is being paged)
-the pagination information will returned in a header 
-    * if we look at postman section 13: Get Users No QS, we see that no pagination info is returned
-    * we can get the info in the client
+usually when we take time to set something up we want to reuse it over and over again easily.
+so lets do that.
 
-so that the goal here, get the info into the header of the response.
-create a Helpers/PaginationHeader.cs
+stating with the user repository to change the return type for our GetMembersAsync method, go to IUserRepository.cs
 
-up next: actually use these pagination classes
+up next: setting this up in the client
 

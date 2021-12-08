@@ -7,6 +7,7 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -30,13 +31,33 @@ namespace API.Controllers
             _userRepository = userRepository;
         }
 
+        //1. update this method to return a PagedList and add the Pagination reader 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        public async Task<ActionResult<PagedList<MemberDto>>> GetUsers(/*4. adding FromQuery*/[FromQuery] UserParams userParams)
         {
-            var users = await _userRepository.GetMembersAsync();
-
+            var users = await _userRepository.GetMembersAsync(userParams);
+            // 2. we allways have an access to re Response object in a controller (property of controller base)
+            //  * oops, change AddApplicationHeader to AddPaginationHeader in the extension method
+            Response.AddPaginationHeader(
+                users.CurrentPage, 
+                users.PageSize, 
+                users.TotalCount, 
+                users.TotalPages);
             return Ok(users);
-        }
+            //3. test functionality in postman,  seasion 13, start with 'Get Users No QS'.
+            //  * aaand we get 415 Unsupported Media Type, our API is not that smart with our parameters...
+            //  * to fix this we need to add [FromQuery] to the parameters, 
+            //      * the query string does suppose to be inside an objects
+            //      * so the API does not know what to do with it
+            //  * we need to add a new parameter to the UserParams class,
+            //  * ok so we get only 10 users, why is that? (because we are using defaults in the UserParams class)
+            //  * what about the headers, we get them, great!
+
+            //5. test functionality in postman,  seasion 13: 'Get Users with pagination'.
+            //  * we get the pagination headers and responses looking good based on params passed!
+            //6. one thing i don't like: the Pagination header is in title case, and i want it in camel case. 
+            //  * to fix this go to HttpExtensions.cs
+        }   
 
         [HttpGet("{username}", Name = "GetUser"),]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
@@ -134,7 +155,6 @@ namespace API.Controllers
 
             if (photo.IsMain) return BadRequest("You cannot delete your main photo");
 
-            // some of our photos are stored on cloudinary (have PublicId), but maybe not all...
             if (photo.PublicId != null) 
             {
                 var result = await _photoService.DeletePhotoAsync(photo.PublicId);
@@ -148,10 +168,5 @@ namespace API.Controllers
 
             return BadRequest("Failed to delete photo");
         }
-        // 2. test in postman, section 11:
-        //  * get user by username to get the photos
-        //  * delete a photo (try first a main one to expect a failure)
-        //  * see if worked, all is working fine (check your cloudinary account to see it is deleted)
-
     }
 }
