@@ -1,9 +1,12 @@
-Adding a paged list class:
+Adding helper classes for pagination:
 
-so what are we going to be page re response in user repository's GetMembersAsync method.
-but we wont be adding .Skip() or .Take() to to this method because it win't be DRY.
+so what we age doing now is creating a pagination information (info about what is being paged)
+the pagination information will returned in a header 
+    * if we look at postman section 13: Get Users No QS, we see that no pagination info is returned
+    * we can get the info in the client
 
-so we;ll create a class file PagedList.cs in the helpers folder, go there.
+so that the goal here, get the info into the header of the response.
+create a Helpers/PaginationHeader.cs
 
-up next: adding a helper class to add the data from PagedList.cs to the response.
+up next: actually use these pagination classes
 
