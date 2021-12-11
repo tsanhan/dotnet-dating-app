@@ -16,14 +16,13 @@ import { MembersService } from 'src/app/services/members.service';
 export class MemberListComponent implements OnInit {
   members: Member[];
   pagination: Pagination;
-  //1. instead using these props we'll use UserParams
-  // pageNumber: number = 1;
-  // pageSize: number = 5;
   userParams: UserParams;
   user: User;
+  //1. we'll need a list of genders to select from
+  genderList = [{ value: 'male', display: 'Males' }, { value: 'female', display: 'Females' }]
 
-  constructor(private memberService: MembersService, /*2. need to get the user to populate userParams */private accountService: AccountService) {
-    // 3. populate local user and userParams properties
+
+  constructor(private memberService: MembersService, private accountService: AccountService) {
     accountService.currentUser$.pipe(take(1)).subscribe(user => {
       this.user = user;
       this.userParams = new UserParams(user);
@@ -34,8 +33,11 @@ export class MemberListComponent implements OnInit {
     this.loadMembers();
   }
 
+
+
+
+
   loadMembers() {
-    // 4. use th local variables
     this.memberService.getMembers(this.userParams).subscribe(
       response => {
         this.members = response.result;
@@ -43,14 +45,19 @@ export class MemberListComponent implements OnInit {
       }
     );
   }
+  //2. a method to reset the filters
+  resetFilters() {
+    this.userParams = new UserParams(this.user); // to reset the params and reload the members data
+    this.loadMembers();
+  }
+  //3. fix the getPaginationHeaders method in members.service.ts, go there and come back
+  //3. go to the html
 
-  //5. update the userParams
-  pageChanged(event: any){
+  pageChanged(event: any) {
     this.userParams.pageNumber = event.page;
     this.loadMembers();
 
   }
-//6. back to readme.md
 
 
 
