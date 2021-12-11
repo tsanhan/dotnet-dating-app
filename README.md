@@ -1,8 +1,8 @@
-Adding filter buttons to the client:
-lets let the user the ability to filter the members list:
-go to member-list.component.ts
+ Adding sorting functionality:
+ to add sorting in the client we'll start with adding it in to API,
+ go to UserParams.cs.
 
-up next: implement sorting in the client
+ as we are already in the API area, lets update the LastActivate property in the entity,
+ for this we'll learn about action filters in c#, a 'do something' when user is interacts with our API.
 
-
-
+ up next:  Adding an action filter to our API

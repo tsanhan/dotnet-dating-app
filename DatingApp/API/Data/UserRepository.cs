@@ -36,33 +36,33 @@ namespace API.Data
 
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            
+
             var query = _context.Users.AsQueryable();
 
             query = query.Where(x => x.UserName != userParams.CurrnetUsername);
             query = query.Where(x => x.Gender == userParams.Gender);
             query = query.Where(x => x.Gender == userParams.Gender);
 
-            //1. filter by age
+
             var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1); //i still want this year to be included
             var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
 
             query = query.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
-            //3. so lets say a user searching ages 20-30
-            //  * minDob = DateTime.Today.AddYears(-30);
-            //  * maxDob = DateTime.Today.AddYears(-20);
-            //  so he was born after today - 30 and before today - 20, got it?
-            //4. test in postman, section 13: 'Get Users with minAge 25'
-            //  * change the param to exec the age of one of the users, works
-            //  * works!, change to 43, also works
-            //  * test 'Get Users with maxAge 40', also works, great!
-            //  * test 'Get Users in 20s'(change to 30s' if needed), works!  
-             
+
+            // 1. add orderBy to the query (switch statement - since c# 8)
+
+            query = userParams.OrderBy switch
+            {
+                "created" => query.OrderByDescending(u => u.Created),
+                _ => query.OrderByDescending(x => x.LastActive),
+            };
+            // 2. test in postman section 13: 'Get Users orderedby Created', works
+            // 3. test in postman section 13: 'Get Users orderedby lastActive', works
             return await PagedList<MemberDto>.CreateAsync(
-                query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), 
-                userParams.PageNumber, 
+                query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(),
+                userParams.PageNumber,
                 userParams.PageSize);
-            
+            // 4. back to readme.md
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
@@ -80,7 +80,7 @@ namespace API.Data
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
             return await _context.Users
-            .Include(x => x.Photos) 
+            .Include(x => x.Photos)
             .ToListAsync();
         }
 

@@ -16,11 +16,15 @@ namespace API.Helpers
         public string CurrnetUsername { get; set; }
         public string Gender { get; set; }
         
-        //1. add properties
-        public int MinAge { get; set; } = 18;// we don't allow ages under 18
-        public int MaxAge { get; set; } = 150;// this will sure give us all the users
-        //2. go to UserRepository.cs to add additional filering to GetMembersAsync method
         
+        public int MinAge { get; set; } = 18;
+        public int MaxAge { get; set; } = 150;
+        
+        
+        //1. add sorting prop, defaulting to when they ware last active
+        public string OrderBy { get; set; } = "lastActive";
+
+        //2. add the orderBy to our query, go to UserRepository.cs
         
 
 
