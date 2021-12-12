@@ -1,8 +1,6 @@
- Adding sorting functionality:
- to add sorting in the client we'll start with adding it in to API,
- go to UserParams.cs.
-
- as we are already in the API area, lets update the LastActivate property in the entity,
- for this we'll learn about action filters in c#, a 'do something' when user is interacts with our API.
-
- up next:  Adding an action filter to our API
+Adding an action filter:
+so how will we update the lastActive property, when a user interact with our API?
+we'll use action filter:
+an action filter allow us to execute code before or after an action is executed.
+lets create one:
+in the API project, create and go to Helpers/LogUserActivity.cs
