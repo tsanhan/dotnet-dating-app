@@ -1,6 +1,6 @@
-Adding an action filter:
-so how will we update the lastActive property, when a user interact with our API?
-we'll use action filter:
-an action filter allow us to execute code before or after an action is executed.
-lets create one:
-in the API project, create and go to Helpers/LogUserActivity.cs
+Making the Last Active action filter more optimal.
+
+ok so lets see how we can make our action filter in LogUserActivity.cs more efficient.
+go to LogUserActivity.cs
+
+up next: sort on the client
