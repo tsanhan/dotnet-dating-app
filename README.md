@@ -1,6 +1,11 @@
-Making the Last Active action filter more optimal.
+Sorting on the client:
+to add sorting to the client, we'll use ngx-bootstrap's special buttons (looks normal but act as checkboxes) that give us some basic binding capabilities.
+documentation: https://valor-software.com/ngx-bootstrap/#/buttons#checkbox
 
-ok so lets see how we can make our action filter in LogUserActivity.cs more efficient.
-go to LogUserActivity.cs
+start implementing by importing the modules.
+go to shared.module.ts 
 
-up next: sort on the client
+so the date time formats are ugly,
+up next: formatting dates and implementing 'time ego' functionality.
+
+

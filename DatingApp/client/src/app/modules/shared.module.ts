@@ -8,6 +8,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { FileUploadModule } from 'ng2-file-upload';
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { PaginationModule } from "ngx-bootstrap/pagination";
+import { ButtonsModule } from "ngx-bootstrap/buttons";
 import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [],
@@ -22,7 +23,8 @@ import { FormsModule } from '@angular/forms';
     NgxSpinnerModule,
     FileUploadModule,
     BsDatepickerModule.forRoot(),
-    PaginationModule.forRoot() //1. add this
+    PaginationModule.forRoot(),
+    ButtonsModule.forRoot(), // 1. add this
   ],
   exports: [
     BsDropdownModule,
@@ -32,9 +34,11 @@ import { FormsModule } from '@angular/forms';
     NgxGalleryModule,
     NgxSpinnerModule,
     FileUploadModule,
-    FormsModule, // 2. add this (for later use of ngModel in the component)
-    PaginationModule //3. add this
-  // 3. go to member-list.component.html
+    FormsModule,
+    PaginationModule ,
+    ButtonsModule //2. add this
+    //3. so we have another property to send, so go to userParams.ts
+
   ]
 })
 export class SharedModule { }

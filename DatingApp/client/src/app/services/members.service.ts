@@ -28,8 +28,12 @@ export class MembersService {
     params = params.append('minAge', userParams.minAge.toString());
     params = params.append('maxAge', userParams.maxAge.toString());
     params = params.append('gender', userParams.gender);
-
-
+    //1. add the orderBy param
+    params = params.append('orderBy', userParams.orderBy);
+    //2. now it's testing time:
+    // login as someone in the list and log in to another member, see that the 1st user in the first in the list?
+    // we can see it works and the last active date in the profile is right.
+    //3. go back to readme.md
 
     return this.getPaginatedResult<Member[]>(`${this.baseUrl}users`,params);
   }
@@ -80,7 +84,6 @@ export class MembersService {
       );
   }
 
-  //1. oops, fix this method, there is no Pagination header...
   private getPaginationHeaders(pageNumber:number, pageSize:number) {
     let headers = new HttpParams();
     headers = headers.append('pageNumber', pageNumber.toString());
