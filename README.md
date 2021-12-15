@@ -1,10 +1,11 @@
-Section 13 summary:
-what we've learned in this section:
-1. implemented filtering and sorting, in the API and client
-2. implemented pagination in the api and client
-3. deferred execution using IQueryable
-4. using action filters (the ability to so something before or after an action is executed)
-5. adding a TimeAgo pipe
-6. implementing caching in the client for paginated resources
+Introduction:
+add a feature: adding the 'like' functionality:
 
-up next: adding a feature: like a person, we would like to let our users the ability to like each other.
+1. many to many relationships in EF (implemented using a join table)
+    * we'll need to configure this relationship ourselves
+    * we'll take a look at Fluent API: https://docs.microsoft.com/en-us/ef/core/modeling/relationships
+        * Fluent API is a way to configure the relationships in the model
+        * tell Entity Framework that: AppUser [-Has One-] -> SourceUser [-With Many-] -> LikedUser
+        * and on the other side:      AppUser [-Has One-] -> LikedUser [-With Many-] -> LikedByUser
+        * so this is what we'll be setting up in this section
+2. configure entities in DbContext
