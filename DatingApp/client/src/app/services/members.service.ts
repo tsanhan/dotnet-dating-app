@@ -14,28 +14,43 @@ import { UserParams } from '../models/userParams';
 })
 export class MembersService {
   baseUrl = environment.apiUrl;
-
   members:Member[] = [];
+
+  //3. a good choice here is to use a Map, better use generics for better type safety
+  memberCache = new Map<string, PaginatedResult<Member[]>>();
+
   constructor(
     private http: HttpClient
   ) { }
 
 
   getMembers(userParams: UserParams) {
+    // 1. so all the params data is stored in UserParams
+      // what do u think? how should we store the results per UserParams combination?
+
+    // 2. lets see how a ket can look like:
+    // console.log(Object.values(userParams).join('-'));
+
+    //4. see if we have a cached version of the results, if we do return them
+    const cacheKey = Object.values(userParams).join('-');
+    const response = this.memberCache.get(cacheKey);
+    if(response) return of(response);
 
     let params = this.getPaginationHeaders(userParams.pageNumber, userParams.pageSize);
 
     params = params.append('minAge', userParams.minAge.toString());
     params = params.append('maxAge', userParams.maxAge.toString());
     params = params.append('gender', userParams.gender);
-    //1. add the orderBy param
     params = params.append('orderBy', userParams.orderBy);
-    //2. now it's testing time:
-    // login as someone in the list and log in to another member, see that the 1st user in the first in the list?
-    // we can see it works and the last active date in the profile is right.
-    //3. go back to readme.md
 
-    return this.getPaginatedResult<Member[]>(`${this.baseUrl}users`,params);
+
+    return this.getPaginatedResult<Member[]>(`${this.baseUrl}users`,params)
+      //5. store data returning from the server ;
+      .pipe(
+        tap(res => this.memberCache.set(cacheKey, res))
+      )
+      //6. test in the browser to see no loading is shown
+      //7. back to readme.md
   }
 
 
