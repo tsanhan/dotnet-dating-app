@@ -1,11 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, take, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Member } from '../models/member';
 import { PaginatedResult } from '../models/pagination';
+import { User } from '../models/user';
 import { UserParams } from '../models/userParams';
+import { AccountService } from './account.service';
 
 
 
@@ -16,14 +18,38 @@ export class MembersService {
   baseUrl = environment.apiUrl;
   members:Member[] = [];
 
-  //3. a good choice here is to use a Map, better use generics for better type safety
   memberCache = new Map<string, PaginatedResult<Member[]>>();
+  userParams: UserParams;
+  user: User;
 
   constructor(
-    private http: HttpClient
-  ) { }
+    private http: HttpClient,
+    /*1. we'll inject the account service */
+    private accountService: AccountService
+  ) {
+    //2. past it from member-list component, add user & userParams properties
+    accountService.currentUser$.pipe(take(1)).subscribe(user => {
+      this.user = user;
+      this.userParams = new UserParams(user);
+    });
+  }
 
+  //3. add setter and getter for userParams
+  public get UserParams(): UserParams {
+    return this.userParams;
+  }
 
+  public set UserParams(userParams : UserParams) {
+    this.userParams = userParams;
+  }
+  //4. go back to member-list.component.ts
+
+  //5. implement resetUserParams()
+  resetUserParams() {
+    this.userParams = new UserParams(this.user);
+    return this.userParams;
+  }
+  //6. go back to member-list.component.ts
   getMembers(userParams: UserParams) {
     const cacheKey = Object.values(userParams).join('-');
     const response = this.memberCache.get(cacheKey);
@@ -45,28 +71,14 @@ export class MembersService {
 
 
   getMember(username: string) {
-    //1. we don't need this, we don't store the members in the service
-    // const member = this.members.find(m => m.username === username);
-    // if(member !== undefined) {
-    //   return of(member);
-    // }
-    //2. so we know the data is of the member is in memberCache.
-    // lets see how our Map looks like and dig our member from there, [query for members and go to member details]
-    //console.log(this.memberCache);
-    //3. lets see that we get when we print the values of the Map:
     const member = [...this.memberCache.values()];
-    // console.log(member);
-    //4. ok so we have an array of objects, which have arrays of members... (PaginatedResult<Member[]>[])
-    // let's reduce the array of objects to a single array of members
-    // H.W. : try to do it with flat or flatMap (careful, some configuration is needed)
+
     const allUsers = member.reduce((arr, elem) => arr.concat(elem.result), [] as Member[]);
-    // console.log(allUsers);
-    //5. now we have an array of members, lets find the member with the username we are looking for
+
     const foundMember = allUsers.find(m => m.username === username);
 
     if(foundMember) return of(foundMember);
-    // 6. test in browser, see that entering a member does not trigger the http request
-    // 7. back to readme.md
+
     return this.http.get<Member>(`${this.baseUrl}users/${username}`);
 
   }
