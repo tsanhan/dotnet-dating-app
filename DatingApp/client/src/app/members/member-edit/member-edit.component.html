@@ -25,13 +25,15 @@
           <p>{{member.age}}</p>
         </div>
         <div>
+          <!-- 1. add the date and timeago pipes  -->
           <strong>Last Active:</strong>
-          <p>{{member.lastActive}}</p>
+          <p>{{member.lastActive | timeago}}</p>
         </div>
         <div>
           <strong>Member since:</strong>
-          <p>{{member.created}}</p>
+          <p>{{member.created | date: 'dd MMM yyyy '}}</p>
         </div>
+        <!-- 2. back to readme.md -->
 
       </div>
       <div class="card-footer">
@@ -62,7 +64,6 @@
         </form>
       </tab>
       <tab heading="Edit Photos">
-        <!-- 1. add the photo editor component, test in the browser  -->
         <app-photo-editor [member]="member"></app-photo-editor>
       </tab>
     </tabset>

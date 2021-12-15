@@ -1,11 +1,8 @@
-Sorting on the client:
-to add sorting to the client, we'll use ngx-bootstrap's special buttons (looks normal but act as checkboxes) that give us some basic binding capabilities.
-documentation: https://valor-software.com/ngx-bootstrap/#/buttons#checkbox
+Formatting dates:
+we'll start with formatting the dates in the details page, starting with a more simple one: 'Member since'
+go to member-detail.component.html
 
-start implementing by importing the modules.
-go to shared.module.ts 
-
-so the date time formats are ugly,
-up next: formatting dates and implementing 'time ego' functionality.
-
-
+ok so got to look at pipes.
+pipes are for presentational purposes only.
+we can look into creating a custom pipe but we need to move forward.
+next up: we fetch the data from the server every time, lets [re]implement caching.

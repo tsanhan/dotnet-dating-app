@@ -10,6 +10,7 @@ import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { PaginationModule } from "ngx-bootstrap/pagination";
 import { ButtonsModule } from "ngx-bootstrap/buttons";
 import { FormsModule } from '@angular/forms';
+import { TimeagoModule } from 'ngx-timeago';
 @NgModule({
   declarations: [],
   imports: [
@@ -24,7 +25,8 @@ import { FormsModule } from '@angular/forms';
     FileUploadModule,
     BsDatepickerModule.forRoot(),
     PaginationModule.forRoot(),
-    ButtonsModule.forRoot(), // 1. add this
+    ButtonsModule.forRoot(),
+    TimeagoModule.forRoot() // 1. add this
   ],
   exports: [
     BsDropdownModule,
@@ -36,8 +38,9 @@ import { FormsModule } from '@angular/forms';
     FileUploadModule,
     FormsModule,
     PaginationModule ,
-    ButtonsModule //2. add this
-    //3. so we have another property to send, so go to userParams.ts
+    ButtonsModule,
+    TimeagoModule//2. add this
+    //3. go back to member-detail.component.html
 
   ]
 })
