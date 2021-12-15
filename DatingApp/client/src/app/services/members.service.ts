@@ -25,13 +25,6 @@ export class MembersService {
 
 
   getMembers(userParams: UserParams) {
-    // 1. so all the params data is stored in UserParams
-      // what do u think? how should we store the results per UserParams combination?
-
-    // 2. lets see how a ket can look like:
-    // console.log(Object.values(userParams).join('-'));
-
-    //4. see if we have a cached version of the results, if we do return them
     const cacheKey = Object.values(userParams).join('-');
     const response = this.memberCache.get(cacheKey);
     if(response) return of(response);
@@ -44,23 +37,38 @@ export class MembersService {
     params = params.append('orderBy', userParams.orderBy);
 
 
-    return this.getPaginatedResult<Member[]>(`${this.baseUrl}users`,params)
-      //5. store data returning from the server ;
-      .pipe(
+    return this.getPaginatedResult<Member[]>(`${this.baseUrl}users`,params).pipe(
         tap(res => this.memberCache.set(cacheKey, res))
       )
-      //6. test in the browser to see no loading is shown
-      //7. back to readme.md
   }
 
 
 
   getMember(username: string) {
-    const member = this.members.find(m => m.username === username);
-    if(member !== undefined) {
-      return of(member);
-    }
+    //1. we don't need this, we don't store the members in the service
+    // const member = this.members.find(m => m.username === username);
+    // if(member !== undefined) {
+    //   return of(member);
+    // }
+    //2. so we know the data is of the member is in memberCache.
+    // lets see how our Map looks like and dig our member from there, [query for members and go to member details]
+    //console.log(this.memberCache);
+    //3. lets see that we get when we print the values of the Map:
+    const member = [...this.memberCache.values()];
+    // console.log(member);
+    //4. ok so we have an array of objects, which have arrays of members... (PaginatedResult<Member[]>[])
+    // let's reduce the array of objects to a single array of members
+    // H.W. : try to do it with flat or flatMap (careful, some configuration is needed)
+    const allUsers = member.reduce((arr, elem) => arr.concat(elem.result), [] as Member[]);
+    // console.log(allUsers);
+    //5. now we have an array of members, lets find the member with the username we are looking for
+    const foundMember = allUsers.find(m => m.username === username);
+
+    if(foundMember) return of(foundMember);
+    // 6. test in browser, see that entering a member does not trigger the http request
+    // 7. back to readme.md
     return this.http.get<Member>(`${this.baseUrl}users/${username}`);
+
   }
 
   updateMember(member: Member) {
