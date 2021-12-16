@@ -1,11 +1,12 @@
-Introduction:
-add a feature: adding the 'like' functionality:
+Adding a likes entity:
+* the first thing we need to add  two collection to our AppUser Entity:
+    1. users I like
+    2. users like me
+* todo that we need to create a join entity (we'll call it UserLike)
+* create and go to Entities/UserLike.cs
 
-1. many to many relationships in EF (implemented using a join table)
-    * we'll need to configure this relationship ourselves
-    * we'll take a look at Fluent API: https://docs.microsoft.com/en-us/ef/core/modeling/relationships
-        * Fluent API is a way to configure the relationships in the model
-        * tell Entity Framework that: AppUser [-Has One-] -> SourceUser [-With Many-] -> LikedUser
-        * and on the other side:      AppUser [-Has One-] -> LikedUser [-With Many-] -> LikedByUser
-        * so this is what we'll be setting up in this section
-2. configure entities in DbContext
+ok so after the context config, we'll add a migration:
+run: `dotnet ef migrations add LikeEntityAdded`.
+success!, we can se the new migration in Migrations folder and after runing the server we can also see the the table in sqlite editor.
+
+up next: adding a repository for this table

@@ -24,14 +24,10 @@ namespace API.Entities
         public string City {get;set;}
         public string Country {get;set;}
         public ICollection<Photo> Photos {get;set;} 
-
-        //1. fixing the issue that AutoMapper uses this method 
-        //   we just remove it
-        // public int GetAge() {
-        //    return DateOfBirth.CalculateAge();
-        // }
-
-        //2. so how will we calculate the age?
-        // go to AutoMapperProfiles.cs
+        //1. add the collections
+        public ICollection<UserLike> LikedByUsers { get; set; } //1. add the collection: hwo liked this currently logged in user
+        public ICollection<UserLike> LikedUsers { get; set; }//2. add the collection: who this user liked
+        //2. configure these entities in the DataContext.cs, go there
+        
     }
 }
