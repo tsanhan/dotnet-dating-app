@@ -14,10 +14,10 @@ namespace API.Extensions
         {
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddScoped<ITokenService, TokenService>();
-
-            //1. add a new service to be scoped to the context of the request
+            //.1 add the like repository
+            services.AddScoped<ILikesRepository, LikesRepository>();
+            //2. back to readme.md
             services.AddScoped<LogUserActivity>();
-            //2. let all the action make use of this action filter, go to BaseApiController.cs
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddScoped<IUserRepository, UserRepository>();
