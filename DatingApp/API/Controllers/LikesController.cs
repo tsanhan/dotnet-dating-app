@@ -51,6 +51,7 @@ namespace API.Controllers
 
             //  * does the user already like the user to like?
             var userLike = await _likesRepository.GetUserLike(sourceUserId, likedUser.Id);
+            
             if (userLike != null) return BadRequest("you already like this user");
 
             //8. create the like

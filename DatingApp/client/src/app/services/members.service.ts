@@ -24,17 +24,14 @@ export class MembersService {
 
   constructor(
     private http: HttpClient,
-    /*1. we'll inject the account service */
     private accountService: AccountService
   ) {
-    //2. past it from member-list component, add user & userParams properties
     accountService.currentUser$.pipe(take(1)).subscribe(user => {
       this.user = user;
       this.userParams = new UserParams(user);
     });
   }
 
-  //3. add setter and getter for userParams
   public get UserParams(): UserParams {
     return this.userParams;
   }
@@ -42,14 +39,11 @@ export class MembersService {
   public set UserParams(userParams : UserParams) {
     this.userParams = userParams;
   }
-  //4. go back to member-list.component.ts
 
-  //5. implement resetUserParams()
   resetUserParams() {
     this.userParams = new UserParams(this.user);
     return this.userParams;
   }
-  //6. go back to member-list.component.ts
   getMembers(userParams: UserParams) {
     const cacheKey = Object.values(userParams).join('-');
     const response = this.memberCache.get(cacheKey);
@@ -68,7 +62,18 @@ export class MembersService {
       )
   }
 
+  //1. we'll add 2 methods here:
+  // * add a like
+  // * get the likes
+  addLike(username: string) {
+    const url = `${this.baseUrl}likes/${username}`;
+    return this.http.post(url, {});// just like in postman
+  }
 
+  getLikes(predicate: string) {
+    return this.http.get(`${this.baseUrl}likes?=${predicate}`);// ?= means query string parameter name and value (?predicate=[value of predicate])
+  }
+  //2. now lets add the functionality in the member-card.component.ts, go there
 
   getMember(username: string) {
     const member = [...this.memberCache.values()];

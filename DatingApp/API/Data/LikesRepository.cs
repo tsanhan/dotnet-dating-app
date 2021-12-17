@@ -19,36 +19,32 @@ namespace API.Data
         
         public async Task<UserLike> GetUserLike(int sourceUserId, int likedUserId)
         {
-            //1. start with the easyest one, just get the user like by the primary key
-            return await _context.Likes.FindAsync(sourceUserId, likedUserId);
+            //1. this is where we need to fix the bug
+            // * if we try to add an existing like, this method return null (no existing like)
+            // * the reason for that is that FindAsync accept likedUserId first and sourceUserId second
+            // * how do I know that? when calling this method the terminal will print the EF created query for the DB
+            // return await _context.Likes.FindAsync(sourceUserId, likedUserId);
+            return await _context.Likes.FindAsync(likedUserId, sourceUserId);
+            //2. and back to README.md
         }
 
         public async Task<IEnumerable<LikeDto>> GetUserLikes(string predicate, int userId)
         {
-            //3. this is a bit tricky one, we'll query baked on predicate
-            //   * predicate: 'liked' or 'liked by', so the question are:
-            //   * 1. 'liked' => "which users this user has liked" => userId is the source user 
-            //   * 2. 'liked by' => "which users have been liked by this user" => userId is the liked user
-
+            
            
             IQueryable<AppUser> users;
             var likes = _context.Likes.AsQueryable();//get the likes
-            //4. looks like 2 queries, but not really, 
-            //  * we'll be joining the two and let EF figure out the join query for the db 
-
-            //5. search for which users this user has liked
+           
             if(predicate == "liked") {
-                likes = likes.Where(like => like.SourceUserId == userId); //filter
-                users = likes.Select(like => like.LikedUser); // select the relevant users (overriding initial users select)
+                likes = likes.Where(like => like.SourceUserId == userId); 
+                users = likes.Select(like => like.LikedUser); 
             }
-            //6. search for users that have been liked by this user
-            else {//if predicate == "likedBy"
-                likes = likes.Where(like => like.LikedUserId == userId); //filter
-                users = likes.Select(like => like.SourceUser); // select the relevant users (overriding initial users select)
+            else {
+                likes = likes.Where(like => like.LikedUserId == userId); 
+                users = likes.Select(like => like.SourceUser); 
             }
             
-            //7. we''ll use the DTO to select the properties we intersted in,
-            //   * no need to configure Mapping here, these are not so mulch properties
+            
             return await users.Select(user => new LikeDto
             {
                 Username = user.UserName,
@@ -58,15 +54,13 @@ namespace API.Data
                 City = user.City,
                 Id = user.Id
             }).ToListAsync();
-            //8. back to readme.md
 
         }
 
         public async Task<AppUser> GetUserWithLikes(int userId)
         {
-            //2. also simple: get the users with his likes included
             return await _context.Users
-                .Include(u => u.LikedUsers)// when a user will ad a like it will be added to the likedUsers list here
+                .Include(u => u.LikedUsers)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
     }

@@ -20,15 +20,15 @@ namespace API.Controllers
             _context = context;
 
         }
-        //1. create some methods to return different types of errors 
-        [Authorize] // with return 401 unauthorized
-        [HttpGet("auth")] // buggy/auth
+         
+        [Authorize] 
+        [HttpGet("auth")] 
         public ActionResult<string> GetSecret()
         {
             return "secret string";
         }
 
-        //2. return not found
+        
         [HttpGet("not-found")] // buggy/not-found
         public ActionResult<AppUser> GetNotFound()
         {
@@ -40,29 +40,9 @@ namespace API.Controllers
             return Ok(); //🤣
         }
 
-        //3. server error
         [HttpGet("server-error")] // buggy/server-error
         public ActionResult<string> GetServerError()
         {
-
-            //1. things used to be like this try catch block but:
-            // * this way we dont get any infomation in the console logs (because we swallowed the exception)
-            // * the data about the exception is in ex, we don;t do much about it
-            // so we wont use try catch blocks all over the place, it's a bad practice and it's not the 1990's 
-            // we'll create our own middleware to handle  exceptions specifically in a global way
-
-            // try
-            // {
-            //     var thing = _context.Users.Find(-1);
-            //     var thingtoReturn = thing.ToString();
-            //     return thingtoReturn; //🤣
-            // }
-            // catch (Exception ex)
-            // {
-            //     return StatusCode(500, "Computer Says no!");
-            // }
-
-            
             var thing = _context.Users.Find(-1);
             var thingtoReturn = thing.ToString();
             return thingtoReturn; //🤣
@@ -70,14 +50,18 @@ namespace API.Controllers
         }
 
 
-        //4. bad request
+        
         [HttpGet("bad-request")] // buggy/bad-request
         public ActionResult<string> GetBetRequest()
         {
-            return BadRequest("this was not a good request");
+            // return BadRequest("this was not a good request");
+            //1. return BadRequest();
+            return BadRequest();
+            //2. return to README.md
+            
         }
 
-        //5. to to RegisterDTO to add another validator
+        
 
     }
 }
