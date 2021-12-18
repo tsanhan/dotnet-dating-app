@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,36 +17,34 @@ namespace API.Data
         {
             _context = context;
         }
-        
+
         public async Task<UserLike> GetUserLike(int sourceUserId, int likedUserId)
         {
-            //1. this is where we need to fix the bug
-            // * if we try to add an existing like, this method return null (no existing like)
-            // * the reason for that is that FindAsync accept likedUserId first and sourceUserId second
-            // * how do I know that? when calling this method the terminal will print the EF created query for the DB
-            // return await _context.Likes.FindAsync(sourceUserId, likedUserId);
             return await _context.Likes.FindAsync(likedUserId, sourceUserId);
-            //2. and back to README.md
+
         }
 
-        public async Task<IEnumerable<LikeDto>> GetUserLikes(string predicate, int userId)
+        // 1. update to get likes params and the returned type to be PagedList
+        public async Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams)
         {
-            
-           
+
+
             IQueryable<AppUser> users;
-            var likes = _context.Likes.AsQueryable();//get the likes
-           
-            if(predicate == "liked") {
-                likes = likes.Where(like => like.SourceUserId == userId); 
-                users = likes.Select(like => like.LikedUser); 
+            var likes = _context.Likes.AsQueryable();
+
+            if (likesParams.Predicate == "liked")
+            {
+                likes = likes.Where(like => like.SourceUserId == likesParams.UserId);
+                users = likes.Select(like => like.LikedUser);
             }
-            else {
-                likes = likes.Where(like => like.LikedUserId == userId); 
-                users = likes.Select(like => like.SourceUser); 
+            else
+            {
+                likes = likes.Where(like => like.LikedUserId == likesParams.UserId);
+                users = likes.Select(like => like.SourceUser);
             }
-            
-            
-            return await users.Select(user => new LikeDto
+
+            //2. update this part:  
+            var likedUsers = users.Select(user => new LikeDto
             {
                 Username = user.UserName,
                 KnownAs = user.KnownAs,
@@ -53,8 +52,12 @@ namespace API.Data
                 PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url,
                 City = user.City,
                 Id = user.Id
-            }).ToListAsync();
+            });
 
+            return await PagedList<LikeDto>.CreateAsync(likedUsers, likesParams.PageNumber, likesParams.PageSize);
+
+            //3. ok so now we need to update the controller
+            // * go to LikesController.cs
         }
 
         public async Task<AppUser> GetUserWithLikes(int userId)
@@ -63,5 +66,7 @@ namespace API.Data
                 .Include(u => u.LikedUsers)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+       
     }
 }

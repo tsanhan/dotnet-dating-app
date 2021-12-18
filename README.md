@@ -1,6 +1,6 @@
-Adding the likes component:
-go to the lists.component.ts
+Adding pagination for the likes:
+* to add pagination for the like, we'll start with the UserParams.cs, go there
+* now that we have pagination in the API, w'll add it in the client.
 
+up next: implement the pagination in the client.
 
-we see the list but they should be paginated.
-up next: paginate the likes in the API. 
