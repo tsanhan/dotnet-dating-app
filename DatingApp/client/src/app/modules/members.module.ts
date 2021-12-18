@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { MemberListComponent } from '../members/member-list/member-list.component';
 import { MemberDetailComponent } from '../members/member-detail/member-detail.component';
-import { MemberCardComponent } from '../members/member-card/member-card.component';
+// import { MemberCardComponent } from '../members/member-card/member-card.component';
 import { SharedModule } from './shared.module';
 
 const routes: Routes = [
@@ -15,10 +15,10 @@ const routes: Routes = [
   declarations: [
     MemberListComponent,
     MemberDetailComponent,
-    MemberCardComponent
+    // MemberCardComponent// 1. remove this
   ],
   imports: [
-    SharedModule,//1. import that
+    SharedModule,
     CommonModule,
     RouterModule.forChild(routes)
   ],

@@ -11,10 +11,15 @@ import { PaginationModule } from "ngx-bootstrap/pagination";
 import { ButtonsModule } from "ngx-bootstrap/buttons";
 import { FormsModule } from '@angular/forms';
 import { TimeagoModule } from 'ngx-timeago';
+import { MemberCardComponent } from '../members/member-card/member-card.component';
+import { RouterModule } from '@angular/router';
 @NgModule({
-  declarations: [],
+  declarations: [
+    MemberCardComponent// 1. add this
+  ],
   imports: [
     CommonModule,
+    RouterModule,// 2. add this because we use routerLink in member-card.component.html
     BsDropdownModule.forRoot(),
     ToastrModule.forRoot({
       positionClass:'toast-bottom-right'
@@ -26,9 +31,10 @@ import { TimeagoModule } from 'ngx-timeago';
     BsDatepickerModule.forRoot(),
     PaginationModule.forRoot(),
     ButtonsModule.forRoot(),
-    TimeagoModule.forRoot() // 1. add this
+    TimeagoModule.forRoot()
   ],
   exports: [
+    MemberCardComponent,//3. add this so this will be available in other modules
     BsDropdownModule,
     BsDatepickerModule,
     ToastrModule,
@@ -39,7 +45,7 @@ import { TimeagoModule } from 'ngx-timeago';
     FormsModule,
     PaginationModule ,
     ButtonsModule,
-    TimeagoModule//2. add this
+    TimeagoModule
     //3. go back to member-detail.component.html
 
   ]

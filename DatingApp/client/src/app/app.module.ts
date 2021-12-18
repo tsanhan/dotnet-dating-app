@@ -47,9 +47,9 @@ import { DateInputComponent } from './forms/date-input/date-input.component';
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
-    ReactiveFormsModule,// add this, might be a good idea to recompile the app (stop and serve)
+    ReactiveFormsModule,
     SharedModule,
-    MembersModule
+    // MembersModule //1. remove this
   ],
   providers: [
     {

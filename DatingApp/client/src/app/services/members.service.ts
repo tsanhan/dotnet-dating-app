@@ -62,18 +62,18 @@ export class MembersService {
       )
   }
 
-  //1. we'll add 2 methods here:
-  // * add a like
-  // * get the likes
+
   addLike(username: string) {
     const url = `${this.baseUrl}likes/${username}`;
-    return this.http.post(url, {});// just like in postman
+    return this.http.post(url, {});
   }
 
   getLikes(predicate: string) {
-    return this.http.get(`${this.baseUrl}likes?=${predicate}`);// ?= means query string parameter name and value (?predicate=[value of predicate])
+    // 1. add Partial<Member>[] as generic type
+    // 2. fis tis ?= nonsense and use normal ?predicate=${predicate}
+    return this.http.get<Partial<Member>[]>(`${this.baseUrl}likes?predicate=${predicate}`);
+    //3. go back to lists.component.ts, point 5
   }
-  //2. now lets add the functionality in the member-card.component.ts, go there
 
   getMember(username: string) {
     const member = [...this.memberCache.values()];
