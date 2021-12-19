@@ -1,10 +1,8 @@
-<!-- 1. a heading -->
 <div class="text-center mt-3">
   <h2>{{predicate === 'liked' ? 'Members I Like' : 'Members Who Like Me'}}</h2>
 
 </div>
 
-<!-- 2. a switch between liked and likedBy (we'll ngModel so we need the name) -->
 <div class="container mt-3">
   <div class="row">
     <div class="btn-group" name="predicate">
@@ -12,25 +10,20 @@
       <button class="btn btn-primary" btnRadio="likedBy" [(ngModel)]="predicate" (click)="loadLikes()"> Members Who Like Me</button>
     </div>
   </div>
-  <!-- 3. show the cards -->
   <div class="row">
     <div class="col-2" *ngFor="let member of members">
       <app-member-card [member]="$any(member)"></app-member-card>
-      <!-- 4. now, we have an issue:
-              * this component (ListsComponent) is part of app module,
-              * the member component is part of the members module
-              * they do not import each other, what should we do?
-              * answer: we need to share the member component it will be available to both modules, so  2 options:
-                1. create a whole shared module just for this component (this option is valid and I personally know a developer that does that)
-                2. add this component to the shared module where it will be available to both modules
-              * we'll do the 2 option so:
-              * 1. go to members.module.ts and remove MemberCardComponent from declarations
-                2. go to shared.module.ts and add MemberCardComponent
-                3. little fix I forgot: go to app.module.ts and remove MembersModule, it loads dynamically, no need for import -->
-      <!-- 5. test this in the browser:
-              * like someone and see him/her in lists in 'members i like'.
-              * login as someone else and like yourself, see in 'members eho like me'
-            all works, go back to README.md -->
+
     </div>
   </div>
 </div>
+
+<!-- 1. we will copy and past the pagination ui from member-list.component.html -->
+<div class="d-flex justify-content-center" *ngIf="pagination">
+
+  <pagination [boundaryLinks]="true" [totalItems]="pagination.totalItems" [itemsPerPage]="pagination.itemsPerPage"
+    [(ngModel)]="pagination.currentPage" (pageChanged)="pageChanged($event)" previousText="&lsaquo;"
+    nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
+  </pagination>
+</div>
+<!-- 2. back to README.md -->

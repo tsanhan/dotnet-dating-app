@@ -68,11 +68,16 @@ export class MembersService {
     return this.http.post(url, {});
   }
 
-  getLikes(predicate: string) {
-    // 1. add Partial<Member>[] as generic type
-    // 2. fis tis ?= nonsense and use normal ?predicate=${predicate}
-    return this.http.get<Partial<Member>[]>(`${this.baseUrl}likes?predicate=${predicate}`);
-    //3. go back to lists.component.ts, point 5
+  getLikes(predicate: string/*2. we can create a class for pagination, I wont for this case */,pageNumber: number, pageSize: number ) {
+    //1. right now we passing the predicate directly to the query string
+    // * if we look at this.getMembers we'll we have a method for getting pagination headers
+    let params = this.getPaginationHeaders(pageNumber,pageSize);
+    params = params.append('predicate',predicate)
+    //2. replace this return with the paginated version
+    // return this.http.get<Partial<Member>[]>(`${this.baseUrl}likes?predicate=${predicate}`);
+    return this.getPaginatedResult<Partial<Member>[]>(`${this.baseUrl}likes`, params);
+    //3. go to lists.component.ts to create the properties to pass
+
   }
 
   getMember(username: string) {

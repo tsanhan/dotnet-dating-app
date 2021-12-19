@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Member } from '../models/member';
+import { Pagination } from '../models/pagination';
 import { MembersService } from '../services/members.service';
 
 @Component({
@@ -8,25 +9,37 @@ import { MembersService } from '../services/members.service';
   styleUrls: ['./lists.component.css']
 })
 export class ListsComponent implements OnInit {
-  //1. sore the members in the array, but these wont be our full member objects
-  members: Partial<Member>[] = [] // every property is partial
+  members: Partial<Member>[] = []
   predicate = 'liked';
+  //1. add pageNumber and pageSize for pagination
+  pageNumber = 1;
+  pageSize = 5;
+  //3. add pagination
+  pagination: Pagination;
 
-  //2. inject the members service
   constructor(private memberService: MembersService) { }
 
   ngOnInit(): void {
     this.loadLikes();
   }
 
-  //3. load the members from the service
+
   loadLikes() {
-    this.memberService.getLikes(this.predicate).subscribe(members => {
-      this.members = members;
-      //4. to fix the error we need to specify that getLikes method returns an observable on array of members
-      // go to members.service.ts
-      //5. go to the html
+    //2. pass pageNumber and pageSize to getLikes
+    this.memberService.getLikes(this.predicate, this.pageNumber, this.pageSize).subscribe(members => {
+      //4. the members are in result
+      this.members = members.result;
+      //5. the pagination is in pagination
+      this.pagination = members.pagination;
+
     });
   }
+
+  //6. to use pagination we need our pageChanged event
+  pageChanged(event: any): void {
+    this.pageNumber = event.page;
+    this.loadLikes();
+  }
+  //7. go to the html to add the pagination ui
 
 }
