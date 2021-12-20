@@ -1,5 +1,5 @@
-Setting up the message repository:
-we'll start with an interface
-create and go to Interfaces/IMessageRepository.cs
+ Setting up the automapper profiles:
+ we build the profiles because our dto is pretty big and not can be auto mapped.
+ go to AutoMapperProfiles.cs
 
-up next: our dto is big so we'll use automapper to help a bit
+ up next: adding a message controller
