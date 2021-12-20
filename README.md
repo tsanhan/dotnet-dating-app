@@ -1,8 +1,13 @@
-Introduction:
-* this is another type of many to many relationship.
-* adding to this relationship the ability to box and unbox an unread messages.
-* using query params in angular
-* these messages will be on a different tab on on the details, so we want to be able to use a direct route to go there, we'll use query params to do that.
-* using route resolvers: the ability to get data when a route is activated but before the component is constructed
+setting up the entities for messaging.
+our messaging system will have a message entity.
+pay attention: when setting a feature up we normally following a normal flow:
+first we start with the entity.
+so create and go to Entities/Message.cs
 
-up next: we'll setting up the entities for messaging 
+* ok so for add a migration we need to shut down the server and type (from the API folder):
+`dotnet ef migrations add MessageEntityAdded`, success!
+* we should find a new migration file in the Migrations folder.
+* nothing special there, pay attention that DateRead is nullable but MessageSent is not.
+* we see the the relationships there
+
+up next: the second thing when setting up a feature: the repository.

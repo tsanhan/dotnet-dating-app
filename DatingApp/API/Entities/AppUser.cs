@@ -24,10 +24,15 @@ namespace API.Entities
         public string City {get;set;}
         public string Country {get;set;}
         public ICollection<Photo> Photos {get;set;} 
-        //1. add the collections
-        public ICollection<UserLike> LikedByUsers { get; set; } //1. add the collection: hwo liked this currently logged in user
-        public ICollection<UserLike> LikedUsers { get; set; }//2. add the collection: who this user liked
-        //2. configure these entities in the DataContext.cs, go there
+        public ICollection<UserLike> LikedByUsers { get; set; }
+        public ICollection<UserLike> LikedUsers { get; set; }
+
+        //1. add collections of messages
+        public ICollection<Message> MessagesSent { get; set; }
+        public ICollection<Message> MessagesReceived { get; set; }
+        //2. go to DataContext.cs to configure the Fluent API ourselves
+        
+        
         
     }
 }
