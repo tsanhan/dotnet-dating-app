@@ -1,16 +1,8 @@
-Section 14 summary:
-what we've earned:
-1. we implemented a 'like user' feature
-2. many to many relationship in EF Core 
-    * we used a join table for this 
-    * in the last ef core versions ef manages to create this relationship automatically
-    * even though ef create the join table under the hood, it just invisible to the BE
-    * many developers don't trust EF to handle it properly (like me)
-    * I like to have control over this relationship
+Introduction:
+* this is another type of many to many relationship.
+* adding to this relationship the ability to box and unbox an unread messages.
+* using query params in angular
+* these messages will be on a different tab on on the details, so we want to be able to use a direct route to go there, we'll use query params to do that.
+* using route resolvers: the ability to get data when a route is activated but before the component is constructed
 
-3. configuring entities in the DbContext 
-    * this give control over how things are being created in the DB
-    * overriding EF conventions  -
-    * also called Fluent API, In EF Core, the ModelBuilder class acts as a Fluent API.
-
-up next: implementing a messaging system
+up next: we'll setting up the entities for messaging 
