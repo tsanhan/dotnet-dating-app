@@ -1,13 +1,16 @@
-Adding a message controller:
-we'll create a new controller for our messages:
-* you can try start to implement it your self half way through
-* [5 min later] create and go to Controllers/MessagesController.cs
+Getting the messages from the Repo:
+* ok so now that we can create messages, we'll see how to receive them.
+* we'll be now be implementing the GetMessagesForUser method in message repository
+* now, we want to let the user to read inbox/outbox and unread messages besides the pagination issue.
+* so we'll create a message params class for that, so create and go to Helpers/MessageParams.cs
 
-* testing. section 15:
-  * start with login, success!
-  * next, 'Create Message From [login] to [another user]', success!
-  * see the message in the db, success!
-  * login as [another user] and and send a message to [login]all in db so we'll have something to work with, success!
+* ok so we created an unread messages/inbox/outbox system.
+* lest test this in postman, section 15:
+    * run 'Get Default Messages for [login]' (these are the unread messages to [login]), success!
+    * run 'Login as [another user] and save token to env',  success! (checkout in the tests, we save to another token)
+    * run 'Get Default Messages for [another user]' (these are the unread messages to [another user] ), success!
+    * test the outbox of [another user] and [login], success!
 
+up next: getting the message thread (the conversation between the two users)
+    
 
-up next: Getting the messages from the Repo
