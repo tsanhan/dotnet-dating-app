@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,12 +13,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
-    //1. implement IMessageRepository
     public class MessageRepository : IMessageRepository
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public MessageRepository(DataContext context,/*4. add the mapper*/IMapper mapper)
+        public MessageRepository(DataContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -38,37 +38,55 @@ namespace API.Data
             return await _context.Messages.FindAsync(id);
         }
 
-        //1. update the method to accept a messageParams object
         public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
         {
-           //1. create a IQueryable
             var query = _context.Messages
-                .OrderByDescending(m => m.MessageSent) // order by 'most recent first'
+                .OrderByDescending(m => m.MessageSent) 
                 .AsQueryable();
 
-            //2. filter by container
             query = messageParams.Container switch 
             {
                 "Inbox" => query.Where(u => u.Recipient.UserName == messageParams.Username),
                 "Outbox" => query.Where(u => u.Sender.UserName == messageParams.Username),
-                /*default case: unread messages like inbox*/
                 _ => query.Where(u => u.Recipient.UserName == messageParams.Username && u.DateRead == null),
             };
 
-            //3. project the query to a list of MessageDto
-            // * need to inject in IMapper
             var messages = query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider);
             
-            //5. return the paged list
             return await PagedList<MessageDto>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
 
-            //6. we can go to the conteroller and create an endpoint to get the messages for a user
-            // * go to MessagesController.cs
         }
-
-        public Task<IEnumerable<MessageDto>> GetMessageThread(int currentUserId, int recipientId)
+        //1. accept usernames instead of ids
+        public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
         {
-            throw new System.NotImplementedException();
+            //2. we want to update the entities, and to marked them as been read.
+            // * for that we can't use the dto to update the DB, we need the entity
+            // * so we'll execute the query and update the entities from memory
+
+            //3. get the conversation
+            var messages = await _context.Messages
+                .Include(u => u.Sender).ThenInclude(p => p.Photos)// we need the sender photo being eager loaded
+                .Include(u => u.Recipient).ThenInclude(p => p.Photos)// we need the recipient photo being eager loaded
+                .Where(m => 
+                m.Recipient.UserName == currentUsername && m.Sender.UserName == recipientUsername || //messages to me
+                m.Recipient.UserName == recipientUsername&& m.Sender.UserName == currentUsername)    // messages from me
+                .OrderByDescending(m => m.MessageSent)
+                .ToListAsync();
+
+            //4. get the unread messages of the current user (sent to me)
+            var unreadMessages = messages.Where(m =>  m.DateRead == null 
+                && m.Recipient.UserName == currentUsername).ToList();
+
+            //5. update the unread messages
+            if(unreadMessages.Any())
+            {
+                foreach (var um in unreadMessages) um.DateRead = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            
+            
+            return _mapper.Map<IEnumerable<MessageDto>>(messages);
+            //6. go to MessagesController.cs to implement the usage of this method
         }
 
         public async Task<bool> SaveAllAsync()
