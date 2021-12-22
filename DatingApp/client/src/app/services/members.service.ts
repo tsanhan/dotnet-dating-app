@@ -8,6 +8,7 @@ import { PaginatedResult } from '../models/pagination';
 import { User } from '../models/user';
 import { UserParams } from '../models/userParams';
 import { AccountService } from './account.service';
+import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 
 
 
@@ -48,16 +49,16 @@ export class MembersService {
     const cacheKey = Object.values(userParams).join('-');
     const response = this.memberCache.get(cacheKey);
     if(response) return of(response);
-
-    let params = this.getPaginationHeaders(userParams.pageNumber, userParams.pageSize);
+    //1. remove this
+    let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize);
 
     params = params.append('minAge', userParams.minAge.toString());
     params = params.append('maxAge', userParams.maxAge.toString());
     params = params.append('gender', userParams.gender);
     params = params.append('orderBy', userParams.orderBy);
 
-
-    return this.getPaginatedResult<Member[]>(`${this.baseUrl}users`,params).pipe(
+    //2. remove this and pass http
+    return getPaginatedResult<Member[]>(`${this.baseUrl}users`,params, this.http).pipe(
         tap(res => this.memberCache.set(cacheKey, res))
       )
   }
@@ -68,15 +69,13 @@ export class MembersService {
     return this.http.post(url, {});
   }
 
-  getLikes(predicate: string/*2. we can create a class for pagination, I wont for this case */,pageNumber: number, pageSize: number ) {
-    //1. right now we passing the predicate directly to the query string
-    // * if we look at this.getMembers we'll we have a method for getting pagination headers
-    let params = this.getPaginationHeaders(pageNumber,pageSize);
+  getLikes(predicate: string,pageNumber: number, pageSize: number ) {
+    //3. remove this
+    let params = getPaginationHeaders(pageNumber,pageSize);
     params = params.append('predicate',predicate)
-    //2. replace this return with the paginated version
-    // return this.http.get<Partial<Member>[]>(`${this.baseUrl}likes?predicate=${predicate}`);
-    return this.getPaginatedResult<Partial<Member>[]>(`${this.baseUrl}likes`, params);
-    //3. go to lists.component.ts to create the properties to pass
+    //4. remove this and pass http
+    return getPaginatedResult<Partial<Member>[]>(`${this.baseUrl}likes`, params, this.http);
+    //6. return to message.service.ts point 4
 
   }
 
@@ -111,29 +110,5 @@ export class MembersService {
   }
 
 
-   private getPaginatedResult<T>(url:string, params: HttpParams) {
-    const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
 
-    return this.http.get<T>(url,
-      {
-        observe: 'response',
-        params
-      }).pipe(
-        map(response => {
-          paginatedResult.result = response.body as T;
-          if (response.headers.get('Pagination') !== null) {
-            paginatedResult.pagination = JSON.parse(response.headers.get('Pagination') || '');
-          }
-          return paginatedResult;
-        })
-      );
-  }
-
-  private getPaginationHeaders(pageNumber:number, pageSize:number) {
-    let headers = new HttpParams();
-    headers = headers.append('pageNumber', pageNumber.toString());
-    headers = headers.append('pageSize', pageSize.toString());
-    return headers;
-
-  }
 }

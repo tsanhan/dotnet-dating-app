@@ -1,1 +1,8 @@
-<p>messages works!</p>
+<!-- 1. we just loop through the messages to test-->
+<p *ngFor="let message of messages">
+ {{message?.content}}
+</p>
+<!-- 2. we need to check in the network tab that the call is ok
+      * if no data is shown, we can change the container property to 'Inbox'/'Outbox' to test the results
+      * make sure data is correct
+      * success!  -->
