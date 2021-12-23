@@ -1,9 +1,86 @@
-<!-- 1. we just loop through the messages to test-->
-<p *ngFor="let message of messages">
- {{message?.content}}
-</p>
-<!-- 2. we need to check in the network tab that the call is ok
-      * if no data is shown, we can change the container property to 'Inbox'/'Outbox' to test the results
-      * make sure data is correct
-      * success!  -->
-<!-- 3. back to readme.md -->
+<div class="row mb-4">
+  <!-- 1. buttons to switch between 'unread', 'inbox' and 'outbox' -->
+  <div class="btn-group" name="container">
+    <button class="btn btn-primary" btnRadio="Unread" [(ngModel)]="container" (click)="loadMessages()">
+      <i class="fa fa-envelope"></i> Unread
+    </button>
+    <button class="btn btn-primary" btnRadio="Inbox" [(ngModel)]="container" (click)="loadMessages()">
+      <i class="fa fa-envelope-open"></i> Inbox
+    </button>
+    <button class="btn btn-primary" btnRadio="Outbox" [(ngModel)]="container" (click)="loadMessages()">
+      <i class="fa fa-paper-plane"></i> Outbox
+    </button>
+  </div>
+</div>
+
+<!-- 2. check messages, we'll see ngSwitch in action  -->
+<div class="row" [ngSwitch]="messages.length">
+  <h3 *ngSwitchCase="0">No messages</h3>
+  <table *ngSwitchDefault class="table table-hover" style="cursor: pointer;" >
+    <thead>
+      <tr>
+        <th style="width: 40%;">Messages</th>
+        <th style="width: 20%;">From / To</th>
+        <th style="width: 20%;">Sent / Received</th>
+        <th style="width: 20%;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 3. on row click we want to go the member,
+            * what member? it depends...
+            * if container is Outbox, this means the recipient is the destination of the link
+            * if container is Inbox, this means the sender is the destination of the link
+              when using [] this means property binding, the value is not a string but a string expression -->
+
+      <tr *ngFor="let message of messages"
+        [routerLink]="'/members/' + (container === 'Outbox' ? message.recipientUsername : message.senderUsername)">
+        <!-- why did I put () after the '+' ? answer: because otherwise the '/members/' will be part of the ternary expression -->
+        <td>{{message.content}}</td>
+        <!-- 4. now we want to display the photo conditionally on if it's the sender or the recipient -->
+        <td>
+          <!-- 5. ng-container is just a hook to put templates in it, it does not have any ui effect, not even an element   -->
+          <ng-container ngSwitch="container">
+            <div *ngSwitchCase="'Outbox'">
+              <img
+                class="img-circle rounded-circle mr-2"
+                src="{{message.recipientPhotoUrl || './assets/user.png'}}"
+                alt="{{message.recipientUsername}}">
+              <strong>{{message.recipientUsername | titlecase}}</strong>
+              <!-- hw: it'll be better to use knownAs, but we don't have one in the message object, deal with that (start with the BE and continue in the front) -->
+            </div>
+            <div *ngSwitchDefault>
+              <img
+                class="img-circle rounded-circle mr-2"
+                src="{{message.senderPhotoUrl || './assets/user.png'}}"
+                alt="{{message.senderUsername}}">
+              <strong>{{message.senderUsername | titlecase}}</strong>
+            </div>
+          </ng-container>
+        </td>
+        <td>{{message.messageSent | timeago}}</td>
+        <td>
+          <!-- 6. add delete, not implementing as button for now -->
+          <button class="btn btn-danger">Danger</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 7. add pagination, copy from lists.component.html
+      * I know i copied this before
+      * but extracting it to another component not worth it
+      * it will be too much to pass to that component, no benefits-->
+<div class="d-flex justify-content-center" *ngIf="pagination">
+
+  <pagination [boundaryLinks]="true" [totalItems]="pagination.totalItems" [itemsPerPage]="pagination.itemsPerPage"
+    [(ngModel)]="pagination.currentPage" (pageChanged)="pageChanged($event)" previousText="&lsaquo;"
+    nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
+  </pagination>
+</div>
+
+<!-- 8. revue in the the browser
+      * the image is too big, go to the css -->
+
+
+
