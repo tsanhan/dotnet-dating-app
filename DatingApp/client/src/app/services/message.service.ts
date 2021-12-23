@@ -8,28 +8,27 @@ import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
   providedIn: 'root'
 })
 export class MessageService {
-  //1. add properties
   baseUrl = environment.apiUrl; // for http
 
-  //2. inject http
   constructor(
     private http: HttpClient
   ) { }
 
-  //3. we want to create a method to get the messages
-  //  * we have a problem because getPaginatedResult ans getPaginationHeaders methods is private in members.service.ts
-  //  * good thing they are almost pure functions (what are pure functions?), 'almost' because we'll need to pass the httpClient
-  //  * create a file to store them, create and go to services/paginationHelper.ts
-
-  //4. create a method to get the messages
   getMessages(pageNumber:number, pageSize:number, container:string) {
-    //1. get params
     let params = getPaginationHeaders(pageNumber, pageSize);
     params = params.append('container', container);
 
     return getPaginatedResult<Message[]>(this.baseUrl + 'messages', params, this.http);
   }
-  //5. go to messages.component.ts we created 500 years ego
 
+  //1. add method
+  getMessageThread(username: string){
+    //2. we can add pagination here too, I didn't! HW: add pagination (add the class, take care of the BE, and pass the data)
+    return this.http.get<Message[]>(`${this.baseUrl}messages/thread/${username}`);
+    //3. create the member-messages component inside members folder
+    //    * make sure the component is provided in members.module.ts and not in app.module.ts
+    //    * go to members.module.ts to make sure of that
+    //    * and go to member-messages.component.ts
+  }
 
 }

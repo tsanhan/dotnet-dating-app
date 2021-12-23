@@ -14,20 +14,12 @@
         </div>
         <div>
           <strong>Last Active:</strong>
-          <!-- 7. use time ego here, you can add parameters if you want, look at the documentation -->
           <p>{{member.lastActive | timeago}}</p>
-          <!-- 8. add the pipes also in member-edit.component.html, go there -->
         </div>
         <div>
           <strong>Member since:</strong>
-          <!-- 1. just add a pipe, test in browser-->
-          <!-- 2. add params to pipe,longDate will putt full month in the date , test in browser-->
           <p>{{member.created | date : 'longDate'}}</p>
-          <!-- 3. can see other default dates: https://angular.io/api/common/DatePipe-->
-          <!-- 4. we can have our custom date view: 'dd MMM yyyy'-->
-          <!-- 5. to calculate a time ego, we'll use a package: ngx-timeago,
-                so: follow the dec: 1.install, 2.add module, 3.use -->
-          <!-- 6. go to shared.module.ts -->
+
 
         </div>
 
@@ -57,7 +49,9 @@
     <ngx-gallery [options]="galleryOptions" [images]="galleryImages" class="ngx-gallery"></ngx-gallery>
   </tab>
   <tab heading="Messages" >
-     <p>Messages will go here</p>
+    <!-- 1. add the message thread here -->
+    <app-member-messages [username]="member.username"></app-member-messages>
+    <!-- 2. back to readme.md -->
    </tab>
 </tabset>
   </div>
