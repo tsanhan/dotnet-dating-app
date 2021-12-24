@@ -1,3 +1,54 @@
-<!-- 1. just add some basic view -->
-<p *ngFor="let message of messages">{{message?.content}}</p>
-<!-- 2. go to member-detail.component.html to add an instance of this component -->
+<!-- 1. we'll create a card -->
+<div class="card">
+  <div class="card-body">
+    <!-- 2. what is going on here? -->
+    <ng-container *ngIf="messages && messages.length > 0; else noMessages">
+      <ul class="chat">
+        <li *ngFor="let message of messages">
+          <div>
+            <span class="chat-img float-right">
+              <img class="rounded-circle" [src]="message.senderPhotoUrl || './assets/user.png'"
+                [alt]="message.senderUsername">
+            </span>
+            <div class="chat-body">
+              <div class="header">
+                <small class="text-muted">
+                  <span class="fa fa-clock-o">
+                    {{message.messageSent | timeago}}
+                  </span>
+                  <!-- 3. some alert if the other person didn't read my message -->
+                  <span class="text-danger" *ngIf="!message.dateRead && message.senderUsername !== username">
+                    (unread)
+                  </span>
+                  <!-- 4. data about when the message was read, HW: make this a single if statement with the same logic (can use ng-content/ ng-template if u like ) -->
+                  <span class="text-success" *ngIf="message.dateRead && message.senderUsername !== username">
+                    (read {{message.dateRead | timeago}})
+                  </span>
+                </small>
+              </div>
+              <!-- 5. the message content -->
+              <p>{{message.content}}</p>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-template #noMessages>
+      No Messages Yet... say hi by using the message box below
+    </ng-template>
+
+
+  </div>
+  <!-- 6. add a footer, this will be a an option to send a message (we'll implement the actual logic later) -->
+  <div class="card-footer">
+    <form >
+      <div class="input-group">
+        <input type="text" placeholder="Send a private message" class="form-control input-sm">
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="submit">Send</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- 7. checkout how it looks in the browser and and go to style some more in the css, go to the css  -->
+</div>

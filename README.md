@@ -1,8 +1,11 @@
-Adding the message thread in the client:
-* ok so we want to show the message thread, where will we show it?
-* in the members/[username] there are tabs, the messages tab is the one.
-* implement fetching the thread, go to message.service.ts
+Styling the message thread:
+lets focus in the member-messages.component.html, go there.
 
-* ok so have the data,
-up next: now lets style the message thread age
+* ok so we have styled out messages component a bit.
+* now pay attention: when we refresh the page in on '/members/[other user]', we load twice:
+    1. once to load the description and other data of the member
+    2. second time to load the messages
 
+the second time is the problem, our user might not want this data, but I'm still fetching it.
+
+so up next, we'll take a look at that and how we will approach this issue.
