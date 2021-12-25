@@ -1,11 +1,18 @@
-Styling the message thread:
-lets focus in the member-messages.component.html, go there.
+Activating the message tab:
+* why the messages being loaded on the details page?
+    - it's because the messages component is a child component of the details page
+    - and when the parent component is loaded (details in out case), the child component is loaded as well.
+* how can we control that? 
+    * not load the messages on details construction?
+    * do load when the messages component is clicked (the data is needed)
 
-* ok so we have styled out messages component a bit.
-* now pay attention: when we refresh the page in on '/members/[other user]', we load twice:
-    1. once to load the description and other data of the member
-    2. second time to load the messages
+lets see how to do that:
+go to member-detail.component.html.
 
-the second time is the problem, our user might not want this data, but I'm still fetching it.
+ok lets test in the browser, we expect the messages to load only on first time needed.
 
-so up next, we'll take a look at that and how we will approach this issue.
+* up next: get directed to the messages.
+    * from the button in the member page (next to 'like' button)
+    * from from the ✉️ icon in the member card
+
+

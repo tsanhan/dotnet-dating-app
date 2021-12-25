@@ -8,24 +8,25 @@ import { MessageService } from 'src/app/services/message.service';
   styleUrls: ['./member-messages.component.css']
 })
 export class MemberMessagesComponent implements OnInit {
-  //1. add fields
+  //1. make the messages an Input property:
+  // messages:Message[];
   @Input() username:string;
-  messages:Message[];
+  @Input() messages:Message[];
 
-  //2. inject what we need
-  constructor(private messageService: MessageService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    //3. load messages
-    this.loadMessages();
+    // 2. no need to load the messaged on component init
+    // this.loadMessages();
+
   }
 
-  //4. implement load messages method
-  loadMessages() {
-    this.messageService.getMessageThread(this.username).subscribe(messages => {
-      this.messages = messages;
-    })
-  }
-  //5. go to the html
+  //3. cut this:
+  // loadMessages() {
+  //   this.messageService.getMessageThread(this.username).subscribe(messages => {
+  //     this.messages = messages;
+  //   })
+  // }
+  //4. go to member-detail.component.ts, point 6.
 
 }

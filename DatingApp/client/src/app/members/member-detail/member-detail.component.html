@@ -33,25 +33,37 @@
     </div>
   </div>
   <div class="col-8">
-<tabset class="member-tabset">
-   <tab heading="About {{member.knownAs}}" >
+    <!-- 1. ok so I want to know when the Messages tab (last one been clicked)
+          * for that I need to hold the tabset a property inside my component
+          * for that I need to somehow "select" it
+          * we do that we use using template reference variable (the # sign)
+          * we'll add a template reference variable to the tabset
+          * we'll call it memberTabs  -->
+<tabset class="member-tabset" #memberTabs>
+    <!-- 2. go to the ts -->
+    <!-- 4. invoke the onTabActivated on selecting each tab (can check the doc: https://valor-software.com/ngx-bootstrap/#/components/tabs?tab=api) -->
+   <tab heading="About {{member.knownAs}}" (selectTab)="onTabActivated($event)">
     <h4>Description</h4>
     <p>{{member.introduction}}</p>
     <h4>Looking for</h4>
     <p>{{member.lookingFor}}</p>
    </tab>
-   <tab heading="Interests" >
+   <!-- 5. invoke the onTabActivated on selecting each tab -->
+   <tab heading="Interests" (selectTab)="onTabActivated($event)">
     <h4>Interests</h4>
     <p>{{member.interests}}</p>
 
    </tab>
-   <tab heading="Photos" >
+   <!-- 6. invoke the onTabActivated on selecting each tab -->
+   <tab heading="Photos" (selectTab)="onTabActivated($event)">
     <ngx-gallery [options]="galleryOptions" [images]="galleryImages" class="ngx-gallery"></ngx-gallery>
   </tab>
-  <tab heading="Messages" >
-    <!-- 1. add the message thread here -->
-    <app-member-messages [username]="member.username"></app-member-messages>
-    <!-- 2. back to readme.md -->
+   <!-- 7. invoke the onTabActivated on selecting each tab -->
+  <tab heading="Messages" (selectTab)="onTabActivated($event)">
+    <!-- 8. back to README.md -->
+    <!-- 3. pass messages -->
+    <!-- <app-member-messages [username]="member.username"></app-member-messages> -->
+   <app-member-messages [username]="member.username" [messages]="messages"></app-member-messages>
    </tab>
 </tabset>
   </div>
