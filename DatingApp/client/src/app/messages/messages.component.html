@@ -1,5 +1,4 @@
 <div class="row mb-4">
-  <!-- 1. buttons to switch between 'unread', 'inbox' and 'outbox' -->
   <div class="btn-group" name="container">
     <button class="btn btn-primary" btnRadio="Unread" [(ngModel)]="container" (click)="loadMessages()">
       <i class="fa fa-envelope"></i> Unread
@@ -13,7 +12,6 @@
   </div>
 </div>
 
-<!-- 2. check messages, we'll see ngSwitch in action  -->
 <div class="row" [ngSwitch]="messages.length">
   <h3 *ngSwitchCase="0">No messages</h3>
   <table *ngSwitchDefault class="table table-hover" style="cursor: pointer;" >
@@ -26,19 +24,15 @@
       </tr>
     </thead>
     <tbody>
-      <!-- 3. on row click we want to go the member,
-            * what member? it depends...
-            * if container is Outbox, this means the recipient is the destination of the link
-            * if container is Inbox, this means the sender is the destination of the link
-              when using [] this means property binding, the value is not a string but a string expression -->
 
+      <!-- 1. add queryParams here -->
       <tr *ngFor="let message of messages"
+       [queryParams]="{tab:3}"
         [routerLink]="'/members/' + (container === 'Outbox' ? message.recipientUsername : message.senderUsername)">
-        <!-- why did I put () after the '+' ? answer: because otherwise the '/members/' will be part of the ternary expression -->
+        <!-- 2. test that is working, great... now how do I access the params in the component?
+              to find out go to member-detail.component.ts, point 3 -->
         <td>{{message.content}}</td>
-        <!-- 4. now we want to display the photo conditionally on if it's the sender or the recipient -->
         <td>
-          <!-- 5. ng-container is just a hook to put templates in it, it does not have any ui effect, not even an element   -->
           <ng-container ngSwitch="container">
             <div *ngSwitchCase="'Outbox'">
               <img
@@ -46,7 +40,6 @@
                 src="{{message.recipientPhotoUrl || './assets/user.png'}}"
                 alt="{{message.recipientUsername}}">
               <strong>{{message.recipientUsername | titlecase}}</strong>
-              <!-- hw: it'll be better to use knownAs, but we don't have one in the message object, deal with that (start with the BE and continue in the front) -->
             </div>
             <div *ngSwitchDefault>
               <img
@@ -59,7 +52,6 @@
         </td>
         <td>{{message.messageSent | timeago}}</td>
         <td>
-          <!-- 6. add delete, not implementing as button for now -->
           <button class="btn btn-danger">Danger</button>
         </td>
       </tr>
@@ -67,10 +59,6 @@
   </table>
 </div>
 
-<!-- 7. add pagination, copy from lists.component.html
-      * I know i copied this before
-      * but extracting it to another component not worth it
-      * it will be too much to pass to that component, no benefits-->
 <div class="d-flex justify-content-center" *ngIf="pagination">
 
   <pagination [boundaryLinks]="true" [totalItems]="pagination.totalItems" [itemsPerPage]="pagination.itemsPerPage"
@@ -79,8 +67,6 @@
   </pagination>
 </div>
 
-<!-- 8. revue in the the browser
-      * the image is too big, go to the css -->
 
 
 

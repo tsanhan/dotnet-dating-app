@@ -1,18 +1,13 @@
-Activating the message tab:
-* why the messages being loaded on the details page?
-    - it's because the messages component is a child component of the details page
-    - and when the parent component is loaded (details in out case), the child component is loaded as well.
-* how can we control that? 
-    * not load the messages on details construction?
-    * do load when the messages component is clicked (the data is needed)
+Using query params.
+1. we'll start with the easy part:
+    * clicking on the 'Message' button (next to the like button in the member-detail page)
+    * go to member-detail.component.ts
+    * test that the button works (it does!), and... we done with this part!
 
-lets see how to do that:
-go to member-detail.component.html.
+2. now how will we access this tab from outside the component:
+    1. from the ✉️ icon in the card in members page,
+    2. from the messages themselves (in the messages page) when clicking on a message.
 
-ok lets test in the browser, we expect the messages to load only on first time needed.
+    * for that we'll use query parameters, this will be a routing functionality, go to member-card.component.html
 
-* up next: get directed to the messages.
-    * from the button in the member page (next to 'like' button)
-    * from from the ✉️ icon in the member card
-
-
+up next: Using route resolvers

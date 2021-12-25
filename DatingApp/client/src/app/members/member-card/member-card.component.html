@@ -8,17 +8,21 @@
         </button>
       </li>
       <li class="list-inline-item">
-        <!-- 1. add a click to the heart -->
         <button (click)="addLike(member)" class="btn btn-primary">
           <i class="fa fa-heart"></i>
         </button>
-        <!-- 2. test in the browser, add a like and wait for the toastr -->
-        <!-- 3. go back to readme.md -->
+
       </li>
       <li class="list-inline-item">
-        <button class="btn btn-primary">
+        <!-- 1. we'll a router link to take us to the member page like above
+            * but also we'll pass query params, this will be an object-->
+        <button routerLink="/members/{{member.username}}"
+        [queryParams]="{tab:3}"
+        class="btn btn-primary">
           <i class="fa fa-envelope"></i>
         </button>
+        <!-- 2. we can see the effect 1 is making in the browser adding the query params to the route -->
+        <!-- 3. we'll do the same for the messages page, go to messages.component.html -->
       </li>
     </ul>
   </div>
