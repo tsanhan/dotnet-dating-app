@@ -1,7 +1,5 @@
-<!-- 1. we'll create a card -->
 <div class="card">
   <div class="card-body">
-    <!-- 2. what is going on here? -->
     <ng-container *ngIf="messages && messages.length > 0; else noMessages">
       <ul class="chat">
         <li *ngFor="let message of messages">
@@ -16,17 +14,14 @@
                   <span class="fa fa-clock-o">
                     {{message.messageSent | timeago}}
                   </span>
-                  <!-- 3. some alert if the other person didn't read my message -->
                   <span class="text-danger" *ngIf="!message.dateRead && message.senderUsername !== username">
                     (unread)
                   </span>
-                  <!-- 4. data about when the message was read, HW: make this a single if statement with the same logic (can use ng-content/ ng-template if u like ) -->
                   <span class="text-success" *ngIf="message.dateRead && message.senderUsername !== username">
                     (read {{message.dateRead | timeago}})
                   </span>
                 </small>
               </div>
-              <!-- 5. the message content -->
               <p>{{message.content}}</p>
             </div>
           </div>
@@ -39,16 +34,24 @@
 
 
   </div>
-  <!-- 6. add a footer, this will be a an option to send a message (we'll implement the actual logic later) -->
   <div class="card-footer">
-    <form >
+    <!-- 1. we'll use a simple template form -->
+    <form #messageForm="ngForm" (ngSubmit)="sendMessage(messageForm)" autocomplete="off">
       <div class="input-group">
-        <input type="text" placeholder="Send a private message" class="form-control input-sm">
+        <!-- 2. add to input: name, required, two way binding -->
+        <input
+        name="messageContent"
+        required
+        [(ngModel)]="messageContent"
+        type="text"
+         placeholder="Send a private message"
+         class="form-control input-sm">
         <div class="input-group-append">
-          <button class="btn btn-primary" type="submit">Send</button>
+          <!-- 3. check if the form is valid -->
+          <button [disabled]="!messageForm.valid" class="btn btn-primary" type="submit">Send</button>
+          <!-- 4. back to README.md -->
         </div>
       </div>
     </form>
   </div>
-  <!-- 7. checkout how it looks in the browser and and go to style some more in the css, go to the css  -->
 </div>

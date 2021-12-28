@@ -1,6 +1,8 @@
+import { MembersService } from 'src/app/services/members.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { Message } from 'src/app/models/message';
 import { MessageService } from 'src/app/services/message.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-member-messages',
@@ -8,25 +10,28 @@ import { MessageService } from 'src/app/services/message.service';
   styleUrls: ['./member-messages.component.css']
 })
 export class MemberMessagesComponent implements OnInit {
-  //1. make the messages an Input property:
-  // messages:Message[];
+
   @Input() username:string;
   @Input() messages:Message[];
+  //2. add a property to hold the message content
+  messageContent:string;
 
-  constructor() { }
+  //1. inject the message service
+  constructor(private messageService: MessageService) { }
 
   ngOnInit(): void {
-    // 2. no need to load the messaged on component init
-    // this.loadMessages();
 
   }
-
-  //3. cut this:
-  // loadMessages() {
-  //   this.messageService.getMessageThread(this.username).subscribe(messages => {
-  //     this.messages = messages;
-  //   })
-  // }
-  //4. go to member-detail.component.ts, point 6.
-
+  //3. create a method to send a message
+  sendMessage(form:NgForm) {
+    this.messageService.sendMessage(this.username, this.messageContent)
+    // we know we get the message back from the API, we'll add it to the array;
+    .subscribe((message) => {
+      // put the message in the beginning of the array (descending order)
+      this.messages.unshift(message as Message);
+      // after the data is pushed to the array, we'll reset the form
+      form.reset();
+    });
+  }
+  //4. do to the html
 }

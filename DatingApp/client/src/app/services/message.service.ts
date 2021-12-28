@@ -8,7 +8,7 @@ import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
   providedIn: 'root'
 })
 export class MessageService {
-  baseUrl = environment.apiUrl; // for http
+  baseUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient
@@ -21,14 +21,17 @@ export class MessageService {
     return getPaginatedResult<Message[]>(this.baseUrl + 'messages', params, this.http);
   }
 
-  //1. add method
   getMessageThread(username: string){
-    //2. we can add pagination here too, I didn't! HW: add pagination (add the class, take care of the BE, and pass the data)
     return this.http.get<Message[]>(`${this.baseUrl}messages/thread/${username}`);
-    //3. create the member-messages component inside members folder
-    //    * make sure the component is provided in members.module.ts and not in app.module.ts
-    //    * go to members.module.ts to make sure of that
-    //    * and go to member-messages.component.ts
   }
+
+  //1. create method to send message
+  sendMessage(username:string, content:string) {//username: who we sending the message to
+    //2. create a message object, need to match the CreateMessageDto object in the API
+    const createMessage = {recipientUsername: username, content};
+    return this.http.post(this.baseUrl + 'messages', createMessage);
+  }
+  //3. go to member-messages.component.ts to use this method
+
 
 }

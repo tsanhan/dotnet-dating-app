@@ -1,16 +1,11 @@
-Using route resolvers:
-ok so when entering https://localhost:4200/members/[member] we get errors.
-our options are:
-1. turn off the ability to go straight to Messages: this is not good - we want that.
-2. optional chaining everywhere - makes a bad UX
-3. route resolvers - the clean and good way.
+Sending messages:
+ok so the next task is to activate the 'send' button in the messages thread page.
+so.. functionality starts with a service, go to message.service.ts
 
-* route resolvers are a way to get hold of the data BEFORE the component is constructed.
-* that way we'll get everything we need to component the component
+ok so now test the message sent in the browser, all works fine!
 
-* technically resolvers are types of services.
-* create a folder called 'resolvers' and create and go to member-detailed.resolver.ts
+now, some fixes:
+1. in the global messages page, we start off in the 'Inbox' tab, I want to start in the 'Unread' tab.
+2. a small fix: we see we don't have a right image in outBox (this is because I didn't ise ngSwitch in the right manner
 
-ok so we can test this in the browser to see if we still get errors when refreshing the member details page, success!
-
-up next: send a message.
+up next: fixing these issues.
