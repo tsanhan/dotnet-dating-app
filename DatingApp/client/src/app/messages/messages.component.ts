@@ -12,13 +12,10 @@ import { MessageService } from '../services/message.service';
 export class MessagesComponent implements OnInit {
   messages: Message[] = [];
   pagination: Pagination;
-  //1. start here to change to Unread
   container: string = 'Unread';
-  //2. go to the html, to fix the way I use ngSwitch
   pageNumber: number = 1;
   pageSize: number = 5;
 
-  //3. add the loading variable
   loading= false;
 
   constructor(private messageService: MessageService) { }
@@ -28,14 +25,11 @@ export class MessagesComponent implements OnInit {
   }
 
   loadMessages() {
-    //4. we change the loading status to true
     this.loading = true;
     this.messageService.getMessages(this.pageNumber, this.pageSize, this.container).subscribe(response => {
       this.messages = response.result;
       this.pagination = response.pagination;
-      //5. we change the loading status back
       this.loading = false;
-      //6. go to the html to use this variable, point 4.
     });
 
   }
@@ -46,6 +40,16 @@ export class MessagesComponent implements OnInit {
       this.loadMessages();
     }
   }
+
+  //1. add a method to delete a message
+  deleteMessage(id:number) {
+    this.messageService.deleteMessage(id).subscribe(() => {
+      this.messages.splice(this.messages.findIndex(m => m.id === id), 1);
+    });
+  }
+  //2. go to the html to invoke this method
+
+
 
 
 

@@ -25,13 +25,16 @@ export class MessageService {
     return this.http.get<Message[]>(`${this.baseUrl}messages/thread/${username}`);
   }
 
-  //1. create method to send message
-  sendMessage(username:string, content:string) {//username: who we sending the message to
-    //2. create a message object, need to match the CreateMessageDto object in the API
+  sendMessage(username:string, content:string) {
     const createMessage = {recipientUsername: username, content};
     return this.http.post(this.baseUrl + 'messages', createMessage);
   }
-  //3. go to member-messages.component.ts to use this method
+
+  //1. ad the functionality to delete a message.
+  deleteMessage(id:number) {
+    return this.http.delete(this.baseUrl + 'messages/' + id);
+  }
+  //2. go to messages.component.ts to use this method
 
 
 }

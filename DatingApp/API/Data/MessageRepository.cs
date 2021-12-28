@@ -35,7 +35,18 @@ namespace API.Data
 
         public async Task<Message> GetMessage(int id)
         {
-            return await _context.Messages.FindAsync(id);
+            //1. this is the problem we only get the message, without the related entities
+            // * what options do we have? anyone?
+            // answer:
+            //   1. project (using mapper configuration), HW: try to do that. 
+            //   2. eager load the related entities eagerly.
+            
+            // 2. we'll go for 2 but FindAsync does not work with Include, we'll change this query 
+            return await _context.Messages
+            .Include(u => u.Sender)
+            .Include(u => u.Recipient)
+            .SingleOrDefaultAsync(x => x.Id == id);
+            // 3.this should work,  back to README.md
         }
 
         public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
@@ -46,9 +57,9 @@ namespace API.Data
 
             query = messageParams.Container switch 
             {
-                "Inbox" => query.Where(u => u.Recipient.UserName == messageParams.Username),
-                "Outbox" => query.Where(u => u.Sender.UserName == messageParams.Username),
-                _ => query.Where(u => u.Recipient.UserName == messageParams.Username && u.DateRead == null),
+                "Inbox" => query.Where(u => u.Recipient.UserName == messageParams.Username && u.RecipientDeleted == false),
+                "Outbox" => query.Where(u => u.Sender.UserName == messageParams.Username && u.SenderDeleted == false),
+                _ => query.Where(u => u.Recipient.UserName == messageParams.Username && u.RecipientDeleted == false && u.DateRead == null ),
             };
 
             var messages = query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider);
@@ -56,37 +67,28 @@ namespace API.Data
             return await PagedList<MessageDto>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
 
         }
-        //1. accept usernames instead of ids
         public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
         {
-            //2. we want to update the entities, and to marked them as been read.
-            // * for that we can't use the dto to update the DB, we need the entity
-            // * so we'll execute the query and update the entities from memory
-
-            //3. get the conversation
+            
             var messages = await _context.Messages
-                .Include(u => u.Sender).ThenInclude(p => p.Photos)// we need the sender photo being eager loaded
-                .Include(u => u.Recipient).ThenInclude(p => p.Photos)// we need the recipient photo being eager loaded
-                .Where(m => 
-                m.Recipient.UserName == currentUsername && m.Sender.UserName == recipientUsername || //messages to me
-                m.Recipient.UserName == recipientUsername&& m.Sender.UserName == currentUsername)    // messages from me
+                .Include(u => u.Sender).ThenInclude(p => p.Photos)
+                .Include(u => u.Recipient).ThenInclude(p => p.Photos)
+                .Where(m =>
+                m.Recipient.UserName == currentUsername && m.Sender.UserName == recipientUsername && m.RecipientDeleted == false ||
+                m.Recipient.UserName == recipientUsername && m.Sender.UserName == currentUsername && m.SenderDeleted == false)    
                 .OrderByDescending(m => m.MessageSent)
                 .ToListAsync();
 
-            //4. get the unread messages of the current user (sent to me)
             var unreadMessages = messages.Where(m =>  m.DateRead == null 
                 && m.Recipient.UserName == currentUsername).ToList();
 
-            //5. update the unread messages
             if(unreadMessages.Any())
             {
                 foreach (var um in unreadMessages) um.DateRead = DateTime.Now;
                 await _context.SaveChangesAsync();
             }
             
-            
             return _mapper.Map<IEnumerable<MessageDto>>(messages);
-            //6. go to MessagesController.cs to implement the usage of this method
         }
 
         public async Task<bool> SaveAllAsync()
