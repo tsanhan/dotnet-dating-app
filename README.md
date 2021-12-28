@@ -1,8 +1,6 @@
-Fixing the messages component
+Deleting messages on the API
+go to MessagesController.cs
 
-ok so first thing we'll fix the entry point of the page and we move on from there.
-go to messages.component.ts
+ok so we done with the API.
 
-ok so we can test in the browser to see the image flickering gone.
-
-up next: deleting messages
+up next do the same take care fo teh client.
