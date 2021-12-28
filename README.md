@@ -1,13 +1,16 @@
-Using query params.
-1. we'll start with the easy part:
-    * clicking on the 'Message' button (next to the like button in the member-detail page)
-    * go to member-detail.component.ts
-    * test that the button works (it does!), and... we done with this part!
+Using route resolvers:
+ok so when entering https://localhost:4200/members/[member] we get errors.
+our options are:
+1. turn off the ability to go straight to Messages: this is not good - we want that.
+2. optional chaining everywhere - makes a bad UX
+3. route resolvers - the clean and good way.
 
-2. now how will we access this tab from outside the component:
-    1. from the ✉️ icon in the card in members page,
-    2. from the messages themselves (in the messages page) when clicking on a message.
+* route resolvers are a way to get hold of the data BEFORE the component is constructed.
+* that way we'll get everything we need to component the component
 
-    * for that we'll use query parameters, this will be a routing functionality, go to member-card.component.html
+* technically resolvers are types of services.
+* create a folder called 'resolvers' and create and go to member-detailed.resolver.ts
 
-up next: Using route resolvers
+ok so we can test this in the browser to see if we still get errors when refreshing the member details page, success!
+
+up next: send a message.
