@@ -1,11 +1,8 @@
-Sending messages:
-ok so the next task is to activate the 'send' button in the messages thread page.
-so.. functionality starts with a service, go to message.service.ts
+Fixing the messages component
 
-ok so now test the message sent in the browser, all works fine!
+ok so first thing we'll fix the entry point of the page and we move on from there.
+go to messages.component.ts
 
-now, some fixes:
-1. in the global messages page, we start off in the 'Inbox' tab, I want to start in the 'Unread' tab.
-2. a small fix: we see we don't have a right image in outBox (this is because I didn't ise ngSwitch in the right manner
+ok so we can test in the browser to see the image flickering gone.
 
-up next: fixing these issues.
+up next: deleting messages

@@ -24,16 +24,27 @@
       </tr>
     </thead>
     <tbody>
-
-      <!-- 1. add queryParams here -->
-      <tr *ngFor="let message of messages"
+      <!--4. hide the list when 'loading' is true (angular gives almost all element the [hidden] attribute)-->
+      <tr [hidden]="loading" *ngFor="let message of messages"
        [queryParams]="{tab:3}"
         [routerLink]="'/members/' + (container === 'Outbox' ? message.recipientUsername : message.senderUsername)">
-        <!-- 2. test that is working, great... now how do I access the params in the component?
-              to find out go to member-detail.component.ts, point 3 -->
+
         <td>{{message.content}}</td>
         <td>
-          <ng-container ngSwitch="container">
+          <!-- 1. fix the way I use ngSwitch, add [] around ngSwitch-->
+          <ng-container [ngSwitch]="container">
+          <!-- 2. now test in the browser to see the right images based on container
+                * wait... we have a flickering issue:
+                * when switching between 'container' values the images change to the [login]'s image before loading all the data
+                * why do you think that is?
+                * well? when we go and fetch the data, the 'container' variable already changed,
+                  * - resulting in different image (and name) based on ngSwitch  -->
+          <!-- 3. how will we fix this?
+                * ideas?
+                * we can create a 'loading' variable.
+                * - and conditionally display the table (and pagination based on that variable)
+                * the variable will change when we go and receive the data
+                * go to the ts, point 3-->
             <div *ngSwitchCase="'Outbox'">
               <img
                 class="img-circle rounded-circle mr-2"
@@ -59,8 +70,9 @@
   </table>
 </div>
 
-<div class="d-flex justify-content-center" *ngIf="pagination">
-
+<!-- 5. add 'loading' to the condition  -->
+<div  class="d-flex justify-content-center" *ngIf="pagination && !loading">
+<!-- 6. back to README.md -->
   <pagination [boundaryLinks]="true" [totalItems]="pagination.totalItems" [itemsPerPage]="pagination.itemsPerPage"
     [(ngModel)]="pagination.currentPage" (pageChanged)="pageChanged($event)" previousText="&lsaquo;"
     nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
