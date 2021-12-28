@@ -1,20 +1,10 @@
-Deleting messages on the client:
+Section 15 summary:
 
-dealing with client functionality, starting with a service.
-go to message.service.ts.
+what we have learned during the implementation of the messaging functionality
+1. more many to many relationships, what are do you think about how this M2M relationship has implemented?
+  * for me messages makes more sense, it;s not just likes, there is content the joint table represents
+2. looking at query params, putting them in the url and reading them from the url
+3. using route resolvers as means to get data before the component constructs (so life's easier without conditionals)
 
-lets test the functionality of the delete button... and.. get an error.
-* try to debug the error, look at the output, find the line where the error is thrown.
-* ok so it's somewhere in MessagesController.cs, go there.
-
-test the delete button (from inbox for example), works!
-now we need to test for the other user that he/she still get the message (in his/her outbox)
-
-now lets do something interesting, try to open a different browser, with different login and simulate a conversation.
-right now we;ll need to re fetch the data every time because the messages won't just pop out right?
-
-that's ok because we don't maintain the connection to the api, but it will come later (a realtime chat capabilities)
-
-up next: section summery
-
+up next: getting to know the ASP.NET Core Identity framework
 
