@@ -1,4 +1,4 @@
-Setting up the entities:
-we'll start with the AppUser( of course), go to AppUser.cs
+Configuring the DbContext:
+go to DataContext.cs
 
-up next: to update the database context
+up next: see what we need to do to update to use Identity in our services 
