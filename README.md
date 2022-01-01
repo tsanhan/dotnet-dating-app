@@ -1,4 +1,6 @@
-Configuring the DbContext:
-go to DataContext.cs
+Configuring the startup class:
 
-up next: see what we need to do to update to use Identity in our services 
+we'll configure the startup class, but we have an extension for this.
+so go to IdentityServiceExtensions.cs 
+
+up next: after configuring the services, we'll add a migration for this. 
