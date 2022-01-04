@@ -18,19 +18,24 @@ namespace API
         {
             var host = CreateHostBuilder(args).Build();
 
-            //1. we create a scope for the services we going to create for this part
             using var scope = host.Services.CreateScope();
 
             var services = scope.ServiceProvider;
-            //2. here we are outside our middleware, so no global exception handling gere
             try
             {
                 var context = services.GetRequiredService<DataContext>();
 
-                //3. this will create the db if it doesn't exist, so in the future we just restart the api and the db will be recreated
                 await context.Database.MigrateAsync();
-
-                await Seed.SeedUsers(context);
+                //1. in order to see if the database appling the migration, we'll skip the seed process
+                // await Seed.SeedUsers(context);
+                //2. just do a `dotnet run` (this will also update the database).
+                // * if you have any issues (if not runing .net 5), try to delete the migrations folder, and creating a new migration.
+                // * the table structure of the database should modified (applying the migration, adding tables, removing fields)
+                // * if we'll look at the AspNetUsers table we'll see new and old columns and data.
+                // * one issue here, we still will have to drop and recreate the database, why?
+                // * because the password-hash data came from our generator and not from Identity, so it won't recognize them. 
+                
+                //3. back to README.md
             }
             catch (Exception ex)
             {
