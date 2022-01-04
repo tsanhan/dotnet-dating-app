@@ -1,9 +1,11 @@
-Refactoring and adding a new migration:
-ok so now that we have Identity configured, we'll create a migration.
-run: `dotnet ef migrations add IdentityAdded`.
-we see in the terminal we get an error, this is because we removed a column (the PasswordSalt)
-to see if we have a successful migration, got to Program.cs.
+Updating the seed method:
+ok so lets update our seed method.
+go to Seed.cs
 
-we still need to seed some data into our new database.
-so, up next: updating the seed method to still be able to add some seed data on empty database.  
+lets drop and recreate the database.
+run `dotnet ef database drop`
+and then `dotnet watch run` as usual to rebuild the db and run the API.
+we can see the database is full of seed data with password hashes (others, from Identity)
+to see the database as t's now.
 
+up next: updating the Account Controller, so we'll use the Users Manager and the Sign In Manager to both create and sign in the user
