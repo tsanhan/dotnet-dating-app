@@ -31,18 +31,14 @@ namespace API.Controllers
             _userRepository = userRepository;
         }
 
-        
+        //1. lets test the role of Admin (this is temporary, only members can get all the users)
+        //[Authorize(Roles = "Admin")]//4. remove authorize
         [HttpGet]
         public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
-            //0. oops, fix in ClaimsPrincipalExtensions the method name: GetUsernae => GetUsername
-            //1. things w need to do here:
-            //  * populate the CurrnetUsername prop in userParams
-            //  * set a default gender to be the opposite then the user's gender if they don't specify it
-            
+           
           
 
-            //2. get user to know it's gender
             var user = await _userRepository.GetUserByUserNameAsync(User.GetUsername());
             
             if(string.IsNullOrEmpty(userParams.Gender))
@@ -50,9 +46,7 @@ namespace API.Controllers
                 userParams.Gender = user.Gender == "male" ? "female" : "male";
             }
 
-            //3. populate CurrnetUsername in params 
             userParams.CurrnetUsername = user.UserName;
-            //4. go to UserRepository.cs, GetMembersAsync method to apply the filtering
             var users = await _userRepository.GetMembersAsync(userParams);
 
             Response.AddPaginationHeader(
@@ -63,6 +57,10 @@ namespace API.Controllers
             return Ok(users);
         }   
 
+        //2. lets test the role of Member (this is temporary, members can get individual user)
+        //[Authorize(Roles = "Member")]//5. remove authorize and back to README.md!
+        //3. back to README.md
+        
         [HttpGet("{username}", Name = "GetUser"),]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
@@ -145,7 +143,6 @@ namespace API.Controllers
             return BadRequest("Failed to set photo to main");
         }
 
-        // 1. add this method
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
