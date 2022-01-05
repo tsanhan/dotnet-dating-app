@@ -26,22 +26,24 @@ namespace API
             try
             {
                 var context = services.GetRequiredService<DataContext>();
-                //1. get the user manager
+
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                //1. add roleManager 
+                var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
 
                 await context.Database.MigrateAsync();
-                //2. uncomment the runing of Seed.SeedUsers method and run it with the user manager
-                 await Seed.SeedUsers(/*context*/ userManager);
+                //2. pass roleManager
+                await Seed.SeedUsers(userManager,roleManager);
 
                 //3. back to README.md
-                
+
             }
             catch (Exception ex)
             {
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 logger.LogError(ex, "An error occurred during migration");
             }
-            
+
             await host.RunAsync();
         }
 

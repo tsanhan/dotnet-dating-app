@@ -1,14 +1,18 @@
-Updating the account controller:
-ok so now that we have some users in our database,
-we'll use the user manager in the Account Controller, go to AccountController.cs
+Adding roles to the app.
+we'll have 3 roles:
+1. admin
+2. moderator
+3. member
 
-* ok so lets test the account controller with postman:
-    * section 16: 'Login as lisa and save token to env', success!
-    * section 16: 'Register User Bob and save token to env', success!, we can see him in the DB
-    * section 16: 'Get Users as Lisa', success!, we get all the users of the opposite gender,
-    * update the user: section 9: 'Update user',we get 204, lets see the updated data:
-        * section 12: 'Get User by username', change the url to [login] and run, success!, we get the updated data
+to add roles to our app we'll start with adding these roles to the seed data.
+go to Seed.cs
 
-* great we are back to where we started before using Identity.
+we'll need to stop the server, drop the database, and recreate it with the new seed data:
+* run `dotnet ef database drop` to drop
+* run `dotnet watch run` to start the server and reseed the database
 
-now we'll take it one step further, and add roles. 
+- we can see the roles in the database in the AspNetRoles table.
+- we can see the users <=> roles joint table AspNetUserRoles table.
+
+cool so we have the roles in our database.
+up next: adding roles to JWT to have access to them when user authenticates.

@@ -11,38 +11,49 @@ namespace API.Data
 {
     public class Seed
     {
-        //1. We get a user manager now the use Identity, no need to the DataContext now
-        // * we;ll use the user manager insted
-        public static async Task SeedUsers(/*DataContext context*/ UserManager<AppUser> userManager)
-        {
-            //2. fix this to use userManager
-            // * we can se how much methods does this Object provide
-            // * we use Users only
-            if (await userManager.Users.AnyAsync()) return;
-
         
+        //1. to use roles, we'll accept role manager as argument
+        public static async Task SeedUsers(UserManager<AppUser> userManager,/*accept role manager*/RoleManager<AppRole> roleManager)
+        {
+            if (await userManager.Users.AnyAsync()) return;
             var userData =  await System.IO.File.ReadAllTextAsync("Data/UserSeedData.json");
-
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
 
+            //2. after getting the users, we'll create the roles
+            var roles = new List<AppRole>
+            {
+                new AppRole{Name = "Member"},
+                new AppRole{Name = "Admin"},
+                new AppRole{Name = "Moderator"},
+            };
+
+            //3. add the roles to the manager
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(role);
+            }
+            
             foreach (var user in users)
             {
                 user.UserName = user.UserName.ToLower();
-
-                //3. change here to use userManager
-                // context.Users.Add(user);
                 await userManager.CreateAsync(user, "Pa$$w0rd");
-                // the ability to add a password to the user later on.
-                // you want simple passwords? 
-                // remove other settings for a complex passwords (in IdentityServiceExtensions.cs, password configuration)
-
-
+                //4. apply member role to every user
+                await userManager.AddToRoleAsync(user, "Member");
+                //5. i'm skipping testing the results of ⬆️ operations, these will run only once and the use don't interact with them
             }
-            //4. the user manager takes care of the saving of changes to the database
-            // await context.SaveChangesAsync(); 
 
-            //5. no wee need to pass UserManager to this class constructor,
-            // * go to Program.cs
+            //6. add admin user
+            var admin = new AppUser
+            {
+                UserName = "admin"
+            };
+
+            await userManager.CreateAsync(admin, "Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin, new[] {"Admin", "Moderator"});
+
+
+            //7. we need to provide the role manager to the constructor, go to Program.cs 
+
         }
     }
 }
