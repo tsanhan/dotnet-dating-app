@@ -1,11 +1,14 @@
-Updating the seed method:
-ok so lets update our seed method.
-go to Seed.cs
+Updating the account controller:
+ok so now that we have some users in our database,
+we'll use the user manager in the Account Controller, go to AccountController.cs
 
-lets drop and recreate the database.
-run `dotnet ef database drop`
-and then `dotnet watch run` as usual to rebuild the db and run the API.
-we can see the database is full of seed data with password hashes (others, from Identity)
-to see the database as t's now.
+* ok so lets test the account controller with postman:
+    * section 16: 'Login as lisa and save token to env', success!
+    * section 16: 'Register User Bob and save token to env', success!, we can see him in the DB
+    * section 16: 'Get Users as Lisa', success!, we get all the users of the opposite gender,
+    * update the user: section 9: 'Update user',we get 204, lets see the updated data:
+        * section 12: 'Get User by username', change the url to [login] and run, success!, we get the updated data
 
-up next: updating the Account Controller, so we'll use the Users Manager and the Sign In Manager to both create and sign in the user
+* great we are back to where we started before using Identity.
+
+now we'll take it one step further, and add roles. 
