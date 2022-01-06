@@ -23,9 +23,11 @@ import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 import { TextInputComponent } from './forms/text-input/text-input.component';
 import { DateInputComponent } from './forms/date-input/date-input.component';
+import { HasRoleDirective } from './directives/has-role.directive';
 
 @NgModule({
   declarations: [
+    HasRoleDirective,
     AppComponent,
     NavComponent,
     HomeComponent,
