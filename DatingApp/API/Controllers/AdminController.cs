@@ -12,36 +12,31 @@ namespace API.Controllers
 {
     public class AdminController : BaseApiController
     {
-        private readonly UserManager<AppUser> userManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        //1. add a constructor to inject what we need
         public AdminController(UserManager<AppUser> userManager)
         {
-            this.userManager = userManager;
+            _userManager = userManager;
         }
 
 
         [Authorize(Policy = "RequireAdminRole")] 
         [HttpGet("users-with-roles")]
-        //2. make the method async that return a task 
         public async Task<ActionResult> GetUsersWithRoles()
         {
-            //3. get all users
-            var users = await userManager.Users
-            .Include(r => r.UserRoles)  // go to the joint table
-            .ThenInclude(r => r.Role)   // to get to the roles table
-            .OrderBy(r => r.UserName)   // order by username
-            .Select(u => new            // and project to anonymous object
+            var users = await _userManager.Users
+            .Include(r => r.UserRoles) 
+            .ThenInclude(r => r.Role)   
+            .OrderBy(r => r.UserName)   
+            .Select(u => new            
             {
-                u.Id, // id  
-                Username = u.UserName, // username
-                Roles = u.UserRoles.Select(r => r.Role.Name).ToList() // list of roles the user in 
+                u.Id,  
+                Username = u.UserName, 
+                Roles = u.UserRoles.Select(r => r.Role.Name).ToList()  
             })
             .ToListAsync();
 
-            // we return the results, not paginated (we allready learned that), you can paginate, as HW 
             return Ok(users);
-            //4. back to README.md
         }
 
 
@@ -52,6 +47,37 @@ namespace API.Controllers
             return Ok("Admins or moderators can see this");
         }
 
+        //1. to edit the roles, we'll create an endpoint for that
+        // * the endpoint will be get the username from the url, and the roles from the query params 
+        [Authorize(Policy = "RequireAdminRole")] 
+        [HttpPost("edit-roles/{username}")]
+        public async Task<ActionResult> EditRoles(string username, [FromQuery] string roles)
+        {
+            var selectedRoles = roles.Split(',').ToArray();
+            var user = await _userManager.FindByNameAsync(username);
+            if(user == null) return NotFound("Could not Find User");
+
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            //2. no we don't have the ability to set the user roles, only to add/remove roles
+            // * so we'll use some group logic here (add missing roles and remove extra roles)
+
+            //add missing roles
+            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
+            
+            if (!result.Succeeded) return BadRequest("Failed to add to roles");
+            
+            //remove extra roles
+            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+            
+            if (!result.Succeeded) return BadRequest("Failed to remove from roles");
+
+            // returning the current user roles
+            return Ok(await _userManager.GetRolesAsync(user));
+            
+            //3. back to README.md 
+        }
     
     }
 }

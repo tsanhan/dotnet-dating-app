@@ -1,10 +1,15 @@
-Getting the users with roles:
-- the odd thing is that the user manager don't have this functionality.
-- we'll have to get it ourselves by querying the database.
-- th reason is that we want admin to be able to update the users roles.
-- go to AdminController.cs
+Editing user roles.
 
-test the users-with-roles endpoint:
-Section 16: 'Get Roles as admin' success!
+go to AdminController.cs
 
-up next: edit the roles of the users.
+testing the edit-roles endpoint:
+* Section 16: run 'Edit Roles for [login]' (edit the username in the url), success! 
+* check that the roles are changed by running 'Get Roles as admin' and look for [login], success!
+* now that [login] has is a moderator, run 'Get Photos to moderate as [login]'
+ * first try: failed because we need a new token.
+    * question: why we need a new token? 
+    * answer: because the token holds the roles sent by the client
+ * run 'Login as admin and save token to env' to ge the new token
+ * run 'Get Photos to moderate as [login]'. 200, success! 
+
+up next: set up the client part (an admin component).
