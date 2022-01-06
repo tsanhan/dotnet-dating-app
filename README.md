@@ -1,15 +1,13 @@
-Editing user roles.
+Adding an admin component:
 
-go to AdminController.cs
+create a folder src/admin, and create a component there named admin-panel
+go to admin-panel.component.ts
 
-testing the edit-roles endpoint:
-* Section 16: run 'Edit Roles for [login]' (edit the username in the url), success! 
-* check that the roles are changed by running 'Get Roles as admin' and look for [login], success!
-* now that [login] has is a moderator, run 'Get Photos to moderate as [login]'
- * first try: failed because we need a new token.
-    * question: why we need a new token? 
-    * answer: because the token holds the roles sent by the client
- * run 'Login as admin and save token to env' to ge the new token
- * run 'Get Photos to moderate as [login]'. 200, success! 
+test: the admin panel should be displayed (https://localhost:4200/admin as logged in user)
 
-up next: set up the client part (an admin component).
+now the basic issues are:
+1. normal users should not be able to access the admin panel (via direct url)
+2. normal users should not see the Admin nav button
+
+up next: add the admin guard
+

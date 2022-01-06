@@ -12,6 +12,11 @@
       <li class="nav-item">
         <a class="nav-link " routerLinkActive="active" routerLink="/messages">Messages</a>
       </li>
+      <!--1. same as messages, we'll navigate to admin -->
+      <li class="nav-item">
+        <a class="nav-link " routerLinkActive="active" routerLink="/admin">Admin</a>
+      </li>
+      <!-- 2. back to README.md -->
     </ng-container>
     <li class="nav-item">
       <a class="nav-link " routerLinkActive="active" routerLink="/errors">Errors</a>
@@ -21,9 +26,7 @@
 
     <div class="dropdown" *ngIf="currentUser$ | async as user" dropdown>
       <img class="img" src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}">
-      <!-- 1. change to user.knownAs and add Welcome, logout and in to see the change,-->
       <a  class="dropdown-toggle text-light" dropdownToggle>Welcome {{user.knownAs | titlecase}}</a>
-       <!--2. in jwt.interceptor.ts also init the knownAs prop, go there   -->
       <div class="dropdown-menu mt-3" *dropdownMenu>
         <a  class="dropdown-item" routerLink="/member/edit">Edit Profile</a>
         <div class="dropdown-divider"></div>
