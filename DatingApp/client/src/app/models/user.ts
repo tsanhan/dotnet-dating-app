@@ -2,9 +2,11 @@ export interface User {
   username: string;
   token: string;
   photoUrl:string;
-  // 1. missing knownAs here btw, this means I didn't used anywhere, i wanted to use it in the nav bar, but didn't 🤔.
-  // 2. lets fix this for a sec. go to nav.component.html
   knownAs: string;
+  gender: string;
 
-  gender: string;//3. add this
+  //1. add a property for roles
+  roles: string[];
+  //2. go to fix the typing issue in jwt.interceptor.ts
+  //3. go back to account.service.ts, point 4
 }

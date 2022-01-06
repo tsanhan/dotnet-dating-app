@@ -19,37 +19,35 @@ export class AccountService {
       map((response: User) => {
         const user = response;
         if (user) {
-          //0. just a little design fix
           this.setCurrentUser(user);
-          // localStorage.setItem('user', JSON.stringify(user));
-          // this.currentUserSource$.next(user);
         }
       })
     )
   }
-
-
 
   register(model: any) {
     return this.http.post<User>(this.baseUrl + 'account/register', model)
     .pipe(
       map((user: User) => {
         if (user) {
-          //0. just a little design fix
           this.setCurrentUser(user);
-          // localStorage.setItem('user', JSON.stringify(user));
-          // this.currentUserSource$.next(user);
         }
         return user;
       })
     )
   }
 
-  //1. ok  so we see that on login and register we push the user to the currentUserSource$
-  //  as a result everybody get notified via currentUser$
-  //  go to the nav.component.html to use the value from currentUser$ in teh dropdown
   setCurrentUser(user: User) {
-    //0. just a little design fix
+    //4. when setting the current user we'll set the roles as empty array
+    user.roles = [];
+    const roles = this.getDecodedToken(user.token).role; //we use role as the property name in the token
+    //5. now sometime the 'role' property is an array, sometime it's a string (depends on if single of many roles)
+    // * so we need to check if it's an array or not
+    Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
+    //6. now we can use this data in a new guard we need to create.
+    // * create and go to admin.guard.ts
+
+
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource$.next(user);
   }
@@ -59,5 +57,14 @@ export class AccountService {
     this.currentUserSource$.next();
   }
 
+  //1. at the first time we need to look inside our token
+  getDecodedToken(token: string) {
+    const tokenParts = token.split('.');
+    const payload = tokenParts[1];
+    //2. now we need to decode the payload
+    const decodedPayload = atob(payload); //atob is a built-in function in js that decodes base64
+    return JSON.parse(decodedPayload);
 
+    //3. next thing is to update our User interface, got to user.ts
+  }
 }

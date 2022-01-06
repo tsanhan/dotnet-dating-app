@@ -1,3 +1,4 @@
+import { AdminGuard } from './guards/admin.guard';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
@@ -29,10 +30,8 @@ const routes: Routes = [
       { path: 'member/edit', component: MemberEditComponent, canDeactivate: [PreventUnsavedChangesGuard] },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
-      //1. we want this route to be protected but under additional guard (for admin)
-      // we'll add it anyway for now
-      {path: 'admin', component: AdminPanelComponent}
-      //2. now we'll need a way to navigate to it, go to nav.component.html
+      {path: 'admin', component: AdminPanelComponent, /*1. add this*/canActivate: [AdminGuard]},
+      //2. back to README.md
     ]
   },
   { path: 'errors', component: TestErrorsComponent },
