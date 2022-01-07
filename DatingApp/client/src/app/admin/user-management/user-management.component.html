@@ -1,0 +1,22 @@
+<!-- 1. build a table to display the roles -->
+<div class="row">
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width:30%">Username</th>
+        <th style="width:40%">Active roles</th>
+        <th style="width:30%"></th> <!-- a column for button (no title) -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{user?.username}}</td><!-- why the '?'?, because the user is partial, all properties are optional  -->
+        <td>{{user?.roles}}</td>
+        <td>
+          <button class="btn btn-info">Edit Roles</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- 2. back to README.md -->

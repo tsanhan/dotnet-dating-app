@@ -1,3 +1,20 @@
-<p>
-  admin-panel works!
-</p>
+<h2>Admin Panel</h2>
+
+<!--1. we'll add tabs like in member details -->
+<div class="tab-panel">
+  <tabset class="member-tabset">
+    <!--2. only the Admin can manage users -->
+    <tab heading='User management' *appHasRole="['Admin']">
+      <div class="container">
+        <app-user-management></app-user-management>
+      </div>
+    </tab>
+    <!--3. do the same for Photo management, Moderator can too work here  -->
+    <tab heading='Photo management' *appHasRole="['Admin', 'Moderator']">
+      <div class="container">
+        <app-photo-management></app-photo-management>
+      </div>
+    </tab>
+  </tabset>
+  <!-- 4. back to README.md -->
+</div>

@@ -1,20 +1,22 @@
-Adding a custom directive:
-* we used directives from angular (structural directives - start with *, and attribute directives- looks list attributes - like bsRadio or ngClass we used)
-* lets create our own structural directive to "not show" the Admin nav button is the user is not in a specific role.
+Adding the edit roles component:
+we'll create 2 new components in the admin component:
+1. user-management
+2. photo-management
 
-- create a folder called "directives" and create a directive called 'has-role'.
-- make sure the new directive is added to the app.module.ts file, in the declarations array. go there to make sure.
-- why do you think it's place is in the declarations array? what common among all the classes in the declarations array? 
-  * the the answer is that the declarations array is where all the view related classed are (components and directives, component derived from directives btw... 🤫)
-- go to has-role.directive.ts
+* make sure they are declared in the admin.module.ts
+* make sure AdminPanelComponent is declared in the admin.module.ts file
 
+* looks like a section that can be exported away as a feature module. if you want, take a HW to export all admin related things away as a feature module (except the admin guard - this we'll be needed outside the module to guard the module lazy load) 
+ 
+go to admin-panel.component.html
 
-test in browser:
-* login with [login] that has the role of Moderator, the Admin nav button should show.
-* login with other simple member ind it should not show (checkout the devTools, the li did not even rendered)
+* can test in browser: login with a moderator to see only the photo management panel and with admin both panels
 
-so this is how we build and use custom structural directive.
-up next: adding some content into the admin panel so the admin can actually manage the user roles.
+* now we want is to display the users with their roles in the user management panel
+* for that we'll start with the functionality.
+* we'll create a new service for that, create and go to admin.service.ts
 
+ok, now we can see the roles when we log in as admin.
+our admin has no name at the top of the page, I wont add a knownAs now... hot fix: go to nav.component.html
 
-
+up next: what we'll do with the 'Edit Roles' Button

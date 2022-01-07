@@ -12,11 +12,9 @@
       <li class="nav-item">
         <a class="nav-link " routerLinkActive="active" routerLink="/messages">Messages</a>
       </li>
-       <!-- 1. use the appHasRole here-->
       <li  *appHasRole="['Admin', 'Moderator']" class="nav-item">
         <a class="nav-link " routerLinkActive="active" routerLink="/admin">Admin</a>
       </li>
-      <!-- 2. back to the README.md -->
 
     </ng-container>
 
@@ -28,7 +26,8 @@
 
     <div class="dropdown" *ngIf="currentUser$ | async as user" dropdown>
       <img class="img" src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}">
-      <a  class="dropdown-toggle text-light" dropdownToggle>Welcome {{user.knownAs | titlecase}}</a>
+      <!-- 1. edit the string interpolation here, add '|| user.username' -->
+      <a  class="dropdown-toggle text-light" dropdownToggle>Welcome {{user.knownAs || user.username  | titlecase}}</a>
       <div class="dropdown-menu mt-3" *dropdownMenu>
         <a  class="dropdown-item" routerLink="/member/edit">Edit Profile</a>
         <div class="dropdown-divider"></div>
