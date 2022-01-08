@@ -7,15 +7,18 @@ import { User } from '../models/user';
   providedIn: 'root'
 })
 export class AdminService {
-  //1. populate the base url from the environment file
   baseUrl = environment.apiUrl;
 
   constructor(private http:HttpClient) { }
 
 
-  //2. create a method to get all users
   getUsersWithRoles(){
     return this.http.get<Partial<User[]>>(this.baseUrl + 'admin/users-with-roles');
   }
-  //3. go to the user-management.component.ts
+
+  // 1. implement the function to update the roles
+  updateUserRoles(username: string, roles: string[]) {
+    return this.http.post(`${this.baseUrl}admin/edit-roles/${username}?roles=${roles}`, {});
+  }
+  // 2. go to user-management.component.ts
 }
