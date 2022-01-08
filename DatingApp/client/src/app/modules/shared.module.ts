@@ -13,13 +13,16 @@ import { FormsModule } from '@angular/forms';
 import { TimeagoModule } from 'ngx-timeago';
 import { MemberCardComponent } from '../members/member-card/member-card.component';
 import { RouterModule } from '@angular/router';
+import { ModalModule } from 'ngx-bootstrap/modal';
+
 @NgModule({
   declarations: [
-    MemberCardComponent// 1. add this
+    MemberCardComponent
   ],
   imports: [
     CommonModule,
-    RouterModule,// 2. add this because we use routerLink in member-card.component.html
+    RouterModule,
+    ModalModule.forRoot(),//1. add this
     BsDropdownModule.forRoot(),
     ToastrModule.forRoot({
       positionClass:'toast-bottom-right'
@@ -34,7 +37,8 @@ import { RouterModule } from '@angular/router';
     TimeagoModule.forRoot()
   ],
   exports: [
-    MemberCardComponent,//3. add this so this will be available in other modules
+    ModalModule,//2. add this
+    MemberCardComponent,
     BsDropdownModule,
     BsDatepickerModule,
     ToastrModule,
@@ -46,8 +50,7 @@ import { RouterModule } from '@angular/router';
     PaginationModule ,
     ButtonsModule,
     TimeagoModule
-    //3. go back to member-detail.component.html
-
+    //3. go back to README.md
   ]
 })
 export class SharedModule { }
