@@ -1,16 +1,32 @@
-<!-- 1. pasting from https://valor-software.com/ngx-bootstrap/old/7.1.2/#/modals#service-component -->
 <div class="modal-header">
-  <h4 class="modal-title pull-left">{{title}}</h4>
+  <!-- 1. change the title -->
+  <h4 class="modal-title pull-left">Edit Roles for {{user.username}}</h4>
   <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
     <span aria-hidden="true" class="visually-hidden">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-  <ul *ngIf="list.length">
-    <li *ngFor="let item of list">{{item}}</li>
-  </ul>
+  <!-- 2. we'll a form for the roles as checkboxes as the body -->
+  <form #rolesForm="ngForm" id="rolesForm">
+    <div class="form-check" *ngFor="let role of roles">
+      <!-- 3.
+          * every role will have a checked property
+          * we don;t want to the admin to disable himself as admin (we need at least one admin)-->
+      <input type="checkbox"
+        class="form-check-input"
+        [checked]="role.checked"
+        [value]="role.name"
+        (change)="role.checked = !role.checked"
+        [disabled]="role.name === 'ADMIN' && user.username ==='admin'"
+      >
+      <label>{{role.name}}</label>
+    </div>
+  </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">{{closeBtnName}}</button>
+  <!-- 4. edit the name for Cancel -->
+  <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
+  <!-- 5. add a button to update the roles-->
+  <button type="button" class="btn btn-success" (click)="updateRoles()">Cancel</button>
+  <!-- 6. back to README.md -->
 </div>
-<!-- 2. back to README.md -->
