@@ -6,24 +6,40 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace API.SignalR
 {
-    
-    [Authorize]//1. non anonymous users will be able to connect to the hub... that's makes sense!
-    // * now we'll need to things a bit differently then what we did in the API controllers.
-    // * and this is because SignalR (websocket) does not send authentication headers
-    // * SignalR can allways send a query strings.
-    // * so we send a query string parameter called 'access_token', that's the SignalR way...
-    // * lets see ho we use it in the IdentityServiceExtensions.cs, go there.
-    public class PresenceHub: Hub 
+
+    [Authorize]
+    public class PresenceHub : Hub
     {
+        //1. add ctor and inject presence tracker
+        private readonly PresenceTracker _tracker;
+        public PresenceHub(PresenceTracker tracker)
+        {
+            _tracker = tracker;
+
+        }
         public override async Task OnConnectedAsync()
         {
+            //2. store getting online
+            await _tracker.UserConnected(Context.User.GetUsername(), Context.ConnectionId);
             await Clients.Others.SendAsync("UserIsOnline", Context.User.GetUsername());
+
+            //3. get current users and publish to all clients, so everybody knows who is online
+            var currentUsers = await _tracker.GetOnlineUsers();
+            await Clients.All.SendAsync("GetOnlineUsers", currentUsers);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            //4. same thing but the opposite
+            await _tracker.UserDisconnected(Context.User.GetUsername(), Context.ConnectionId);
+
             await Clients.Others.SendAsync("UserIsOffline", Context.User.GetUsername());
             await base.OnDisconnectedAsync(exception);
+
+            //5. same behavior as point 3.
+            var currentUsers = await _tracker.GetOnlineUsers();
+            await Clients.All.SendAsync("GetOnlineUsers", currentUsers);
+            //6. back to README.md
         }
 
     }

@@ -1,26 +1,22 @@
-Client side SignalR:
-to implement a client side SignalR we need to install the SignalR.Client NuGet package.
-* run `npm i @microsoft/signalr`
-* add a new root endpoint to the environments files, go to environment.ts
+Adding a presence tracker:
+we would like to track who is currently connected to our user.
+why we want to know that? because we want to mark parts of our UI (the 👤 icon) using this data.
 
-* now the we added the routes to the environments files, we'll start with the implementation programmatically.
-* we'll start by creating a dedicated service to track the online presence of the users.
-* create a new service called 'presence', go to presence.service.ts
+* if we go to our PresenceHub.cs we'll notice that there is no way to get that information natively from the Hub (or SignalR in general)
+* Microsoft didn't develop that functionality for a specific reason:
+* if we ware in a web farm (A web farm is a group of two or more web servers (or nodes) that host multiple instances of an app. When requests from users arrive to a web farm, a load balancer distributes the requests to the web farm's nodes, like dockers in kubernetes), and we had more than one server we could not get the data from the other server (and this data is vital in terms of privacy) 
 
-- lets test this in the browser.
-* first thing we can see in the console, when we logged in, is the printing of WebSocket connection information
-    * we can see that this is not https, but wss (the secure version of ws)
-    * we can spot the connection to localhost:5001/hubs/presence
-    * we can see the access token in the query string
+* so we need to think how will we store the connections without the help of SignalR.
+* one option is to use an in memory scalable database (like redis), this is a good solution because the database can be distributed across multiple servers and can be scaled up easily.
 
-* now lets open another tab and connect with any user and see what happens in the first tab.
-    * we see the 'disconnection' and 'connected' toasts on the page
-    * why we can login with the same user and still get the notifications?
-    * this is because the socket protocol itself does not know who you really are, it only knows the identifier shred with the client. 
+* in this module we won't implement that solution (we don't have the time, and this is a core+angular module)
 
-* now of course we don't use sockets just to pop a toastr if a user has logged in or out, thats annoying 
-* lets do so that in a more gentle way.
+another option is to store this data in a database (we'll maybe take a look that that option later)
 
-* in a the cards in the 'Matches' page, lets change the color of the '👤' icon to be green if the user is online.
+* we'll implement a simple one server - one in memory data structure.
+* not scalable, but it's a good solution for a small one server app.
+* that the easiest way to solve this challenge
+* create a class for presence tracker inside the SignalR folder, and go to PresenceTracker.cs 
 
-up next: do that.
+up next: display the current online users (using the 👤 icon)
+

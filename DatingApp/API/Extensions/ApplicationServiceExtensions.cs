@@ -2,6 +2,7 @@ using API.Data;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,12 +13,13 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            //1. add presence tracker
+            services.AddSingleton<PresenceTracker>();
+            //2. go back to our PresenceHub.cs to use this service
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ILikesRepository, LikesRepository>();
-            //.1 add the message repository
             services.AddScoped<IMessageRepository, MessageRepository>();
-            //2. back to readme.md
             services.AddScoped<LogUserActivity>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
