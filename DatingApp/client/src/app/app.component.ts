@@ -1,3 +1,4 @@
+import { PresenceService } from './services/presence.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { User } from './models/user';
@@ -14,29 +15,27 @@ export class AppComponent implements OnInit {
 
 
 
-  constructor(/*3. no need: private http: HttpClient,*/ private accountService: AccountService) {
+  constructor(
+    private accountService: AccountService,
+    private presenceService: PresenceService//2. inject the presence service
 
+    ) {
   }
 
   ngOnInit(): void {
-    //2. no need fot this
-    // this.getUsers();
     this.setCurrentUser();
   }
 
   setCurrentUser() {
     const userFromLS: any = localStorage.getItem('user');
     const user: User = JSON.parse(userFromLS);
-    this.accountService.setCurrentUser(user);
+    //1. we really should check if the user is null or not
+    if(user) {
+      this.accountService.setCurrentUser(user);
+      //2. create the hub connection
+      this.presenceService.createHubConnection(user);
+      //3. next we'll go to the account.service.ts
+    }
   }
 
-  // 1. we dont need this method - moving to home component:
-  //   getUsers() {
-  //     this.http.get('https://localhost:5001/api/users')
-
-  //       .subscribe(response => {
-  //         this.users = response
-  //       },
-  //         error => { console.log(error); }, () => { }) // also all are optional
-  //   }
 }
