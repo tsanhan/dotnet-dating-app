@@ -1,8 +1,7 @@
-Adding a presence hub:
-* lets start by creating a new folder in the API called SignalR, and inside it create PresenceHub.cs
-* go to PresenceHub.cs
+Authenticating to SignalR.
 
+we'll start with the obvious, adding [Authorize] Attribute annotation.
+go to PresenceHub.cs
 
-* we also need to take care of is authorization, 
-* we want our hubs be secured behind authentication
- up next: dealing with authentication SignalR
+ok, so this is all for basics on the server side.
+up next: sting up the client side for SignalR

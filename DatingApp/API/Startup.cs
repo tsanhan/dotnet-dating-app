@@ -73,6 +73,9 @@ namespace API
             policy
             .AllowAnyHeader()
             .AllowAnyMethod()
+            //1. allow sending credentials
+            .AllowCredentials()
+            //2. back to README.md
             .WithOrigins("https://localhost:4200")
             );
 
@@ -83,9 +86,9 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //2. add signalR
-                endpoints.MapHub<PresenceHub>("bubs/presence");//passing the route of the hub (we'll have more then one hub)
-                //3. back to README.md
+                
+                endpoints.MapHub<PresenceHub>("hubs/presence");
+                
                 
             });
         }
