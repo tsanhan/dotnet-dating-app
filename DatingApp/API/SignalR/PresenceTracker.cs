@@ -25,7 +25,7 @@ namespace API.SignalR
             lock (OnlineUsers)
             {
                 //4. if the username is not in the dictionary, add it
-                if (OnlineUsers.ContainsKey(username))
+                if (!OnlineUsers.ContainsKey(username))
                 {
                     OnlineUsers.Add(username, new List<string>());
                 }

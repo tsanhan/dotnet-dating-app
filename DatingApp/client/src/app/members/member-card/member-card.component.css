@@ -26,7 +26,6 @@
   margin-left: auto;
   opacity: 0;
 }
-/* so initially we wont see nothing, but on hover we will */
 .card-img-wrapper:hover .member-icons {
   bottom: 0px;
   opacity: 1;
@@ -35,3 +34,25 @@
 .animate {
   transition: all 0.3s ease-in-out;
 }
+
+/* 1. we want the user icon to blink, so we'll use keyframe */
+@keyframes fa-blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+/* 2. we'll use this keyframe in the class */
+.is-online{
+  animation: fa-blink 1.5s linear infinite;
+  color: rgb(1, 189, 42);
+}
+/* oops, there might me a problem in the OnlineUsers.ContainsKey(username), it should be "!Online..."*/
+/* 3. lets test this in the browser in the member page, we should see the icon blinking in green   */
+/* 4. let's do something in the details page too to the user is online, go to member-detail.component.ts */
+

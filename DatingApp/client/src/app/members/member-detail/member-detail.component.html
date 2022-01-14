@@ -1,19 +1,17 @@
-<!-- 3. remove the condition -->
-<!-- <div class="row" *ngIf="member"> -->
+
 <div class="row">
-  <!-- 4. now test if works
-     well it worked.. kinda.. we get a lot of different other errors when just entering (or refreshing) the page.
-     * this is because we try to render different things related to 'member' property... witch is populated later.
-     * so we can add conditional chaining everywhere (?), but then things will start popping up, not a good UX.
-     * better option: have our 'member' data available to us BEFORE the component start constructing.
-     * how? using route resolvers.
-     * back to README.md
-  -->
+
   <div class="col-4">
     <div class="card">
       <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.knownAs}}" class="card-img-top img-thumbnail">
 
       <div class="card-body">
+        <!-- 1. we'll some indication for the online presence just above the data -->
+        <div class="mb-2" *ngIf="(presence.onlineUsers$ | async)?.includes(member.username)">
+          <i class="fa fa-user-circle text-success"></i> Online now
+        </div>
+        <!-- 2. can test in the browser, we'll see the circle icon in the member details page -->
+        <!-- 3. back to README.md -->
         <div>
           <strong>Location:</strong>
           <p>{{member.city}}, {{member.country}}</p>
@@ -37,9 +35,7 @@
       <div class="card-footer">
         <div class="btn-group d-flex">
           <button class="btn btn-primary">Like</button>
-          <!-- 1. add a click event, messages is the 3rd (0 based array) -->
           <button class="btn btn-success" (click)="selectTab(3)">Message</button>
-          <!-- 2. back to README.md -->
         </div>
       </div>
     </div>

@@ -14,21 +14,24 @@
 
       </li>
       <li class="list-inline-item">
-        <!-- 1. we'll a router link to take us to the member page like above
-            * but also we'll pass query params, this will be an object-->
+
         <button routerLink="/members/{{member.username}}"
         [queryParams]="{tab:3}"
         class="btn btn-primary">
           <i class="fa fa-envelope"></i>
         </button>
-        <!-- 2. we can see the effect 1 is making in the browser adding the query params to the route -->
-        <!-- 3. we'll do the same for the messages page, go to messages.component.html -->
+
+
       </li>
     </ul>
   </div>
   <div class="card-body p-1">
     <h6 class="card-title text-center mb-1">
-      <i class="fa fa-user mr-2"></i>
+      <!-- 1. so basicity we'll update the color of the icon (wrapping it in a span) -->
+      <span [class.is-online]="(presence.onlineUsers$ | async)?.includes(member.username)">
+        <i class="fa fa-user mr-2"></i>
+      </span>
+      <!-- 2. lets create the is-online css, go to the css file -->
       {{member.knownAs}} , {{member.age}}
     </h6>
     <p class="card-text text-muted text-center">

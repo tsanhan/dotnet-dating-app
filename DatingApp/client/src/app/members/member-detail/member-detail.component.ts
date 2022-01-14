@@ -6,6 +6,7 @@ import { Member } from 'src/app/models/member';
 import { Message } from 'src/app/models/message';
 import { MembersService } from 'src/app/services/members.service';
 import { MessageService } from 'src/app/services/message.service';
+import { PresenceService } from 'src/app/services/presence.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -22,11 +23,16 @@ export class MemberDetailComponent implements OnInit {
 
   activeTab: TabDirective;
 
-  constructor(private memberService: MembersService, private route: ActivatedRoute, private messageService: MessageService ) { }
+  constructor(
+    private route: ActivatedRoute,
+    private messageService: MessageService,
+    //1. again, the same as the member card, inject publicly the presence service
+    public presence: PresenceService
+    //2. go to the html to use it
+
+    ) { }
   ngOnInit(): void {
-    //1. we don't need to load the member here.
-    // this.loadMember();
-    //2. get the member from the resolver
+
     this.route.data.subscribe(data => {
       this.member = data['member'];
     });
@@ -44,7 +50,6 @@ export class MemberDetailComponent implements OnInit {
       preview: false,
     }];
 
-    //3. we still need images from the member
     this.galleryImages = this.getImages();
 
   }
@@ -62,16 +67,6 @@ export class MemberDetailComponent implements OnInit {
   }
 
 
-  //4. this will no longer be needed
-  // loadMember() {
-  //   const username = this.route.snapshot.paramMap.get('username') as string;
-  //   this.memberService.getMember(username).subscribe(member => {
-
-  //     this.member = member;
-  //     this.galleryImages = this.getImages();
-  //   });
-  // }
-  //5. back to README.md
 
   selectTab(tabId: number) {
     this.memberTabs.tabs[tabId].active = true;
