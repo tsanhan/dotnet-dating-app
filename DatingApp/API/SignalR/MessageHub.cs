@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using API.DTOs;
+using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
@@ -12,72 +14,92 @@ namespace API.SignalR
     {
         private IMessageRepository _messageRepository;
         private IMapper _mapper;
+        private IUserRepository _userRepository;
 
         public MessageHub(
-            //2. we need to inject two thing we need access to:
-            // * the message repository
             IMessageRepository messageRepository,
-            // * th mapper, when we'll send a massage, we'll have to map it into a dto
-            IMapper mapper
+            IMapper mapper,
+            IUserRepository userRepository // inject this.
+
             )
         {
             _messageRepository = messageRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
         }
 
-        //3. override the OnConnectedAsync method
         public override async Task OnConnectedAsync()
         {
-            //4. ok, so the concept is that we'll create a group for each user pair that want to chat
-            //* this group is created/joined to once the [currentUser] (looged in user) enters the message page in [otherUser]'s profile.
-            //* now, I don't know if [otherUser] logged in or not, or in the messages page of [currentUser] or not.
-            //* BUT the name of the group need to be as such so [currentUser] and [otherUser]  will enter the same group (identified by name)
-            //* we need to define the group name
-            //* lets call it "[username]-[username]" (ordered alphabetically)
-            //* example: dave and lisa will enter the same group, a group with the name: "dave-lisa", because the names are ordered alphabetically
-            //* if dave will be createing the group, lisa will find it and join it, and vice versa
-            //* how will we get the username of [currentUser]? we'll user Context.User.
-            //* how will th get the username of [otherUser]? currentUser will send it over using query string.
-
-            //* lets start with getting the context of the current connection.
             var httpContent = Context.GetHttpContext();
             var otherUser = httpContent.Request.Query["username"].ToString();
 
-            //5. lets create a provate method to create the group name (we'll need it later on other methods)
-            //7. use the method
             var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
-            //8 and now we join (using our connection Id) to a specific group
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-            //9. when a user start a group i don't know if he allready started a conversation... so...
-            // so what I'll do is I'll send the total message thread to everybody on the group.
-            // so on creation of the group the thread will be empty, (only one user will get it)
-            // and on a [otherUser] joining the group, he'll get the thread up until now 
-            // * this will be all the messages the [currentUser] sent, 
-            // * will be sent to both users - (everybody in the group, remember?)
             var messages = await _messageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
             await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
-            //10. now you might be thinking this is not optimal:
-            // * sending the thread the first time, when the thread is empty.
-            // * sending the thread the second time to someone that already started the conversation (the hase the thread allready, right?)
-            // well, don't worry about it, we'll start simple and optimize later.
+
         }
-        //11. override the OnDisconnectedAsync method
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await base.OnDisconnectedAsync(exception);
-            // when a user disconnect, SignalR will remove him from all groups he's in automatically.
         }
-        //12. after creating the hub we'll need to go to the startup.cs to ad it to as an endpoint (go to Startup.cs) 
 
-        //6. create a GetGroupName method
+        //1. create a method for sending messages
+        public async Task SendMessage(CreateMessageDto createMessageDto)
+        {
+            //2. just copy all the code from from CreateMessage method in MessageController.cs and paste it here [do it]
+            // * then we'll adapt things as we go along:
+            // * fist thing: we don't have access to API responces (these are http responses, we don't have access to that inside somthing that doesn't use HTTP)
+
+            var username = Context.User.GetUsername(); // User.GetUsername();
+
+            if (username == createMessageDto.RecipientUsername.ToLower())
+                /*return BadRequest*/
+                throw new HubException("You cannot send a messages to yourself!");
+            // HubException will appear in the client side as an exaction comming from the hub, we'll need to handle it there 
+
+            //* we still need the users here, inject UserRepository into this file.
+            var sender = await _userRepository.GetUserByUserNameAsync(username);
+            var recipient = await _userRepository.GetUserByUserNameAsync(createMessageDto.RecipientUsername);
+
+            if (recipient == null)
+                throw new HubException("Not found user");// return NotFound(); 
+
+            var message = new Message
+            {
+                Sender = sender,
+                Recipient = recipient,
+                SenderUsername = sender.UserName,
+                RecipientUsername = recipient.UserName,
+                Content = createMessageDto.Content
+            };
+
+            _messageRepository.AddMessage(message);
+
+            if (await _messageRepository.SaveAllAsync())
+            {
+                // return Ok(_mapper.Map<MessageDto>(message));
+                //3. here we'll do something a bit different:
+                // * we'll just send the message to everybody in the group, to put on their board.
+                // * but first, we need the group name, right?
+                var group = GetGroupName(sender.UserName, recipient.UserName);
+                await Clients.Group(group).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
+                
+            }
+
+
+            //4. no need for this at all 
+            // return BadRequest("Failed to send message");
+            //5. back to README.md
+        }
         private string GetGroupName(string current, string other)
         {
             var stringCompare = string.CompareOrdinal(current, other) < 0;
             return stringCompare ? $"{current}-{other}" : $"{other}-{current}";
-            // return to point 7.
+
         }
-        
+
 
     }
 }

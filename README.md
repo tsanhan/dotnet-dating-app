@@ -1,14 +1,15 @@
-Creating a message hub.
-* the purpose of the message hub for the members to be able to live chat with each other.
-* we'll make this work by using SignalR groups.
-* each pair of users will be in their own group.
-* messages inside a group does not spread to other groups.
+Adding the send message method to the hub.
 
-* because we'll need use the connected and disconnected methods inside a hub, we'll create another hub for the messages.
-* so inside SignalR folder, create and go to MessagesHub.cs
+* ok so I want to add the ability to send a message via the hub
+* every connected client in that group could receive that message
 
-* after we created and the message hub and took care of the connection to the hub,
-* we need to add the functionality in the hub of sending messages.
+* the starting point iof this functionality is via the messages controller.
+* we wont change anything there but the CreateMessage method will be the source of our logic when we create the logic in the message hub [can look at the method to remember what was done there] 
+* go to MessageHub.cs
 
-* up next: adding the send message method to the hub
+* ok so now that we have our send message method 
+* very similar to what we had before, in the messages controller, 
+* we just refactored it to work with our SignalR hub 
+
+up next: the client side of this.
 
