@@ -1,15 +1,12 @@
-Adding the send message method to the hub.
+Adding the hub connection to the message service:
 
-* ok so I want to add the ability to send a message via the hub
-* every connected client in that group could receive that message
+* ok so we have our message hub configured in the API.
+* lets see what we need to do in the client side of things.
 
-* the starting point iof this functionality is via the messages controller.
-* we wont change anything there but the CreateMessage method will be the source of our logic when we create the logic in the message hub [can look at the method to remember what was done there] 
-* go to MessageHub.cs
+* as all functionality starts, we go for the implementation of the logic, the relevant service.
+* go to message.service.ts 
 
-* ok so now that we have our send message method 
-* very similar to what we had before, in the messages controller, 
-* we just refactored it to work with our SignalR hub 
-
-up next: the client side of this.
-
+up next: implementing the service logic in the message component:
+    * create the connection,
+    * receive the messages from the messageThread$ observable
+    * stopping the connection on user navigation away
