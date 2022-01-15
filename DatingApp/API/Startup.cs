@@ -49,7 +49,6 @@ namespace API
             services.AddCors();
 
             services.AddIdentityServices(_config);
-            //1. add signalR
             services.AddSignalR();
         }
 
@@ -73,9 +72,7 @@ namespace API
             policy
             .AllowAnyHeader()
             .AllowAnyMethod()
-            //1. allow sending credentials
             .AllowCredentials()
-            //2. back to README.md
             .WithOrigins("https://localhost:4200")
             );
 
@@ -88,8 +85,9 @@ namespace API
                 endpoints.MapControllers();
                 
                 endpoints.MapHub<PresenceHub>("hubs/presence");
-                
-                
+                //1. add the message hub
+                endpoints.MapHub<MessageHub>("hubs/message");
+                //2. back to README.md                
             });
         }
     }

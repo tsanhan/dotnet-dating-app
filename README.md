@@ -1,9 +1,14 @@
-Displaying online presence:
+Creating a message hub.
+* the purpose of the message hub for the members to be able to live chat with each other.
+* we'll make this work by using SignalR groups.
+* each pair of users will be in their own group.
+* messages inside a group does not spread to other groups.
 
-* now that we have a method to get the online users("GetOnlineUsers"),
-* we'll store those users in a behavior subject 
-    * like replay subject, but with buffer of 1 and initial value
-* go to presence.service.ts
+* because we'll need use the connected and disconnected methods inside a hub, we'll create another hub for the messages.
+* so inside SignalR folder, create and go to MessagesHub.cs
 
-ok so now we are dome with the presence hub,
-up next: we'll talk about a new hub, a message hub. when a user sends a massage to another we want the other user se it immediately, we'll start build this hub next. 
+* after we created and the message hub and took care of the connection to the hub,
+* we need to add the functionality in the hub of sending messages.
+
+* up next: adding the send message method to the hub
+
