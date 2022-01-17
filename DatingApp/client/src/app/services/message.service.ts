@@ -12,11 +12,9 @@ import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 })
 export class MessageService {
   baseUrl = environment.apiUrl;
-  //1. we'ss start with a hub connection for our messages
   hubUrl = environment.hubUrl;
   private hubConnection: HubConnection;
 
-  //8. subject and observable fot the messages
   private messageThreadSource$ = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource$.asObservable();
 
@@ -24,41 +22,32 @@ export class MessageService {
     private http: HttpClient
   ) { }
 
-  //2. create a method to connect to the hub
-  connectHubConnection(user: User, otherUsername: string) {
-    //3. create a connection using a builder
+  //2. on the way, we'll fix 2 things here:
+  // * 1. change the name of the method to createHubConnection (user rename symbol)
+  // * 2. change the query param to username: '...message?user=$...' to  'message?username='
+  createHubConnection(user: User, otherUsername: string) {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl(`${this.hubUrl}message?user=${otherUsername}`, { // passing the other user's username as a query string
-        accessTokenFactory: () => user.token // authenticate using the user's token
+      .withUrl(`${this.hubUrl}message?username=${otherUsername}`, {
+        accessTokenFactory: () => user.token
       })
-      .withAutomaticReconnect() // to try and reconnect if the connection is lost
+      .withAutomaticReconnect()
       .build();
 
-    //6. start the connection
     this.hubConnection.start().catch(err => console.error(err));
 
-    //7. now what will we do when we receive a message after connecting?
-    // * we'll store the thread of the messages in an observable.
-    // so create a source behavior subject and an observable to get the thread
-
-    //9. create a method to handle the incoming messages (the methodName need to be exactly the same as the one in the hub)
     this.hubConnection.on('ReceiveMessageThread', (messages: Message[]) => {
       this.messageThreadSource$.next(messages);
     });
 
-    //10. we don't deal with 'NewMessage' method yet.
-    // * lets see see what we need to do in the message component...
-    // * because there we'll need to:
-    //    * create this connection,
-    //    * receive the messages from the messageThread$ observable
-    //    * deal with stopping the connection then the user (we'll create the method for it in a sec)
   }
 
-  //11. add a method to stop the hub connection
   stopHubConnection() {
-    this.hubConnection.stop().catch(error => console.log(error));
+    //1. if the connection exist we'll stop it:
+    if(this.hubConnection) {
+      this.hubConnection.stop().catch(error => console.log(error));
+    }
+    //3. go back to member-detail.component.ts, point 9.
   }
-  //12. back to README.md
 
   getMessages(pageNumber: number, pageSize: number, container: string) {
     let params = getPaginationHeaders(pageNumber, pageSize);
