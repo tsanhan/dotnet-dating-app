@@ -23,7 +23,6 @@ namespace API.Data
             _mapper = mapper;
         }
 
-        //1. implementing AddGroup
         public void AddGroup(Group group)
         {
             _context.Groups.Add(group);
@@ -39,7 +38,6 @@ namespace API.Data
             _context.Messages.Remove(message);
         }
 
-        // 2. implement GetConnection (make async)
         public async Task<Connection> GetConnection(string connectionId)
         {
             return await _context.Connections.FindAsync(connectionId);
@@ -53,11 +51,10 @@ namespace API.Data
             .SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        //3. implement GetMessageGroup (make async)
         public async Task<Group> GetMessageGroup(string groupName)
         {
             return await _context.Groups
-            .Include(x => x.Connections) // get the connections too
+            .Include(x => x.Connections)
             .FirstOrDefaultAsync(x => x.Name == groupName);
         }
 
@@ -96,19 +93,21 @@ namespace API.Data
 
             if(unreadMessages.Any())
             {
-                foreach (var um in unreadMessages) um.DateRead = DateTime.Now;
+                foreach (var um in unreadMessages) um.DateRead = DateTime.UtcNow; //1. use UTC
+                //2. no this will not change anything, the server will still send the dates in the same format as the client, it's just that now they'll use UTC time
+                //  * to let the client to know about this, we'll need to change how the client get the data (will Z added)
+                //  * we'll use automapper to help with that
+                //  * go to AutoMapperProfiles.cs
                 await _context.SaveChangesAsync();
             }
             
             return _mapper.Map<IEnumerable<MessageDto>>(messages);
         }
 
-        //4. implement GetMessageGroup 
         public void RemoveConnection(Connection connection)
         {
             _context.Connections.Remove(connection);
         }
-        //5. back to README.md
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0; 

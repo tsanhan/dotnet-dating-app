@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using API.DTOs;
 using API.Entities;
@@ -29,19 +30,20 @@ namespace API.Helpers
 
             CreateMap<RegisterDto, AppUser>();
 
-            //1. add the mapping:
             CreateMap<Message, MessageDto>()
             .ForMember(
-                dest => dest.SenderPhotoUrl,// we mapping to SenderPhotoUrl 
-                opt => opt.MapFrom(         // we mapping from the senders photos, the one that is main
+                dest => dest.SenderPhotoUrl,
+                opt => opt.MapFrom(
                     src => src.Sender.Photos.FirstOrDefault(x => x.IsMain).Url))
             .ForMember(
-                dest => dest.RecipientPhotoUrl,// we mapping to RecipientPhotoUrl 
-                opt => opt.MapFrom(            // we mapping from the Recipient photos, the one that is main
+                dest => dest.RecipientPhotoUrl,
+                opt => opt.MapFrom(
                     src => src.Recipient.Photos.FirstOrDefault(x => x.IsMain).Url));
-            //2. we'll be adding another dto for the receiving of a message by the API
-            // * create and go to DTOs/CreateMessageDto.cs
-            
+
+            //1. we'll create a mapping for the DateTime we return
+            CreateMap<DateTime,DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+            //2. what this means is that when we return our dates to the client, we'll have the Z at the end of it.
+            //back to README.md
 
 
         }
