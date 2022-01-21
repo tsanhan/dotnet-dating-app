@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Message } from '../models/message';
 import { User } from '../models/user';
@@ -22,9 +23,7 @@ export class MessageService {
     private http: HttpClient
   ) { }
 
-  //2. on the way, we'll fix 2 things here:
-  // * 1. change the name of the method to createHubConnection (user rename symbol)
-  // * 2. change the query param to username: '...message?user=$...' to  'message?username='
+
   createHubConnection(user: User, otherUsername: string) {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(`${this.hubUrl}message?username=${otherUsername}`, {
@@ -39,14 +38,20 @@ export class MessageService {
       this.messageThreadSource$.next(messages);
     });
 
+    //1. we'll add another listener connection to handle 'NewMessage' method
+    this.hubConnection.on('NewMessage', (message: Message) => {
+      const currentMessages = this.messageThreadSource$.getValue();
+      this.messageThreadSource$.next([...currentMessages, message]);
+    });
+
+
+
   }
 
   stopHubConnection() {
-    //1. if the connection exist we'll stop it:
     if(this.hubConnection) {
       this.hubConnection.stop().catch(error => console.log(error));
     }
-    //3. go back to member-detail.component.ts, point 9.
   }
 
   getMessages(pageNumber: number, pageSize: number, container: string) {
@@ -60,10 +65,19 @@ export class MessageService {
     return this.http.get<Message[]>(`${this.baseUrl}messages/thread/${username}`);
   }
 
-  sendMessage(username: string, content: string) {
+  //3. this can be an async function (we return a promise)
+  // * but more importantly, we want to know when the message is sent, so we could reset the message form
+  async sendMessage(username: string, content: string) {
     const createMessage = { recipientUsername: username, content };
-    return this.http.post(this.baseUrl + 'messages', createMessage);
+    //2. about the sending message, I see we create an api call, we'll our hub instead:
+    //  * the way sending messages work in the hub is by calling the 'invoke' method, with the method name in the hub (in the BE,'SendMessage' in our case) and the parameters
+    return this.hubConnection.invoke('SendMessage', createMessage)
+              //now this does not return an observable like API call, this returns a promise, and we don't have access to our interceptor to handle the response
+              .catch(error => console.log(error));
+
+    // return this.http.post(this.baseUrl + 'messages', createMessage);
   }
+  //4. go to member-messages.component.ts to use this method
 
   deleteMessage(id: number) {
     return this.http.delete(this.baseUrl + 'messages/' + id);

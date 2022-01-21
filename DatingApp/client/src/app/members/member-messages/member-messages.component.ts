@@ -16,18 +16,21 @@ export class MemberMessagesComponent implements OnInit {
   messageContent:string;
 
   constructor(
-    //1. we'll subscribe to the messages directly from the template so we'll make this injection public
     public messageService: MessageService) { }
-    //2. go to the html
 
   ngOnInit(): void {
 
   }
   sendMessage(form:NgForm) {
     this.messageService.sendMessage(this.username, this.messageContent)
-    .subscribe((message) => {
-      this.messages.unshift(message as Message);
+    //1. we'll need to handle this method differently now that it returns a promise we have a hub connection.
+    // .subscribe((message) => {
+    //   this.messages.unshift(message as Message);
+    //   form.reset();
+    // });
+    .then(() => {
       form.reset();
     });
+    //2. back to README.md
   }
 }
