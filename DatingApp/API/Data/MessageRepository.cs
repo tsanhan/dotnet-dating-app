@@ -23,6 +23,12 @@ namespace API.Data
             _mapper = mapper;
         }
 
+        //1. implementing AddGroup
+        public void AddGroup(Group group)
+        {
+            _context.Groups.Add(group);
+        }
+
         public void AddMessage(Message message)
         {
             _context.Messages.Add(message);
@@ -33,20 +39,26 @@ namespace API.Data
             _context.Messages.Remove(message);
         }
 
+        // 2. implement GetConnection (make async)
+        public async Task<Connection> GetConnection(string connectionId)
+        {
+            return await _context.Connections.FindAsync(connectionId);
+        }
+
         public async Task<Message> GetMessage(int id)
         {
-            //1. this is the problem we only get the message, without the related entities
-            // * what options do we have? anyone?
-            // answer:
-            //   1. project (using mapper configuration), HW: try to do that. 
-            //   2. eager load the related entities eagerly.
-            
-            // 2. we'll go for 2 but FindAsync does not work with Include, we'll change this query 
             return await _context.Messages
             .Include(u => u.Sender)
             .Include(u => u.Recipient)
             .SingleOrDefaultAsync(x => x.Id == id);
-            // 3.this should work,  back to README.md
+        }
+
+        //3. implement GetMessageGroup (make async)
+        public async Task<Group> GetMessageGroup(string groupName)
+        {
+            return await _context.Groups
+            .Include(x => x.Connections) // get the connections too
+            .FirstOrDefaultAsync(x => x.Name == groupName);
         }
 
         public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
@@ -91,6 +103,12 @@ namespace API.Data
             return _mapper.Map<IEnumerable<MessageDto>>(messages);
         }
 
+        //4. implement GetMessageGroup 
+        public void RemoveConnection(Connection connection)
+        {
+            _context.Connections.Remove(connection);
+        }
+        //5. back to README.md
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0; 
