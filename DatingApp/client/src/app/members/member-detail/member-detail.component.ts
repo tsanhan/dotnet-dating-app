@@ -1,6 +1,6 @@
 import { AccountService } from './../../services/account.service';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
 import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
 import { Member } from 'src/app/models/member';
@@ -31,13 +31,14 @@ export class MemberDetailComponent implements OnInit ,OnDestroy {
     private route: ActivatedRoute,
     private messageService: MessageService,
     public presence: PresenceService,
-    //1. we'll need the account service to get the user,
-    //* this is needed to create the hub connection in the message service
-    private accountService: AccountService
-
+    private accountService: AccountService,
+    //1. we need to inject router here because this is the place where the route is being reused
+    private router: Router,
     ) {
-      //2. populate local user property
       this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user)
+      //2. change the strategy
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+      //3. back to README.md
     }
 
   ngOnInit(): void {
@@ -85,32 +86,15 @@ export class MemberDetailComponent implements OnInit ,OnDestroy {
   onTabActivated(data: TabDirective){
     this.activeTab = data;
     if(this.activeTab.heading === 'Messages' && this.messages.length === 0) {
-      //3. right now, on tab selection we just load the messages  (api call)
-      // * we'll change this because we'll get those messages from SignalR hub
-      // this.loadMessages();
-      //4. get the messages from SignalR
+
       this.messageService.createHubConnection(this.user, this.member.username)
-    //5. else I want the user to disconnect from the messages hub on tab switch
     } else {
       this.messageService.stopHubConnection();
-      //6. but wait, there is another reason to stop the hub connection:
-      //* if the user is exiting the member  details
-      //* in other words, when this component is no longer show on the screen
-      //* when this happens, component is destroyed, and there is a hook for that,
-      //* it's called OnDestroy and we can execute code when it happen
-      //* go and add OnDestroy to the interfaces this component 'implements'
-    }
+     }
   }
-  //7. implement ngOnDestroy
   ngOnDestroy(): void {
     this.messageService.stopHubConnection();
-    //8. now we could have an issue here, we could try to stop the connection after we already did that.
-    // * if we changed the tab AND navigated away from this component
-    // * we'll fix this in the stopHubConnection method is self.
-    // * go to message.service.ts
 
-    //9. now that we don't populate the message array, we don't need to pass them down to the member messages component
-    // go to the html
   }
 
 

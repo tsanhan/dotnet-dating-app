@@ -1,29 +1,38 @@
-Dealing with UTC date formats:
+Notifying users when they receive a message:
 
-lets explain the issue:
- * on entering the chat room open the devtools => Network Tab => WS Tab.
- * we'll see, in the 'messages' tab the messages being passed to and from the client.
- * we'll notice in one of the messages (with "target": "ReceiveMessageThread" ) a json containing the 'dateRead' data something like: "2022-01-21T15:15:38.8916351"
- * this data don't tell un nothing about local time, not offset, not timezone, not even if this is a utc or not.
- * so different browsers assume different things, some think it's a utc, others don't.
- * you might (not 100% sure) see the values being different if you have different browser types installed.
- * what we'll need too do is to standardize this and return utc always.
-
- * server will return UTC but the client will read UTC but display local time.
- * the way this works is if we add Z ("2022-01-21T15:15:38.8916351Z") in the end of the data cumming in, then the browser will convert it to local time.
-
- * lest start by swishing the dates around to use UTC.
- * go to Message.cs 
-
- test it out:
- * on entering the chat room open the devtools => Network Tab => WS Tab.
- * in the same messages (with "target": "ReceiveMessageThread" ) the json will contain dateRead property with Z at the end.
- * this will be a UTC date, this means it will show the date a few hours ahead or behind, depending od where you are in the world.
+* ok so now we have some more information about our users:
+* we know if they or not and we know if that in a group or not.
+* we can use the combination of those to send them a message if they not inside a chat with that other user.
  
- another test: open different browsers (if you have them installed) and enter the chat room.
- * you should see the 'dateRead' data from both users in the chat being the sage
+* so we can start with the message hub, we want to say this:
+    * when [user1] sending a message to [user2], if [user2] is not connected to the same chat we want to send [user2] a notification, only if [user2] is online.
 
- one more little feature: if [user1] sending [user2] a message but [user2] is not in the chat room with [user1], then [user2] will not know that.
+* so using the DB we know if [user2] is in the same group, and using the presence tracker we know if [user2] is online.
+* one thing to remember: our users can connect from different devices, so they can have different connection ids...
+* so we need a method to get a the different connections for a particular logged  in user.
 
- up next: notifying users when they got a new message.
- 
+* ok, so we'll start with the Presence Tracker, and create that method:
+* go to PresenceTracker.cs
+
+* ok,  before testing lets clear the table 'Groups' and 'Connections' and try this. we see it;s working!
+
+but lets debug this for a sec:
+[user1] and user [user2] be in the same group (chat).
+- now, [user1] going to another chat with another user ([user3]).
+- [user2] sending a message, [user1] see a message have been sent and click it
+- when [user1] navigated back, the chat is empty...
+
+not making sense...
+this is because re directly updated the route...
+angular will try to reuse routes a possible (just updating the view, not really go over the logic in the component)
+
+we'll need to change the route reuse strategy.
+go to member-detail.component.ts
+
+test again with the scenario in debug, now it's working! 
+
+* ok.. for now we did get this thing going... but this is not optimal.
+* we'll try to send what we need only to the person who needs it and not everything to everyone.
+
+up next: optimizing the presence.
+

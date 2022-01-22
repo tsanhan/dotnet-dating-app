@@ -48,5 +48,21 @@ namespace API.SignalR
             return Task.FromResult(onlineUsers);
         }
 
+        //1. create the method to get the connections per user
+        public Task<List<string>> GetConnectionsForUser(string username)
+        {
+            List<string> connectionIds;
+            lock (OnlineUsers)
+            {
+                connectionIds = OnlineUsers.GetValueOrDefault(username);
+            }
+            return Task.FromResult(connectionIds);
+        }
+        //2. now there is something else:
+        // * in our message hub, we can only send messages to users that are connected to that particular hub.
+        // * and the idea is to send a notification to users that are not connected to the message hub (they are not offline but they also not in a conversation)
+        // * luckily, we can access the context of a different hub inside a hub...
+        // * in our case we can access the presence hub context inside the message hub
+        // * go to MessageHub.cs to to that
     }
 }

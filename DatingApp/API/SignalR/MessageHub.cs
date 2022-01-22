@@ -15,16 +15,25 @@ namespace API.SignalR
         private IMessageRepository _messageRepository;
         private IMapper _mapper;
         private IUserRepository _userRepository;
+        private  PresenceTracker _tracker;
+
+        public IHubContext<PresenceHub> _presenceHub { get; }
 
         public MessageHub(
             IMessageRepository messageRepository,
             IMapper mapper,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            //1. add the presence hub's context to be able to send messages to the presence hub
+            IHubContext<PresenceHub> presenceHub,
+            //2. add the presence tracker to know who is online
+            PresenceTracker tracker
             )
         {
             _messageRepository = messageRepository;
             _mapper = mapper;
             _userRepository = userRepository;
+            _presenceHub = presenceHub;
+            _tracker = tracker;
         }
 
         public override async Task OnConnectedAsync()
@@ -34,7 +43,6 @@ namespace API.SignalR
 
             var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            //3. add to the group
             await AddToGroup(groupName);
 
             var messages = await _messageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
@@ -44,11 +52,7 @@ namespace API.SignalR
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            //4. remove from group
             await RemoveFromMessageGroup();
-            //5. so what did all this work gave us? 
-            //  * we can use it in the send message method here:
-
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -75,22 +79,33 @@ namespace API.SignalR
             };
 
             _messageRepository.AddMessage(message);
-            
-            //6. get the group name
+
+
             var group = GetGroupName(sender.UserName, recipient.UserName);
-            var groupEntity = await _messageRepository.GetMessageGroup(group);      // get the group entity
-            if(groupEntity.Connections.Any(x => x.Username == recipient.UserName)){ // if the recipient is in the group (he is connected)
-                // we'll start using utc now (not local time) because of the way dotnet core works and calculate dates
-                // we'll use these in other couple of places 
-                // we'll talk about it later on, because we'll have a mix of different timezones
+            var groupEntity = await _messageRepository.GetMessageGroup(group);
+
+            if (groupEntity.Connections.Any(x => x.Username == recipient.UserName))
+            {
                 message.DateRead = DateTime.UtcNow;
-                // back to README.md
+            }
+            //3. here, when we send a message, if the recipient is NOT in the group, we'll check if he is even online
+            else {
+                var connections = await _tracker.GetConnectionsForUser(recipient.UserName);
+                if (connections != null)
+                {
+                    // if this code runs, we know the recipient is online but not in the same mesage group as the sender
+                    await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new {
+                        username = sender.UserName,
+                        knownAs = sender.KnownAs
+                    });
+                    // the client does not listen to 'NewMessageReceived' method yet... we'll deal with that now.
+                    //go to presence.service.ts 
+                }
+                
             }
 
             if (await _messageRepository.SaveAllAsync())
             {
-                // we'll move this line up
-                // var group = GetGroupName(sender.UserName, recipient.UserName);
                 await Clients.Group(group).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
             }
 
@@ -103,13 +118,11 @@ namespace API.SignalR
             return stringCompare ? $"{current}-{other}" : $"{other}-{current}";
         }
 
-        //1. add a method to add to a group 
         private async Task<bool> AddToGroup(string groupName)
         {
             var group = await _messageRepository.GetMessageGroup(groupName);
             var connection = new Connection(Context.ConnectionId, Context.User.GetUsername());
 
-            // if the group is null, we need to create it
             if (group == null)
             {
                 group = new Group(groupName);
@@ -120,13 +133,11 @@ namespace API.SignalR
             return await _messageRepository.SaveAllAsync();
         }
 
-        //2. add a method to remove from a message group
         private async Task RemoveFromMessageGroup()
         {
             var connection = await _messageRepository.GetConnection(Context.ConnectionId);
             _messageRepository.RemoveConnection(connection);
             await _messageRepository.SaveAllAsync();
-            // now we have something to do when a user connect to disconnect from this message hub.
         }
     }
 }

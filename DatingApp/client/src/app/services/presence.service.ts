@@ -4,21 +4,22 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
 import { BehaviorSubject } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PresenceService {
   hubUrl = environment.hubUrl;
-  //1. store the online users in a behavior subject
   private onlineUsersSource$ = new BehaviorSubject<string[]>([]);
-  //2. we'll have another observable to get the online users
   onlineUsers$ = this.onlineUsersSource$.asObservable();
 
 
   private hubConnection: HubConnection;
   constructor(
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) { }
 
   createHubConnection(user: User) {
@@ -42,12 +43,25 @@ export class PresenceService {
       this.toastr.warning(`${username} has disconnected`);
     });
 
-    //3. we'll create another listening event for getting the online users
     this.hubConnection.on('GetOnlineUsers', (usernames: string[]) => {
       this.onlineUsersSource$.next(usernames);
     });
-    //4. next we need to add the indication if the user is online in the member card and member detail components
-    //* go to member-card.component.ts
+
+    //1. add a new hub connection event
+    this.hubConnection.on('NewMessageReceived', ({username, knownAs}) => {
+      this.toastr.info(`${knownAs} send you a new message!`)
+      // one cool thing we get with this toastr is the fact we can handle events related to the toastr using observables.
+      //  * here is want to navigate (to the chat) the user if he tap on the massage
+      .onTap
+      .pipe(take(1))
+      .subscribe(() => {
+        // we want to navigate the user to the chat page of the user that send the message
+        this.router.navigateByUrl(`/members/${username}?tab=3`);
+      } );
+      // back to README.md
+
+    });
+
   }
 
   stopHubConnection(){
