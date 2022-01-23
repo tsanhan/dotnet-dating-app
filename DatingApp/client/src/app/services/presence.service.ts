@@ -36,29 +36,32 @@ export class PresenceService {
     .catch(error => console.log(error));
 
     this.hubConnection.on('UserIsOnline', (username) => {
-      this.toastr.info(`${username} has connected`);
+      //1. here we'll remove this annoying toastr.
+      // * and replace it with the ability to track the users that are online right now, add the new user to the list.
+      // this.toastr.info(`${username} has connected`);
+      this.onlineUsers$.pipe(take(1)).subscribe(onlineUsers => this.onlineUsersSource$.next([...onlineUsers, username]));
     });
 
     this.hubConnection.on('UserIsOffline', (username) => {
-      this.toastr.warning(`${username} has disconnected`);
+      //2. do similar thing here
+      // this.toastr.warning(`${username} has disconnected`);
+      this.onlineUsers$.pipe(take(1)).subscribe(onlineUsers => this.onlineUsersSource$.next([...onlineUsers.filter(u => u !== username)]));
     });
+    //3. back to README.md
 
     this.hubConnection.on('GetOnlineUsers', (usernames: string[]) => {
       this.onlineUsersSource$.next(usernames);
     });
 
-    //1. add a new hub connection event
+
     this.hubConnection.on('NewMessageReceived', ({username, knownAs}) => {
       this.toastr.info(`${knownAs} send you a new message!`)
-      // one cool thing we get with this toastr is the fact we can handle events related to the toastr using observables.
-      //  * here is want to navigate (to the chat) the user if he tap on the massage
+
       .onTap
       .pipe(take(1))
       .subscribe(() => {
-        // we want to navigate the user to the chat page of the user that send the message
         this.router.navigateByUrl(`/members/${username}?tab=3`);
       } );
-      // back to README.md
 
     });
 

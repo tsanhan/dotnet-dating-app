@@ -8,34 +8,46 @@ namespace API.SignalR
     {
         private static readonly Dictionary<string, List<string>> OnlineUsers = new Dictionary<string, List<string>>();
 
-        public Task UserConnected(string username, string connectionId)
+        //1. we'll change the return type to Task<bool> to indicate if this is a really new user;
+        public Task<bool> UserConnected(string username, string connectionId)
         {
+            //2. we'll flag isOnline to false 
+            bool isOnline = false;
+            
             lock (OnlineUsers)
             {
                 if (!OnlineUsers.ContainsKey(username))
                 {
                     OnlineUsers.Add(username, new List<string>());
+                    isOnline = true;//3. is really a new user
                 }
                 OnlineUsers[username].Add(connectionId);
             }
-            return Task.CompletedTask;
+            //4. return isOnline;
+            return Task.FromResult(isOnline);
         }
         
-        public Task UserDisconnected(string username, string connectionId)
+        //5. do similar thing for UserDisconnected, change the return type to Task<bool> to indicate if this is a really disconnected;
+        public Task<bool> UserDisconnected(string username, string connectionId)
         {
+             //6. we'll flag isOnline to false 
+            bool isOffline = false;
+
             lock (OnlineUsers)
             {
-                if (!OnlineUsers.ContainsKey(username)) return Task.CompletedTask;
+                if (!OnlineUsers.ContainsKey(username)) return Task.FromResult(isOffline); //7. this is a odd place to get into, but we'll return false if the user is not connected.
 
                 OnlineUsers[username].Remove(connectionId);
 
                 if (OnlineUsers[username].Count == 0)
                 {
                     OnlineUsers.Remove(username);
+                    isOffline = true;//8. the user is really disconnected
                 }
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(isOffline);// 9.return isOffline;
+            //10 back to PresenceHub.cs, point 4, we'll see how we use this boolean data.
         }
 
         public Task<string[]> GetOnlineUsers()
@@ -48,7 +60,6 @@ namespace API.SignalR
             return Task.FromResult(onlineUsers);
         }
 
-        //1. create the method to get the connections per user
         public Task<List<string>> GetConnectionsForUser(string username)
         {
             List<string> connectionIds;
@@ -58,11 +69,6 @@ namespace API.SignalR
             }
             return Task.FromResult(connectionIds);
         }
-        //2. now there is something else:
-        // * in our message hub, we can only send messages to users that are connected to that particular hub.
-        // * and the idea is to send a notification to users that are not connected to the message hub (they are not offline but they also not in a conversation)
-        // * luckily, we can access the context of a different hub inside a hub...
-        // * in our case we can access the presence hub context inside the message hub
-        // * go to MessageHub.cs to to that
+        
     }
 }
