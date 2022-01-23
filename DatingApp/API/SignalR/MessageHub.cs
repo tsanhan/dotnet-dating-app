@@ -15,7 +15,7 @@ namespace API.SignalR
         private IMessageRepository _messageRepository;
         private IMapper _mapper;
         private IUserRepository _userRepository;
-        private  PresenceTracker _tracker;
+        private PresenceTracker _tracker;
 
         public IHubContext<PresenceHub> _presenceHub { get; }
 
@@ -23,9 +23,7 @@ namespace API.SignalR
             IMessageRepository messageRepository,
             IMapper mapper,
             IUserRepository userRepository,
-            //1. add the presence hub's context to be able to send messages to the presence hub
             IHubContext<PresenceHub> presenceHub,
-            //2. add the presence tracker to know who is online
             PresenceTracker tracker
             )
         {
@@ -43,16 +41,48 @@ namespace API.SignalR
 
             var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await AddToGroup(groupName);
+            //10. get the group from the adding the group operation
+            var group = await AddToGroup(groupName);
+            //11 at this point the group was updated, so we'll send the group to all the client in the group.
+            // * why we send the the group to the clients in the group?
+            // * you understand in a sec (point 13)
+            await Clients.Group(groupName).SendAsync("UpdatedGroup", group); // new method, we'll deal with it in theclient
+
 
             var messages = await _messageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
-            await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
+            //1. ok so we see here that we sent all the message thread (the second time) to both of the users.
+            // * even though one allready got it
+            // * lets see what we can go about it
+            // go to method AddToGroup here
 
+            // 12. ok lets go back a bit. 
+            // * this is the first time a user connects to the newly created group.
+            // * the user connected (now alone in the group) need the messages, so we'll it to him
+            // * first of all, change sending to a Group to sending to the Caller
+            await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
+            // 13. now lets take one step forward.
+            //  * [user1] and sending a message to [user2], [user2] is connected but not in the chat
+            //  * the message in [user1] board marked as unread (sure [user2] didn't see it yet)
+            //  * when [user2] gets the notification, he entering the chat with [user1]
+            //  * and this is where the problem happends!
+            //  * the message thread (with the new message marked as read) is being send to [user2] alone (Clients.*Caller*.SendAsync...)
+            //  * so [user1] does not get the message thread and does not know his new message was just been read.
+            //  * so this is why (in 11) we send the group to the clients in the group.
+            //  * so on group update, the user can see if his partner joined the group.
+            //  * and if he did, he can mark his messages as been read (like right now) and update his own message thread.
+
+            //  * but before we do that in the client side lets deal with the OnDisconnectedAsync method too. 
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await RemoveFromMessageGroup();
+            //14. get the group
+            var group  = await RemoveFromMessageGroup();
+            //15. update the members of the group (with the updated group) that the group changed
+            await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+            //16. now we'll deal with the client side.
+            // * create a new interface for group in the 'models' folder.
+            // * go to group.ts
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -88,20 +118,19 @@ namespace API.SignalR
             {
                 message.DateRead = DateTime.UtcNow;
             }
-            //3. here, when we send a message, if the recipient is NOT in the group, we'll check if he is even online
-            else {
+            else
+            {
                 var connections = await _tracker.GetConnectionsForUser(recipient.UserName);
                 if (connections != null)
                 {
-                    // if this code runs, we know the recipient is online but not in the same mesage group as the sender
-                    await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new {
+                    await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new
+                    {
                         username = sender.UserName,
                         knownAs = sender.KnownAs
                     });
-                    // the client does not listen to 'NewMessageReceived' method yet... we'll deal with that now.
-                    //go to presence.service.ts 
+
                 }
-                
+
             }
 
             if (await _messageRepository.SaveAllAsync())
@@ -118,7 +147,12 @@ namespace API.SignalR
             return stringCompare ? $"{current}-{other}" : $"{other}-{current}";
         }
 
-        private async Task<bool> AddToGroup(string groupName)
+        //2. we returned a boolean for success on saving, but we can return the group.
+        // * why we return the group to the members of the groups?
+        // * so the user connected will know who is inside the group.
+        // * he will wil know if the recipient in the group and mark the messages as being read.
+
+        private async Task<Group> AddToGroup(string groupName)
         {
             var group = await _messageRepository.GetMessageGroup(groupName);
             var connection = new Connection(Context.ConnectionId, Context.User.GetUsername());
@@ -130,14 +164,35 @@ namespace API.SignalR
             }
 
             group.Connections.Add(connection);
-            return await _messageRepository.SaveAllAsync();
+            //3. change this small thing
+            if (await _messageRepository.SaveAllAsync()) return group;
+            throw new HubException("failed to join group");
+            
         }
 
-        private async Task RemoveFromMessageGroup()
+        //4. the remove from group is a bit more tricky.
+        // * we want to return the group from this method.
+        private async Task<Group> RemoveFromMessageGroup()
         {
-            var connection = await _messageRepository.GetConnection(Context.ConnectionId);
+            // 5. we'll have to get the group for this ⬇️ connection
+            //  * lets build this method in the repository,
+            //  * but first we have to add it to the interface, go to IMessageRepository.cs 
+            // var connection = await _messageRepository.GetConnection(Context.ConnectionId);
+
+            // 6. so we get the group for the current connection
+            var group = await _messageRepository.GetGroupForConnection(Context.ConnectionId);
+
+            // 7. get the connection from the group.
+            var connection = group.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+
             _messageRepository.RemoveConnection(connection);
-            await _messageRepository.SaveAllAsync();
+
+            //8. last check if successfull and return the group
+
+            if(await _messageRepository.SaveAllAsync()) return group;
+            throw new HubException("failed to remove from group");
+            //9. ok so now we have two methods that return the currently populated group to return to the members of the group to investigate.
+            // * lets use them, go back to the method OnConnectedAsync
         }
     }
 }

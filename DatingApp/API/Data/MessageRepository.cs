@@ -32,7 +32,7 @@ namespace API.Data
         {
             _context.Messages.Add(message);
         }
-        
+
         public void DeleteMessage(Message message)
         {
             _context.Messages.Remove(message);
@@ -42,6 +42,17 @@ namespace API.Data
         {
             return await _context.Connections.FindAsync(connectionId);
         }
+
+        //1. implement the interface method
+        public async Task<Group> GetGroupForConnection(string connectionId)
+        {
+            return await _context.Groups
+            .Include(c => c.Connections)
+            .Where(c => c.Connections
+            .Any(x => x.ConnectionId == connectionId))
+            .FirstOrDefaultAsync();
+        }
+        //2. now we can go back to the MessageHub.cs, go to method 
 
         public async Task<Message> GetMessage(int id)
         {
@@ -61,46 +72,43 @@ namespace API.Data
         public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
         {
             var query = _context.Messages
-                .OrderByDescending(m => m.MessageSent) 
+                .OrderByDescending(m => m.MessageSent)
                 .AsQueryable();
 
-            query = messageParams.Container switch 
+            query = messageParams.Container switch
             {
                 "Inbox" => query.Where(u => u.Recipient.UserName == messageParams.Username && u.RecipientDeleted == false),
                 "Outbox" => query.Where(u => u.Sender.UserName == messageParams.Username && u.SenderDeleted == false),
-                _ => query.Where(u => u.Recipient.UserName == messageParams.Username && u.RecipientDeleted == false && u.DateRead == null ),
+                _ => query.Where(u => u.Recipient.UserName == messageParams.Username && u.RecipientDeleted == false && u.DateRead == null),
             };
 
             var messages = query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider);
-            
+
             return await PagedList<MessageDto>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
 
         }
         public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
         {
-            
+
             var messages = await _context.Messages
                 .Include(u => u.Sender).ThenInclude(p => p.Photos)
                 .Include(u => u.Recipient).ThenInclude(p => p.Photos)
                 .Where(m =>
                 m.Recipient.UserName == currentUsername && m.Sender.UserName == recipientUsername && m.RecipientDeleted == false ||
-                m.Recipient.UserName == recipientUsername && m.Sender.UserName == currentUsername && m.SenderDeleted == false)    
+                m.Recipient.UserName == recipientUsername && m.Sender.UserName == currentUsername && m.SenderDeleted == false)
                 .OrderByDescending(m => m.MessageSent)
                 .ToListAsync();
 
-            var unreadMessages = messages.Where(m =>  m.DateRead == null 
+            var unreadMessages = messages.Where(m => m.DateRead == null
                 && m.Recipient.UserName == currentUsername).ToList();
 
-            if(unreadMessages.Any())
+            if (unreadMessages.Any())
             {
-                foreach (var um in unreadMessages) um.DateRead = DateTime.UtcNow; //1. use UTC
-                //2. no this will not change anything, the server will still send the dates in the same format as the client, it's just that now they'll use UTC time
-                //  * to let the client to know about this, we'll need to change how the client get the data (will Z added)
-                //  * we'll use automapper to help with that
-                //  * go to AutoMapperProfiles.cs
+                foreach (var um in unreadMessages) um.DateRead = DateTime.UtcNow;
+
                 await _context.SaveChangesAsync();
             }
-            
+
             return _mapper.Map<IEnumerable<MessageDto>>(messages);
         }
 
@@ -110,7 +118,7 @@ namespace API.Data
         }
         public async Task<bool> SaveAllAsync()
         {
-            return await _context.SaveChangesAsync() > 0; 
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

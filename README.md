@@ -1,19 +1,15 @@
-Optimizing the presence:
+Optimizing the messages:
+ok so now lets take a look at the message hub to see what we can improve there.
 
-* ok so we get our SignalR service working... but it's not really optimal.
-go to PresenceHub.cs
+go to the OnConnectedAsync method in MessageHub.cs
 
-test this:
-- [user1] and [user2] connected tot eh site, in Matches page.
-- [user1] exiting the site (disconnects) and [user2] don't see toastr message but does see the 👤 icon gray
-- [user1] reconnects and [user2] don't see toastr message and the 👤 icon turns green
+test all of this (clear the tables for clean environment)
 
-this works!
- ok so now we have optimized the presence, we updating a single user (that is really connected) to everybody that is allready connected without the annoying toastr message.
-
-next we want a similar thing for the messages: not returning the message thread to both users we'll send it only to the connecting client and update the 'DateRead' property if the client is already connected in the same group (chat).
-
-up next: Optimizing the messages
+- [user1] in a chat room, [user2] is not in the chat room.
+- [user1] sends a message to [user2], marked as unread.
+- [user2] receiving a notification and entering the chat room.
+- [user1] have her message being read.
 
 
-
+ok so we have SignalR set up, active, optimized, and we good to go.
+ up next section summery.
