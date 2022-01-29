@@ -1,15 +1,19 @@
-Optimizing the messages:
-ok so now lets take a look at the message hub to see what we can improve there.
+Section 17 summary:
 
-go to the OnConnectedAsync method in MessageHub.cs
+so we went the SignalR path and started to see how to make things live in our application.
 
-test all of this (clear the tables for clean environment)
+so what we've done is:
+1. set up SignalR on the server and the client 
+2. implemented online presence (so user can recognize when other users are online)
+3. implemented live chant between the users 
+    * we had some work needed to be done there, not because the groups setup, but because the following the group's memberships, because SignalR doesn't give us any way to do that natively
 
-- [user1] in a chat room, [user2] is not in the chat room.
-- [user1] sends a message to [user2], marked as unread.
-- [user2] receiving a notification and entering the chat room.
-- [user1] have her message being read.
+- now this is as far as I'm going to go with SignalR, other things you can do if you want:
+    1. notify how many unread messages the user has when they connect to the presence SignalR hub
+    2. 1 can be popped up as a toastr or be static in the navbar (like in facebook)
 
 
-ok so we have SignalR set up, active, optimized, and we good to go.
- up next section summery.
+ok.. we are getting close to the end but before we finish there are some architecture work we need to do.
+what we got now is many repositories, this means that we have many instances of our DataContext, this can be problematic and this is what we'll take care of in the sext section
+
+so.. up next 'Unit of work' pattern and finishing touches
