@@ -10,18 +10,16 @@ namespace API.Interfaces
     {
          void Update(AppUser user);
 
-         Task<bool> SaveAllAsync();
+        //  Task<bool> SaveAllAsync();//1. remove that, and go to UserRepository.cs 
 
          Task<IEnumerable<AppUser>> GetUsersAsync();
          Task<AppUser> GetUserByIdAsync(int id);
          Task<AppUser> GetUserByUserNameAsync(string username);
 
-        //1. change this to return PagedList and accept user parameters
-        Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);// we can't call it params, because it's a reserved keyword
+        Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);
 
         Task<MemberDto> GetMemberAsync(string username);
 
-        //2. go to UserRepository.cs and apply the change
 
     }
 }

@@ -44,25 +44,21 @@ namespace API.Data
             query = query.Where(x => x.Gender == userParams.Gender);
 
 
-            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1); //i still want this year to be included
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1); 
             var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
 
             query = query.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
 
-            // 1. add orderBy to the query (switch statement - since c# 8)
 
             query = userParams.OrderBy switch
             {
                 "created" => query.OrderByDescending(u => u.Created),
                 _ => query.OrderByDescending(x => x.LastActive),
             };
-            // 2. test in postman section 13: 'Get Users orderedby Created', works
-            // 3. test in postman section 13: 'Get Users orderedby lastActive', works
             return await PagedList<MemberDto>.CreateAsync(
                 query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(),
                 userParams.PageNumber,
                 userParams.PageSize);
-            // 4. back to readme.md
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
@@ -84,10 +80,12 @@ namespace API.Data
             .ToListAsync();
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
+        //1. no need for that
+        // public async Task<bool> SaveAllAsync()
+        // {
+        //     return await _context.SaveChangesAsync() > 0;
+        // }
+        //2. go to IMessageRepository.cs
 
         public void Update(AppUser user)
         {

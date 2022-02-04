@@ -13,23 +13,30 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            //1. add presence tracker
             services.AddSingleton<PresenceTracker>();
-            //2. go back to our PresenceHub.cs to use this service
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<ILikesRepository, LikesRepository>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
+            // services.AddScoped<ILikesRepository, LikesRepository>();    //1. no need for that
+            // services.AddScoped<IMessageRepository, MessageRepository>();//2. no need for that
             services.AddScoped<LogUserActivity>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-            services.AddScoped<IUserRepository, UserRepository>();
+            // services.AddScoped<IUserRepository, UserRepository>();      //3. no need for that
+            services.AddScoped<IUnitOfWork, UnitOfWork>();                 //4. add this
+                                                                             // * so now every controller will have an instance of the UOF
+                                                                             // * and that means one instance of data context per controller call
+                                                                             // * no matter the repository usage needed in this controller. 
+                                                                             
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
 
             return services;
+
+            //5. so we don't need the 'SaveAllAsync' in the repositories.
+            //  * they not responsible for saving changes to the database, the UOF does.
+            //6. go to IUserRepository.cs and remove the SaveAllAsync method
         }
     }
 }

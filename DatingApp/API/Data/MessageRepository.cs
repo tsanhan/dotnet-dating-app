@@ -43,7 +43,6 @@ namespace API.Data
             return await _context.Connections.FindAsync(connectionId);
         }
 
-        //1. implement the interface method
         public async Task<Group> GetGroupForConnection(string connectionId)
         {
             return await _context.Groups
@@ -52,7 +51,6 @@ namespace API.Data
             .Any(x => x.ConnectionId == connectionId))
             .FirstOrDefaultAsync();
         }
-        //2. now we can go back to the MessageHub.cs, go to method 
 
         public async Task<Message> GetMessage(int id)
         {
@@ -116,9 +114,11 @@ namespace API.Data
         {
             _context.Connections.Remove(connection);
         }
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
+        //1. no need for that
+        // public async Task<bool> SaveAllAsync()
+        // {
+        //     return await _context.SaveChangesAsync() > 0;
+        // }
+        //2. back to README.md
     }
 }
