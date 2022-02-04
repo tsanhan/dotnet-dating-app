@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace API.Helpers
 {
     public class LogUserActivity : IAsyncActionFilter
-    {
+    {   
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
 
@@ -16,28 +16,18 @@ namespace API.Helpers
 
             if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return;
             
-            //1. ok so the reason we use GetUserByUserNameAsync is because this is the only data about the user we have in the token.
-            //  so if I want to have the user id so I can use GetUserByIdAsync (which is more efficient), i need to add this data to the token.
-            //  go to TokenService.cs
-            //2. after the fix we can get the id insted of the username
-            // var username = resultContext.HttpContext.User.GetUsername();
+           
             var userId = resultContext.HttpContext.User.GetUserId();
 
-            var repo = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            //3. and use it
-            // var user = await repo.GetUserByUserNameAsync(username);
-            var user = await repo.GetUserByIdAsync(userId);
-            user.LastActive = DateTime.Now;
-            await repo.SaveAllAsync();
+            //1. we'll get the IUnitOfWork from the service provider and use it
+            var uow = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+            var user = await uow.UserRepository.GetUserByIdAsync(userId);
+            user.LastActive = DateTime.UtcNow;//2. change to UtxNow, to be consistent with other dates 
+            await uow.Complete();
 
-            //4. test in postman and browser:
-            //  postman: section 13: 
-            //  1. login, get the token and past it in jwt.io, we see the payload contains name and the id
-            //  2. get request with 'Get Users No QS', see it's working fine 
-            //  3. test updating the user in section 9, we get 204 and ,
-            //  4. we can see the data been updated in section 12, we can also see the lastActive also updated to just now 
-
-            // back to readme.md
+            //2. also onw other thing, we'll remove all _context.SaveChangesAsync(); in the app except in the UOW.
+            // * it;s not the repository job anymore, it's the unit of work job
+            // * we have one in MessageRepository.cs, go there and remove it
 
         }
     }

@@ -104,7 +104,12 @@ namespace API.Data
             {
                 foreach (var um in unreadMessages) um.DateRead = DateTime.UtcNow;
 
-                await _context.SaveChangesAsync();
+                // await _context.SaveChangesAsync();//1. remove that
+                //2. but lets think why we want to save the changes here?
+                // * we want to save the fact the message been read
+                // * so if we can't save this data here where can we save it?
+                // * the Message Hub is the one calling this method (GetMessageThread).
+                // * we can save the messages there, go to MessageHub.cs, point 4
             }
 
             return _mapper.Map<IEnumerable<MessageDto>>(messages);
@@ -114,11 +119,6 @@ namespace API.Data
         {
             _context.Connections.Remove(connection);
         }
-        //1. no need for that
-        // public async Task<bool> SaveAllAsync()
-        // {
-        //     return await _context.SaveChangesAsync() > 0;
-        // }
-        //2. back to README.md
+      
     }
 }

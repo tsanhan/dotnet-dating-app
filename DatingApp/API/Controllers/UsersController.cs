@@ -17,29 +17,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-
+   
     [Authorize]
     public class UsersController : BaseApiController
     {
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
-        private readonly IUserRepository _userRepository;
-        public UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService)
+        //1. also remove the repositories and replace with unit of work
+        //  * switch all _userRepository with _unitOfWork.UserRepository
+        //  * switch all SaveChangesAsync() to Complete()
+        // private readonly IUserRepository _userRepository;
+        // ...
+        //2. after no JIT interpolation errors, we'll continue fixing MessageHub.cs
+        //3. go to MessageHub.cs
+
+        private readonly IUnitOfWork _unitOfWork;
+        public UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService)
         {
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _photoService = photoService;
-            _userRepository = userRepository;
+            // _userRepository = userRepository;
         }
 
-        //1. lets test the role of Admin (this is temporary, only members can get all the users)
-        //[Authorize(Roles = "Admin")]//4. remove authorize
         [HttpGet]
         public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
            
           
 
-            var user = await _userRepository.GetUserByUserNameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUserNameAsync(User.GetUsername());
             
             if(string.IsNullOrEmpty(userParams.Gender))
             {
@@ -47,7 +54,7 @@ namespace API.Controllers
             }
 
             userParams.CurrnetUsername = user.UserName;
-            var users = await _userRepository.GetMembersAsync(userParams);
+            var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
 
             Response.AddPaginationHeader(
                 users.CurrentPage, 
@@ -57,14 +64,11 @@ namespace API.Controllers
             return Ok(users);
         }   
 
-        //2. lets test the role of Member (this is temporary, members can get individual user)
-        //[Authorize(Roles = "Member")]//5. remove authorize and back to README.md!
-        //3. back to README.md
         
         [HttpGet("{username}", Name = "GetUser"),]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
-            var rtn = await _userRepository.GetMemberAsync(username);
+            var rtn = await _unitOfWork.UserRepository.GetMemberAsync(username);
 
             return rtn;
         }
@@ -73,14 +77,14 @@ namespace API.Controllers
         public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDTO)
         {
             var username = User.GetUsername();
-            var user = await _userRepository.GetUserByUserNameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserByUserNameAsync(username);
 
             _mapper.Map(memberUpdateDTO, user);
 
-            _userRepository.Update(user);
+            _unitOfWork.UserRepository.Update(user);
 
 
-            if (await _userRepository.SaveAllAsync())
+            if (await _unitOfWork.Complete())
             {
                 return NoContent();
             }
@@ -92,7 +96,7 @@ namespace API.Controllers
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
             var username = User.GetUsername();
-            var user = await _userRepository.GetUserByUserNameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserByUserNameAsync(username);
 
             var result = await _photoService.UploadPhotoAsync(file);
 
@@ -114,7 +118,7 @@ namespace API.Controllers
 
             user.Photos.Add(photo);
 
-            if (await _userRepository.SaveAllAsync())
+            if (await _unitOfWork.Complete())
             {
                 return CreatedAtRoute("GetUser", new { username = user.UserName }, _mapper.Map<PhotoDto>(photo));
             }
@@ -127,7 +131,7 @@ namespace API.Controllers
         {
             var username = User.GetUsername();
 
-            var user = await _userRepository.GetUserByUserNameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserByUserNameAsync(username);
 
             var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
 
@@ -138,7 +142,7 @@ namespace API.Controllers
             photo.IsMain = true;
 
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await _unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Failed to set photo to main");
         }
@@ -148,7 +152,7 @@ namespace API.Controllers
         {
             var username = User.GetUsername();
 
-            var user = await _userRepository.GetUserByUserNameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserByUserNameAsync(username);
 
             var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
 
@@ -165,7 +169,7 @@ namespace API.Controllers
 
             user.Photos.Remove(photo);
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest("Failed to delete photo");
         }

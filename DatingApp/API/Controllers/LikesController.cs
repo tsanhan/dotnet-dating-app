@@ -17,30 +17,36 @@ namespace API.Controllers
     [Authorize]
     public class LikesController : BaseApiController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILikesRepository _likesRepository;
+        //1. no need for the repositories
+        // private readonly IUserRepository _userRepository;
+        // private readonly ILikesRepository _likesRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LikesController(IUserRepository userRepository, ILikesRepository likesRepository)
+
+        //2. inject IUnitOfWork
+        public LikesController(IUnitOfWork unitOfWork)
         {
-            _likesRepository = likesRepository;
-            this._userRepository = userRepository;
+            _unitOfWork = unitOfWork;
+            // _likesRepository = likesRepository;
+            // this._userRepository = userRepository;
         }
 
         [HttpPost("{username}")]
         public async Task<ActionResult> AddLike(string username)
         {
             var sourceUserId = User.GetUserId();
+            //3.  change all '_userRepository' with  '_unitOfWork.UserRepository'
+            // * and all '_likesRepository' with  '_unitOfWork.LikesRepository'
+            var likedUser = await _unitOfWork.UserRepository.GetUserByUserNameAsync(username);
 
-            var likedUser = await _userRepository.GetUserByUserNameAsync(username);
-
-            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
+            var sourceUser = await _unitOfWork.LikesRepository.GetUserWithLikes(sourceUserId);
 
             if (likedUser == null) return NotFound();
-            
+
             if (sourceUser.UserName == username) return BadRequest("you can't like yourself");
 
-            var userLike = await _likesRepository.GetUserLike(sourceUserId, likedUser.Id);
-            
+            var userLike = await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
+
             if (userLike != null) return BadRequest("you already like this user");
 
             userLike = new UserLike
@@ -50,29 +56,25 @@ namespace API.Controllers
             };
 
             sourceUser.LikedUsers.Add(userLike);
+            //4. change the SaveAllChanges() method to Complete()
+            if (await _unitOfWork.Complete()) return Ok();
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
-            
             return BadRequest("Failed to like user");
-            
 
-            
+            //5. go next to MessagesController.cs
+
         }
-    
-        //1. update the controller and the usages of the likes repository
-        public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes([FromQuery]LikesParams likesParams)
+
+        public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
         {
             likesParams.UserId = User.GetUserId();
-            var users = await _likesRepository.GetUserLikes(likesParams);
-            //2. add header to the response
+            
+            var users = await _unitOfWork.LikesRepository.GetUserLikes(likesParams);
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
             return Ok(users);
-            //3. test in postman(section 14, login and get the liked users - make use you like one) 
-            // see the pagination header in the response
-            //4. back to README.md
         }
-        
 
-       
+
+
     }
 }
