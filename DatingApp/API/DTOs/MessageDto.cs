@@ -1,31 +1,34 @@
 using System;
+using System.Text.Json.Serialization;
 using API.Entities;
 
 namespace API.DTOs
 {
     public class MessageDto
     {
-        //1. we start with pasting everithid from Message.cs
         public int Id { get; set; }
         public int SenderId { get; set; }
         public string SenderUsername { get; set; }
 
-        //public AppUser Sender { get; set; }//2. remove that
-        public string SenderPhotoUrl { get; set; }//3. replace with the photo url
+        public string SenderPhotoUrl { get; set; }
 
 
         public int RecipientId { get; set; }
         public string RecipientUsername { get; set; }
-        // public AppUser Recipient { get; set; }//4. remove that
-        public string RecipientPhotoUrl { get; set; }//5. replace with the photo url
+        public string RecipientPhotoUrl { get; set; }
 
         public string Content { get; set; }
         public DateTime? DateRead { get; set; }
-        public DateTime MessageSent { get; set; }//6. no need for that = DateTime.Now;
+        public DateTime MessageSent { get; set; }
 
-        //7. no need for that
-        // public bool SenderDeleted { get; set; }
-        // public bool RecipientDeleted { get; set; }
-        //8. back to IMessageRepository.cs point 3.
+        //1. ok we added back the SenderDeleted and RecipientDeleted but we don't want to return them to the user
+        // * only use them in the BE
+        // * we'll use JsonIgnore annotation for that
+        [JsonIgnore]
+        public bool SenderDeleted { get; set; }
+        [JsonIgnore]
+        public bool RecipientDeleted { get; set; }
+
+        //2. back to README.md
     }
 }
