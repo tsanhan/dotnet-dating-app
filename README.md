@@ -1,26 +1,20 @@
-Adding a confirmation service to the angular app:
+Getting the data from the confirmation modal:
 
-* so we have one place we ask to confirm (non admin use): on navigating away after editing the profile without saving it first.
-* it's a default JS confirm dialog.
-* lets do better!
+* after we have t a confirm service and a modal lets see how to link all together and get the data out of the confirm dialog.
+* go to confirm.service.ts
 
-* we'll use ngx-bootstrap's modal service (https://valor-software.com/ngx-bootstrap/#/components/modals)
-* I can tell you that in angular there is basically 2 types of modals:
-   1. the content of the modal is a template in the view. 
-   2. the content of the modal is another component.
-    - in both ways the component has a reference to the modal and the component showing the modal using a service.
+* test this by editing the profile and navigating away from the page.
+* success! 
 
-* I want to use the modal with a service anywhere I want in the application.
-* the problem is that option 2 is most close, but not just close enough... 
+* but lets use this in another place to feel more easy in using this service.
+* lets warn the user when we want to delete a message.
+* go to messages.component.ts
 
-* a simple scenario:
-  1. I don't want a reference to a template inside my component for the modal (option 1)
-  2. I don't want a reference to another component for the modal (option 2)
+* test the delete message dialog confirm modal, try to delete a message.
+* success, we see a modal.
+* so now we have a modal we can use everywhere in our app.
 
-* I want to be DRY, reference only a modal service when I want to use a modal!  
+up next: we'll see what we can do in the message component ( the chat component ), we'll make the page a bit more convenient to use.
 
-* we'll create this service, the job of the service will only to create a confirmation modal.
 
-* let's how I do that: create a confirm service and go to services/confirm.service.ts 
 
-* ok so now we have a confirm dialog and service, next up: lets start linking them all together.
