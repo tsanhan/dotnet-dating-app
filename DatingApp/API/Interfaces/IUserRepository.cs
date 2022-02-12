@@ -10,7 +10,6 @@ namespace API.Interfaces
     {
          void Update(AppUser user);
 
-        //  Task<bool> SaveAllAsync();//1. remove that, and go to UserRepository.cs 
 
          Task<IEnumerable<AppUser>> GetUsersAsync();
          Task<AppUser> GetUserByIdAsync(int id);
@@ -20,6 +19,8 @@ namespace API.Interfaces
 
         Task<MemberDto> GetMemberAsync(string username);
 
-
+        //1. add this.
+        Task<string> GetUserGender(string username);
+        //2. go to UserRepository.cs
     }
 }

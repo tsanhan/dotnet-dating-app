@@ -23,13 +23,7 @@ namespace API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
-        //1. also remove the repositories and replace with unit of work
-        //  * switch all _userRepository with _unitOfWork.UserRepository
-        //  * switch all SaveChangesAsync() to Complete()
-        // private readonly IUserRepository _userRepository;
-        // ...
-        //2. after no JIT interpolation errors, we'll continue fixing MessageHub.cs
-        //3. go to MessageHub.cs
+        
 
         private readonly IUnitOfWork _unitOfWork;
         public UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService)
@@ -37,23 +31,25 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _photoService = photoService;
-            // _userRepository = userRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
-           
-          
-
-            var user = await _unitOfWork.UserRepository.GetUserByUserNameAsync(User.GetUsername());
+           //1. this list is making the big query, do we need it? lets see... 
+           //4. lets fix this query:
+            var gender = await _unitOfWork.UserRepository.GetUserGender(User.GetUsername());
             
             if(string.IsNullOrEmpty(userParams.Gender))
             {
-                userParams.Gender = user.Gender == "male" ? "female" : "male";
+                //3. so the the only need on this Entity is it's gender.
+                // * let's create a query in the repo just for that, go to IUserRepository.cs
+                //5. user the new variable
+                userParams.Gender = gender == "male" ? "female" : "male";
+                //6. go to README.md
             }
 
-            userParams.CurrnetUsername = user.UserName;
+            userParams.CurrnetUsername = User.GetUsername();//2. we don't need to get the username from the Entity, we can get it from the Token.
             var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
 
             Response.AddPaginationHeader(
