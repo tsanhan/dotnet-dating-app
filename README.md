@@ -1,30 +1,28 @@
-Optimizing queries part one:
+Fixing UTC dates again:
 
-- lets open the TERMINAL tab and enter the chat messages page in the user profile.
-- if we look at the query in the terminal we'll see it a really big one...
-- we select everything...(make sure in the appsettings.Development.json the LogLevel for Microsoft is Information)
-- so what we'll do now is to make this query much cleaner.
-- this query is being build in the MessageRepository.cs, go there.
+ok so lets understand the problem:
+- go to the chat and send a message to someone.
+- the message is added the message list with the green timeego.
+- after refreshing the page the time ego data is now 2 hours forward in time (it's in the future, stating the message read 2 hours ego)
 
-* now if we'll look at the query at the messages (when fetching the message thread)
-* we'll see a MUCH cleaner minimal query.
-* we selecting what we actually need from the DB
+* the reason for this is that we have lost the 'Z' from our date time
+* now this is a bug in ef core (https://github.com/dotnet/efcore/issues/4711)
+* if we look at the data in the Messages table we'll see that the DateRead and MessageSent are stored unspecified, it don;t have the 'Z'
+* what ef is doing is really just converting these to UTC.
+* but the problem is that there is no information in the DB to confirm that.
+* that's why we needed to "add the the 'Z'" when reading this data and putting it in a model, on the way out, outside the DB.
+* now there is a different type of date time, the DateTimeOffset, but It's not very useful...
+    * it's easier to work with UTC and to send UTC back to the client.
+* what we'll do is we'll go to to a pre written code from the issue on github: (https://github.com/dotnet/efcore/issues/4711#issuecomment-689489146)
 
-nice.
+* this solution is good, it's about converting the date time to a UTC using the SpecifyKind method.
+  * we already used this method before in Automapper.
+  * this time we'll apply this in the level of the data context
+  * this way we'll have the conversion happening on the way out of out DB and we won't be needed to use it anywhere else.
+  * we'll copy the UtcDateAnnotation class from the issue to our project.
+  * go to DataContext.cs
 
-- lets try another one... lets do the inbox/outbox messages 
-- lets go with postman this time, section 15, "Get Outbox Messages for Lisa"
-
-- we can see the query is fine but lets still see what we can do...
-- the query is getting the messages using the GetMessagesForUser method in MessagesController.cs, go there (point 7)
-
-- ok so our query is a bit more organized.
-* if we look at the data coming in from the query, we can notice something is off...
-* even thought dateRead is *SET* to UTC, it's not *STORED* as UTC
-* I'll tell you a little secret, this shit have been like that for years...
-
-* bot if we look at the GetMessageThread in MessageRepository.cs we see that we set dateRead as utc AFTER the automapper have done it's work... and thats where we mapped to UTC, so this is annoying...
-* this will break our (read ... hours ego) feature in the messages after a refresh
-
-
-up next: Fixing UTC dates... again
+* now we can test in postman (section 13, Get Outbox Messages for Lisa) that the dates are in UTC
+  * also we can see the in the chat that the times of timeego make sense after page refresh
+            
+* up next: we'll continue some of the query optimizations.

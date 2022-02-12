@@ -40,11 +40,11 @@ namespace API.Helpers
                 opt => opt.MapFrom(
                     src => src.Recipient.Photos.FirstOrDefault(x => x.IsMain).Url));
 
-            //1. we'll create a mapping for the DateTime we return
-            CreateMap<DateTime,DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
-            //2. what this means is that when we return our dates to the client, we'll have the Z at the end of it.
-            //back to README.md
-
+            //1. no need for this.
+            // CreateMap<DateTime,DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+            
+            
+            //2. back to README.md
 
         }
     }
