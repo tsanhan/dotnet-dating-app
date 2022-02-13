@@ -1,13 +1,30 @@
 <div class="card">
   <div class="card-body">
-    <!-- 1. change the condition to use an observable from the message service -->
     <ng-container *ngIf="(messageService.messageThread$ | async)?.length; else noMessages">
-      <ul class="chat">
-        <!-- 2. up date the condition to loop through the messages
-              * i'm sure there is  abetter way then subscribing twice here
-              * I guess another wrapping ng-container with alias to use inside... you can take it as a challenge -->
-        <li *ngFor="let message of messageService.messageThread$ | async ">
-          <!-- 3. back to README.md -->
+      <!-- 1. we'll focus on the main part, the unordered list.
+            * we want to let angular to control the scrolling to this list
+            * we'll add a template reference, some style and a property for the scrollTop (how mush the element need to be scrolled down)
+            * -->
+      <ul
+        class="chat"
+
+        comment="this is the main part of the chat"
+        #scrollMe
+        style="overflow-y: scroll; height: 500px;"
+        [scrollTop]="scrollMe.scrollHeight"
+
+        >
+        <!--2. now we can see this may work, but if we look at the console, we'll se an error:
+            ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.
+            * this is a very know error in angular, it does not happen in production compilation, only in simple one.
+            * and we need to understand why it happens
+            * https://angular.io/errors/NG0100
+
+            * after understanding the error, we can fix it easily.
+            * go to the ts
+        -->
+
+         <li *ngFor="let message of messageService.messageThread$ | async ">
           <div>
             <span class="chat-img float-right">
               <img class="rounded-circle" [src]="message.senderPhotoUrl || './assets/user.png'"

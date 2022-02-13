@@ -1,20 +1,8 @@
-Getting the data from the confirmation modal:
+Tidying up the member message component:
 
-* after we have t a confirm service and a modal lets see how to link all together and get the data out of the confirm dialog.
-* go to confirm.service.ts
+* ok so one small thing before we publish our app:
+* on entering the the chat (message component) we see it'd not so convenient to scroll all the way down to the bottom of the chat to send the message, and after rerendering the chat the last message is on top.
 
-* test this by editing the profile and navigating away from the page.
-* success! 
-
-* but lets use this in another place to feel more easy in using this service.
-* lets warn the user when we want to delete a message.
-* go to messages.component.ts
-
-* test the delete message dialog confirm modal, try to delete a message.
-* success, we see a modal.
-* so now we have a modal we can use everywhere in our app.
-
-up next: we'll see what we can do in the message component ( the chat component ), we'll make the page a bit more convenient to use.
-
-
-
+* we change that, let's design the message board a bit differently.
+* I just don't want to scroll a bit down every time I send a message, I want the scroll be in the bottom.
+* go to member-messages.component.html
