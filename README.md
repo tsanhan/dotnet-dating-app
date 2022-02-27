@@ -1,40 +1,77 @@
-Photo management challenge:
-this will be a photo management solution:
-* when a user upload a photo, it must be approved before anyone can see them.
+Introduction:
+learning goals:
+publishing the app and understand:
+1. how to prepare the app for publishing
+2. what to consider before publishing an app to the world.
+3. we will switch databases, with all due respect. sqlite is not a production DB
+    * EF make this process very easy
+4. we'll serve static content from our API server.
+    * static content = HTML/JS/CSS/images/etc... files.
+    * our angular app will be hosted by out .net server
+    * now this is not a must, you can have our API and client be hosted in different locations (will slow your app)
+5. publishing to Heroku (it's free!)
 
-requirements:
-1. any photos a user uploads should be unapproved
-2. only admins or moderators can approve photos.
-3. no other user should be able to see unapproved photos.
-4. the user that uploaded the photo should be able to see the photo.
-    * but it should be clearly identified as "awaiting approval"
-5. what about the first photo? when a user uploads their first photo, this should not be set as their main photo
-    * so they can delete it if they don't like it while it's still in an "unapproved" state. 
-6. when an admin or a moderator approves a photo for a user, and this user does not have a main photo, then this should set the approved photo to 'main'
+6. now one important thing to understand with software projects. they never done! only stopped work on.
+    * software project need to maintenance, and be improved.
+    * so we'll see how to integrate Heroku with Github
+7. related to 7, we'll see how we'll work on a separate branches so the main branch will stay stable.
 
-so the photos can be in one of 2 states: "approved" and "unapproved", if "unapproved", the user see the photo identified as "awaiting approval", otherwise it;s all the same as before.
 
-now I will help you in describing the steps to to the challenge not the actual code.
-if you want the code itself, there is a PDF for that.
+ok.
+so what to consider when publishing:
 
-* in StudentAssets/PhotoManagementChallenge folder you find the steps to take, it's only the steps, no code or details.
-* it also contains some mock screenshots of how the UI should be look like. 
-* it also contains some tests in postman you can take, you can find them in section 18 
-* I suggest doing the API first and then the client side.
+1. environment variables 
+    * that secret info u store in your app
+        * our cloudinary settings
+        * our token key
+    * we need to think where we store them
+    * the safest place is to store them in environment variables on the hosting server itself 
+    * now you can store then in the appsettings file (that file won't be served)
+        * it's ok but environment variables are considered safer
+        * also, .net core take env variables over other locations when there is a conflict in settings
 
-[ go over in brief over the PDF]
+2. localhost
+    * need to think where we hardcoded 'localhost'.
+    * why do you think this is critical?
+    * answer: when we use the client app, we don't have our API running on our computer anymore...
 
-* if you feel you messed up and the code is not working at all, you can always use 'git stash',
-    * all the code will be stashed and if you want you can get it later
+3. CORS
+    * in case client and API are in different domains
+    * in that case we'll need to update our CORS configuration
+    * like adding which origin it's ok to serve the resource from.
+        * if you remember, the client can interact only with approved origins.
+        * we'll need to add to the API the client origin (because this is where it originated from)
+    * we wont need to do much here, if anything, we'll host the client and server from same origin.
 
-* IMPORTANT: you cna do things in a different way then what;s in the PDF, as long as it;s working it's all good!.
+4. database
+    * up until now we used sqlite.
+    * what to consider when choosing a DB?
+        * const/performance/publish location of the app/what is available
+    * all the above is things to consider but because we use EF, it doesn't really matter.
+    * what matters is is EF support that DB.
+    * so in EF support a lot of databases, it's does not support ALL of them.
+        * for example, EF is not a good fit for NoSql DBs like mongo, it's not relational.
+    * heroku is navigating us to use postgres sql, so we'll do that
 
-* onw last thing: if you look at point 6. in the recipe, you find that you should use Query filter.
-    * now we didn't learned about query filters in EF
-    * they are almost never used in EF 
-    * this is an opportunity to research something new: Entity Framework Query Filter 
-        * this is an easy way to ensure you never return any unapproved photos.
-        * and you can also add an Ignore Query Filter where you DO want unapproved photos (like for the current user/ admin/ moderator )
+5. Cost (the budget for this project)
+    * and when we think about cost, we need to think what are we buying:
+    * Capacity/Scalability: the resources you buy to run the app (CPU/Memory/Storage)
+        1. up front (price of every machine)
+        2. and how well can you adopt and buy more in order to scale
+            * horizontal scale: buy more resources to scale
+            * vertical scale: resize current resources to scale 
+         
+    * we won't worry about this because we'll publish to a free platform
 
-* up next: publishing our app.
+6. Seed Data.
+    * we have seed data in our db, as a training app it's perfectly fine to put seed data
+    * if this was a real production app... let's think...
+    * do you want to publish a dating app with no data?
+    * like an empty restaurant, do you come in into a restaurant like that?
+    * i think seed data will still be in our app
 
+7. Fake delays.
+    * this will have to go!
+    * there won't be any fake delays
+
+        
