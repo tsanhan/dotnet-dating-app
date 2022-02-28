@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-test-errors',
@@ -7,8 +8,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./test-errors.component.css']
 })
 export class TestErrorsComponent implements OnInit {
-  baseURL = "https://localhost:5001/api/";
-  //1. add property to the component
+
+  baseURL = environment.apiUrl; //1. update this and go back to README.md
   validationErrors: string[] = [];
 
   constructor(private http: HttpClient) { }
@@ -16,7 +17,6 @@ export class TestErrorsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  //3. implement error methods
   get404Error() {
     this.http.get(this.baseURL + 'buggy/not-found').subscribe(response => {
       console.log(response);
@@ -55,9 +55,7 @@ export class TestErrorsComponent implements OnInit {
       console.log(response);
     }, error => {
       console.log(error);
-      //2. we know we get here
       this.validationErrors = error;
-      //3. go to the template and display the errors
     });
   }
 

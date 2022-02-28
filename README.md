@@ -1,77 +1,43 @@
-Introduction:
-learning goals:
-publishing the app and understand:
-1. how to prepare the app for publishing
-2. what to consider before publishing an app to the world.
-3. we will switch databases, with all due respect. sqlite is not a production DB
-    * EF make this process very easy
-4. we'll serve static content from our API server.
-    * static content = HTML/JS/CSS/images/etc... files.
-    * our angular app will be hosted by out .net server
-    * now this is not a must, you can have our API and client be hosted in different locations (will slow your app)
-5. publishing to Heroku (it's free!)
+Preparing the angular app and serving this from the API server:
+* first thing is to see how we'r going to serve our client app from out web api kestrel server
+    * what is kestrel server? 
+        * doc: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel
+    * it's the web server .net core uses to serve clients.
+    * it's like iis but cross platform, all .net core web projects are served using kestrel
 
-6. now one important thing to understand with software projects. they never done! only stopped work on.
-    * software project need to maintenance, and be improved.
-    * so we'll see how to integrate Heroku with Github
-7. related to 7, we'll see how we'll work on a separate branches so the main branch will stay stable.
+* first of all we'll find all the places we used localhost in the client app (find in folder in vscode)
+    * we find 2 files:
+        environment file - no problem, we have a production version of that file
+        test-errors.component.ts, we'll change this, go to test-errors.component.ts
+
+* next, in angular.json, in architect/build/options
+    * the outputPath is something in dist/client
+    * this path is not really hold our app, we serve it from memory.
+    * if we to build out app (ng build), we'll the dist folder being created and the compilation result is in the 'client' folder 
+        * the maximum budget error can be easily fixed in angular.json
+    * now we don't want the build to be in dist/client, we want it to be in the api.
+    * go to angular.json and update the outputPath to "../API/wwwroot"
+        * 'wwwroot' is the default content folder the kestrel server will use to serve static files
+        * in the end angular app is static files (js/html/css)
+
+* now we'll need to tell our API to use static files,
+    * go to Startup.cs
+
+* lets build the the app into the www folder, run `ng build` in the client
+* we see the folder was created in the API folder
+
+* lest see what happens if we just start our API server
+* we should see our app on localhost:5001
+* if you need to logout and in again think why you needed to do that?
+    * the local storage with the existing token was stored for was of different origin, is was for port 4200, we are on 5001 now!
+
+* we still have a bug... try to refresh the page when in some route (like https://localhost:5001/members)
+    * why is that, what do you think? 
+    * our API understand what to do then we go to the basic url with no route,
+    * once there is route the browser call for the page  https://localhost:5001/members
+    * is actually a GET request for the 'members' controller 
+    * we don't have a 'members' controller, and if we did it would return data, not an angular component
+
+up next: tell our API what to do with angular routes, and we'll do that by adding a fallback controller (what to do if it cannot find a route)
 
 
-ok.
-so what to consider when publishing:
-
-1. environment variables 
-    * that secret info u store in your app
-        * our cloudinary settings
-        * our token key
-    * we need to think where we store them
-    * the safest place is to store them in environment variables on the hosting server itself 
-    * now you can store then in the appsettings file (that file won't be served)
-        * it's ok but environment variables are considered safer
-        * also, .net core take env variables over other locations when there is a conflict in settings
-
-2. localhost
-    * need to think where we hardcoded 'localhost'.
-    * why do you think this is critical?
-    * answer: when we use the client app, we don't have our API running on our computer anymore...
-
-3. CORS
-    * in case client and API are in different domains
-    * in that case we'll need to update our CORS configuration
-    * like adding which origin it's ok to serve the resource from.
-        * if you remember, the client can interact only with approved origins.
-        * we'll need to add to the API the client origin (because this is where it originated from)
-    * we wont need to do much here, if anything, we'll host the client and server from same origin.
-
-4. database
-    * up until now we used sqlite.
-    * what to consider when choosing a DB?
-        * const/performance/publish location of the app/what is available
-    * all the above is things to consider but because we use EF, it doesn't really matter.
-    * what matters is is EF support that DB.
-    * so in EF support a lot of databases, it's does not support ALL of them.
-        * for example, EF is not a good fit for NoSql DBs like mongo, it's not relational.
-    * heroku is navigating us to use postgres sql, so we'll do that
-
-5. Cost (the budget for this project)
-    * and when we think about cost, we need to think what are we buying:
-    * Capacity/Scalability: the resources you buy to run the app (CPU/Memory/Storage)
-        1. up front (price of every machine)
-        2. and how well can you adopt and buy more in order to scale
-            * horizontal scale: buy more resources to scale
-            * vertical scale: resize current resources to scale 
-         
-    * we won't worry about this because we'll publish to a free platform
-
-6. Seed Data.
-    * we have seed data in our db, as a training app it's perfectly fine to put seed data
-    * if this was a real production app... let's think...
-    * do you want to publish a dating app with no data?
-    * like an empty restaurant, do you come in into a restaurant like that?
-    * i think seed data will still be in our app
-
-7. Fake delays.
-    * this will have to go!
-    * there won't be any fake delays
-
-        
