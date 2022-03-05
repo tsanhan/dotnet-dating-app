@@ -79,14 +79,9 @@ namespace API
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            //1. after Authorization we say to use default files.
-            // * if there is any index.html file in the default location (the www folder), it will serve it
-            // * our angular app has index.html file
-            app.UseDefaultFiles(); //enable the usage of current www folder for files
-            app.UseStaticFiles(); //enable to serve static files from the www folder
-
-            //2. back to README.md
+  
+            app.UseDefaultFiles(); 
+            app.UseStaticFiles(); 
 
             app.UseEndpoints(endpoints =>
             {
@@ -94,6 +89,9 @@ namespace API
                 
                 endpoints.MapHub<PresenceHub>("hubs/presence");
                 endpoints.MapHub<MessageHub>("hubs/message");
+                // 1. we'll just add another endpoint for the index.html file
+                endpoints.MapFallbackToController("Index", "Fallback");
+                // 2. go to Readme.md
             });
         }
     }
