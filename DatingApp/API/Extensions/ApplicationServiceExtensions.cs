@@ -16,27 +16,19 @@ namespace API.Extensions
             services.AddSingleton<PresenceTracker>();
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddScoped<ITokenService, TokenService>();
-            // services.AddScoped<ILikesRepository, LikesRepository>();    //1. no need for that
-            // services.AddScoped<IMessageRepository, MessageRepository>();//2. no need for that
             services.AddScoped<LogUserActivity>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-            // services.AddScoped<IUserRepository, UserRepository>();      //3. no need for that
-            services.AddScoped<IUnitOfWork, UnitOfWork>();                 //4. add this
-                                                                             // * so now every controller will have an instance of the UOF
-                                                                             // * and that means one instance of data context per controller call
-                                                                             // * no matter the repository usage needed in this controller. 
-                                                                             
+            services.AddScoped<IUnitOfWork, UnitOfWork>();                 
             services.AddDbContext<DataContext>(options =>
             {
-                options.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                //1. update UseSqlite to UseNpgsql to use Postgres 
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+                //2. back to README.md
             });
 
             return services;
 
-            //5. so we don't need the 'SaveAllAsync' in the repositories.
-            //  * they not responsible for saving changes to the database, the UOF does.
-            //6. go to IUserRepository.cs and remove the SaveAllAsync method
         }
     }
 }
